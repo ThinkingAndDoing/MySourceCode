@@ -1,0 +1,84 @@
+
+Option Explicit
+
+'printUTF-8
+Private Sub printUTF(outputFile As String, OutputString As String)
+    
+    Dim WriteStream As Object
+    Set WriteStream = CreateObject("ADODB.Stream")
+    
+    With WriteStream
+        .Type = 2               'adTypeText
+        .Charset = "UTF-8"
+        .Open
+        .WriteText OutputString
+        .SaveToFile outputFile, 2  'adSaveCreateOverWrite
+        
+        .Flush
+        .Close
+        
+    End With
+    
+    Set WriteStream = Nothing
+ 
+    
+End Sub
+
+
+Public Sub Generate_Strings()
+
+    On Error GoTo Hell
+
+    Dim wk_Strings As Worksheet
+    Set wk_Strings = Worksheets("TextGenerator")
+    wk_Strings.Select
+    
+    Dim Col_Primary As Integer
+    Dim Col_StringName As Integer
+    Dim Col_English As Integer
+    Dim Col_Chinese As Integer
+    Col_Primary = 2
+    Col_StringName = 7
+    Col_English = 8
+    Col_Chinese = 9
+    
+    Dim strContent As String
+    Dim outputFile As String
+    outputFile = ThisWorkbook.Path & "\Strings.xml"
+
+    'print the header.
+    strContent = strContent & "<?xml version=" & Chr(34) & "1.0" & Chr(34) & " encoding=" & Chr(34) & "utf-8" & Chr(34) & "?>" & Chr(13)
+    strContent = strContent & "<Resources>" & Chr(13)
+    strContent = strContent & "<Type>Strings</Type>" & Chr(13)
+    
+    'print the body.
+    Dim index As Integer, istart As Integer, iend As Integer
+    index = 2
+    
+    Do While Not IsEmpty(wk_Strings.Cells(index, Col_Primary))
+    If Not IsEmpty(wk_Strings.Cells(index, Col_StringName)) And Not IsEmpty(wk_Strings.Cells(index, Col_English)) And Not IsEmpty(wk_Strings.Cells(index, Col_Chinese)) Then
+        
+        strContent = strContent & "<Resource Name=" & Chr(34) & wk_Strings.Cells(index, Col_StringName) & Chr(34) & " EnsurePreturn=" & Chr(34) & "false" & Chr(34) & ">" & Chr(13)
+        strContent = strContent & "<Value DependencyExpression=" & Chr(34) & "Language : English" & Chr(34) & ">" & wk_Strings.Cells(index, Col_English) & "</Value>" & Chr(13)
+        strContent = strContent & "<Value DependencyExpression=" & Chr(34) & "Language : Chinese" & Chr(34) & ">" & wk_Strings.Cells(index, Col_Chinese) & "</Value>" & Chr(13)
+        strContent = strContent & "<Value>" & wk_Strings.Cells(index, Col_Chinese) & "</Value>" & Chr(13)
+        strContent = strContent & "</Resource>" & Chr(13)
+
+    End If
+    
+    index = index + 1
+    Loop
+    
+    'print the tail.
+    strContent = strContent & "</Resources>" & Chr(13)
+
+    printUTF outputFile, strContent
+    
+    Exit Sub
+Hell:
+    MsgBox "Error No.: " & Err.Number & vbNewLine & vbNewLine _
+    & "Description: " & Err.Description _
+    , vbCritical, "Error"
+    
+End Sub
+
