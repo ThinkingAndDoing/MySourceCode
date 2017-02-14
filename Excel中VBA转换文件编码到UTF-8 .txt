@@ -1,0 +1,31 @@
+'上半截是读取文件, 下半截是写入文件, 需要转换不同格式, 请自行更换
+Private Sub ConvFile(InputFile As String, OutputFile As String)
+    Dim ReadStream As Object
+    Set ReadStream = CreateObject("ADODB.Stream")
+    Dim FileContent As String
+    With ReadStream
+        .Type = 2               'adTypeText
+        .Charset = "UNICODE"
+        .Open
+        .LoadFromFile InputFile
+        FileContent = .ReadText
+        .Close
+    End With
+    Set ReadStream = Nothing
+
+    Dim WriteStream As Object
+    Set WriteStream = CreateObject("ADODB.Stream")
+
+    With WriteStream
+        .Type = 2               'adTypeText
+        .Charset = "UTF-8"
+        .Open
+        .WriteText FileContent
+        .SaveToFile OutputFile, 2  'adSaveCreateOverWrite
+        
+        .Flush
+        .Close
+    End With
+    Set WriteStream = Nothing
+
+End Sub
