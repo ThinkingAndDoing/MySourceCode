@@ -1,5 +1,5 @@
 '''
-1.例子源代码 Python 3.x
+1.Sample Python 3.x
 '''
 # -*- coding: UTF-8 -*-
 import spider
@@ -7,8 +7,6 @@ import re
 import logging
 logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S',filename='test.log',filemode='w')
 
-
-#test passed!
 class Traverse:
    def __init__(self):
       self.website = "http://www.mmkao.net/XiuRen/201610/"
@@ -19,6 +17,7 @@ class Traverse:
 
    def readPathAndImgs(self,url):
       page = self.spider.getDecodeResponseData(url)
+      #logging.debug("Page content is : " + page)
       pattern = re.compile('<title>(.*?)</title>',re.S)
       title = re.findall(pattern,page)
       self.imgPath = title[0]
@@ -63,7 +62,7 @@ print("抓取完成！")
 
 
 '''
-2.相关知识点
+2.Reference
 '''
 
 
@@ -77,8 +76,8 @@ print("抓取完成！")
 
 
 '''
-3.扩展
-python 高级教程
+3.Extension
+
 http://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/001431917715991ef1ebc19d15a4afdace1169a464eecc2000
 '''
 

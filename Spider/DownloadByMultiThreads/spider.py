@@ -1,5 +1,5 @@
 '''
-1.例子源代码 Python 3.x
+1.Sample Python 3.x
 '''
 # -*- coding: UTF-8 -*-
 import socket
@@ -29,8 +29,10 @@ class Spider:
       while attempts < self.timesOfRetry and not success:
          try:
             headers = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2837.0 Safari/537.36' }
-            req = urllib.request.Request(url, headers = headers)
-            data = urllib.request.urlopen(req).read()
+            reqconf = urllib.request.Request(url, headers = headers)
+            request = urllib.request.urlopen(reqconf)
+            data = request.read()
+            request.close()
             success = True
          except Exception as e:
             print(Exception,"in getResponseData:",e)

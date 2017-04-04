@@ -1,11 +1,11 @@
 '''
-1.例子源代码 Python 3.x
+1.Sample Python 3.x
 '''
 # -*- coding: UTF-8 -*-
 import spider
 import os
 
-class Photos:
+class ListOfPhotos:
    def __init__(self):
       self.list = []
       self.distPath = "."
@@ -46,7 +46,7 @@ class Photos:
       self.saveImgs(self.list,self.distPath)
 
 '''
-2.相关知识点
+2.Reference
 '''
 
 
@@ -61,5 +61,6 @@ class Photos:
 
 
 '''
-3.扩展
+3.Extension
+
 '''

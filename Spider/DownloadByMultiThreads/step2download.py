@@ -1,8 +1,8 @@
 '''
-1.例子源代码 Python 3.x
+1.Sample Python 3.x
 '''
 # -*- coding: UTF-8 -*-
-import photos
+import listofphotos
 import os
 from time import ctime
 import threading
@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(
 
 def downloadList(list):
     try:
-        gp = photos.Photos()
+        gp = listofphotos.ListOfPhotos()
         for i in list:
             if i=="":
                 continue
@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
 
 '''
-2.相关知识点
+2.Reference
 '''
 
 
@@ -71,5 +71,6 @@ if __name__ == '__main__':
 
 
 '''
-3.扩展
+3.Extension
+
 '''
