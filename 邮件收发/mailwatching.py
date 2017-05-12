@@ -19,7 +19,7 @@ from email.header import decode_header
 每分钟检查一次系统中的进程
 '''
 
-__processpath = "processes.txt"
+__processpath = "C:\\ProgramData\\processes.txt"
 
 class getemail:
 	maillist = []
@@ -92,12 +92,12 @@ def reademail(mail):
 def readprocessfromfile():
 	try:
 		f = open(__processpath, "r", encoding='utf-8')
-		for line in f.readlines:
-			line.replace("\n","")
+		for line in f.readlines():
+			line = line.replace("\n","")
 			if line!="":
 				killprocess(line)
-	except:
-		print("Do nothing!")
+	except Exception as e:
+		print("exception:",e)
 
 def isonedaypassd():
 	if os.path.exists(__processpath) and os.path.isfile(__processpath):
