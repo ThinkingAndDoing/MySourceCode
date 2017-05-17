@@ -9,7 +9,7 @@ import poplib
 from email.mime.text import MIMEText
 from email.header import Header
 from email.header import decode_header
-
+import pickle as p
 
 '''
 读取邮箱中所有邮件的标题
@@ -21,13 +21,13 @@ from email.header import decode_header
 
 __processpath = "C:\\ProgramData\\processes.txt"
 
-class getemail:
-	maillist = []
+class GetEmail:
 	def __init__(self):
 		self.host = "pop3.163.com"
 		self.username = "xxx@163.com"
 		self.password = "xxx"
 		self.pp = poplib.POP3(self.host)	# 创建一个pop3对象，这个时候实际上已经连接上服务器了
+		self.maillist = []
 		
 	def login(self):
 		#self.pp.set_debuglevel(1)	# 设置调试模式，可以看到与服务器的交互信息
@@ -53,9 +53,37 @@ class getemail:
 			for line in down[1]:	# 输出邮件
 				aMail += line.decode("utf-8")+'\n'
 			self.maillist.append(aMail)
+		return self.maillist
 		
 	def quit(self):
 		self.pp.quit()
+
+class ReadEmail:
+	def __init__(self, email):
+		self.eml = email
+		self.msg = ""
+		self.subject = ""
+		self.sender = ""
+		self.parse()
+
+	def parse(self):
+		self.msg = email.message_from_string(self.eml)
+
+	def decodemailheader(self):
+		list = decode_header(self.subject)
+		if list[0][1] is None:
+			self.subject = list[0][0]
+		else:
+			self.subject = list[0][0].decode(list[0][1])
+
+	def getsubject(self):
+		self.subject = self.msg.get("Subject")
+		self.decodemailheader()
+		return self.subject
+
+	def getsender(self):
+		self.sender = email.utils.parseaddr(self.msg.get("from"))[1]
+		return self.sender
 
 def killprocess(processName):
 	cmd = 'tasklist | find "' + processName + '"'
@@ -71,31 +99,20 @@ def addrule(rule):
 	if os.path.splitext(rule)[-1]=='.exe':
 		killprocess(rule)
 
-def decodemailheader(subject):
-	list = decode_header(subject)
-	if list[0][1] is None:
-		return list[0][0]
-	else:
-		return list[0][0].decode(list[0][1])
-
-def reademail(mail):
-	msg = email.message_from_string(mail)
-	subject = msg.get("Subject")
-	subject = decodemailheader(subject)
-	mailsrc = email.utils.parseaddr(msg.get("from"))[1]
-	if mailsrc=="xiewei23703@163.com" or mailsrc=="xiewei23703@126.com":
-		addrule(subject)
-		return subject
-	else:
-		return ""
-
 def readprocessfromfile():
 	try:
-		f = open(__processpath, "r", encoding='utf-8')
-		for line in f.readlines():
-			line = line.replace("\n","")
-			if line!="":
-				killprocess(line)
+		f = open(__processpath, "rb")
+		tasknamelist = p.load(f)
+		for tn in tasknamelist:
+			addrule(tn)
+	except Exception as e:
+		print("exception:",e)
+
+def writeprocesstofile(tnlist):
+	try:
+		f = open(__processpath, "wb")
+		p.dump(tnlist, f)
+		f.close()
 	except Exception as e:
 		print("exception:",e)
 
@@ -111,21 +128,28 @@ def isonedaypassd():
 	else:
 		return True
 
+def gettasknamelist(emllist):
+	tasknamelist = []
+	for mail in emllist:
+		eml = ReadEmail(mail)
+		sender = eml.getsender()
+		if sender=="xiewei23703@163.com" or sender=="xiewei23703@126.com":
+			pn = eml.getsubject()
+			if pn!="":
+				tasknamelist.append(pn)
+	return tasknamelist
+
 def run():
 	flag = isonedaypassd()
 	if flag:
 		try:
-			pop = getemail()
+			pop = GetEmail()
 			pop.login()
-			pop.getemails()
-			#print(pop.maillist)
-			f = open(__processpath, "w", encoding='utf-8')
-			for mail in pop.maillist:
-				pn = reademail(mail)
-				if pn!="":
-					f.write(pn+'\n')
-			f.close()
+			emls = pop.getemails()
 			pop.quit()
+			
+			tasknamelist = gettasknamelist(emls)
+			writeprocesstofile(tasknamelist)
 		except:
 			readprocessfromfile()
 	else:
