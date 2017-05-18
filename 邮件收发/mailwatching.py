@@ -103,6 +103,8 @@ def readprocessfromfile():
 	try:
 		f = open(__processpath, "rb")
 		tasknamelist = p.load(f)
+		print("read list:")
+		print(tasknamelist)
 		for tn in tasknamelist:
 			addrule(tn)
 	except Exception as e:
@@ -111,6 +113,8 @@ def readprocessfromfile():
 def writeprocesstofile(tnlist):
 	try:
 		f = open(__processpath, "wb")
+		print("write list:")
+		print(tnlist)
 		p.dump(tnlist, f)
 		f.close()
 	except Exception as e:
@@ -118,10 +122,10 @@ def writeprocesstofile(tnlist):
 
 def isonedaypassd():
 	if os.path.exists(__processpath) and os.path.isfile(__processpath):
-		#mtime = time.ctime(os.path.getmtime(__processpath))
-		createtime = time.localtime(os.path.getctime(__processpath))
+		modifytime = time.localtime(os.path.getmtime(__processpath))
+		#createtime = time.localtime(os.path.getctime(__processpath))
 		curtime = time.localtime(time.time())
-		if createtime.tm_year==curtime.tm_year and createtime.tm_mon==curtime.tm_mon and createtime.tm_mday!=curtime.tm_mday:
+		if modifytime.tm_year==curtime.tm_year and modifytime.tm_mon==curtime.tm_mon and modifytime.tm_mday!=curtime.tm_mday:
 			return True
 		else:
 			return False
@@ -143,6 +147,7 @@ def run():
 	flag = isonedaypassd()
 	if flag:
 		try:
+			print("Start to get emails!")
 			pop = GetEmail()
 			pop.login()
 			emls = pop.getemails()
@@ -157,4 +162,5 @@ def run():
 
 while True:
 	run()
+	#time.sleep(1)
 	time.sleep(60)
