@@ -1,0 +1,88 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style type="text/css">
+        #container {
+            font-size: 12px;
+            margin: 5px 0;
+        }
+    </style>
+    <title>如何获取商圈</title>
+
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/CityList/1.4/src/CityList_min.js"></script>
+    <script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+
+</head>
+<body>
+<div id="container"></div>
+<div style="width:520px;height:340px;border:1px solid gray" id="map_container"></div>
+<hr>
+<div id="result"></div>
+</body>
+</html>
+<script type="text/javascript">
+    var map = new BMap.Map("map_container");
+    map.centerAndZoom(new BMap.Point(121.478125, 31.229649), 12);
+
+    var cityList = new BMapLib.CityList({
+        container: 'container',
+        map: map
+    });
+
+    //    province_url="http://api.map.baidu.com/shangquan/forward/?qt=sub_area_list&ext=1&level=1&areacode=1&business_flag=0&callback=BMap._rd._cbk11453";
+    //    RequstData(province_url);
+
+
+    cityList.getSubAreaList(340, function (json) {
+        console.log(json);
+        for (var k = 0; k < json.sub.length; k++) {//遍历所有区域
+            var myurl = "http://api.map.baidu.com/shangquan/forward/?qt=sub_area_list&ext=1&level=1&areacode=" + json.sub[k].area_code + "&business_flag=1&callback=BMap._rd._cbk24526";
+            RequstData(myurl);
+        }
+    });
+
+    function RequstData(myurl) {
+        $.ajax({
+            type: "GET",
+            url: myurl,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert(textStatus);
+                alert(errorThrown);
+                this; // 调用本次AJAX请求时传递的options参数
+            },
+            dataType: "jsonp",
+            success: function (msg, textStatus) {
+                for (var i = 0; i < msg.content.sub.length; i++) {//遍历区域里面所有商圈
+
+                    //按照javascript二位数组的形式输出到页面
+//                    record="[\""+msg.content.area_name+"\",\""+msg.content.sub[i].area_code+"\",\""+msg.content.sub[i].area_name+"\"],";
+//                    document.getElementById("result").innerHTML += record;
+
+//                    sqlformat(msg.content.area_name,msg.content.sub[i].area_name,msg.content.sub[i].business_geo);
+
+                    //UPDATE business_area SET geo = '1|12683726.56,2556854.58;12683726.56,2556854.58|12683726.56,2556854.58;' WHERE name = '后海'
+//                    var sqlline="UPDATE business_area SET geo = '"+ msg.content.sub[i].geo+"' WHERE name = '"+msg.content.sub[i].area_name + "';";
+                    var sqlline="UPDATE business_area SET baidu_level = '"+ msg.content.sub[i].business_type+"' WHERE name = '"+msg.content.sub[i].area_name + "';";
+//                    console.log(sqlline);
+                    document.getElementById("result").innerHTML += sqlline + "<br>";
+                }
+//                console.log(msg);
+            }
+        })
+    }
+
+    function sqlformat(arg1, arg2, arg3) {
+        var sqlline = "insert into business_area(district_id,name,boundary,create_time,update_time) values((select id from district where name=\"" +
+                arg1 +
+                "\"),\"" +
+                arg2 +
+                "\",\"" +
+                arg3 +
+                "\",now(),now())";
+        console.log(sqlline);
+    }
+
+
+</script>
+

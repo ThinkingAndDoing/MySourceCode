@@ -1,0 +1,68 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style type="text/css">
+        #container {
+            font-size: 12px;
+            margin: 5px 0;
+        }
+    </style>
+    <title>如何获取商圈</title>
+
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/CityList/1.4/src/CityList_min.js"></script>
+    <script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+
+</head>
+<body>
+<div id="container"></div>
+<div style="width:520px;height:340px;border:1px solid gray" id="map_container"></div>
+<hr>
+<div id="result"></div>
+</body>
+</html>
+<script type="text/javascript">
+    var map = new BMap.Map("map_container");
+    map.centerAndZoom(new BMap.Point(121.478125, 31.229649), 12);
+
+    var cityList = new BMapLib.CityList({
+        container: 'container',
+        map: map
+    });
+
+    //搜集商圈坐标点经纬度
+    var maplist = [
+        ["南山区", "11184", "后海"],
+        ["福田区", "14966", "振华路"]
+    ];
+    console.log("the length of maplist is:"+maplist.length);
+    var targetObj = new Object();
+    var handler = function (json) {//根据商圈名字，获取商圈坐标经纬度。
+        if (json.length > 1) {//当有同名商圈的时候，只取深圳市对应的商圈坐标
+            for (var t = 0; t < json.length; t++) {
+                if (json[t].city === "深圳市") {
+                    targetObj = json[t];
+                }
+            }
+        } else {
+            targetObj = json[0];
+        }
+        console.log("s="+s);
+        console.log(targetObj);
+        var latlon = "";
+        for (var k = 0; k < targetObj.coordinate.length; k++) {//将坐标经纬度格式化成一个字符串
+            latlon += targetObj.coordinate[k].lng + "," + targetObj.coordinate[k].lat + ";";
+        }
+        var record = "[\"" + maplist[s][2] + "\",\"" + latlon + "\"],";
+        document.getElementById("result").innerHTML += record;
+        s++;
+        if (s < maplist.length) {
+            cityList.getBusiness(maplist[s][2], handler);
+        }
+    };
+
+    s = 0;
+    cityList.getBusiness(maplist[s][2],handler);
+
+</script>
+

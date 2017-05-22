@@ -1,0 +1,47 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style type="text/css">
+        #container {
+            font-size: 12px;
+            margin: 5px 0;
+        }
+    </style>
+    <title>如何获取商圈</title>
+
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/CityList/1.4/src/CityList_min.js"></script>
+    <script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+
+</head>
+<body>
+<div id="container"></div>
+<div style="width:520px;height:340px;border:1px solid gray" id="map_container"></div>
+<hr>
+<div id="result"></div>
+</body>
+</html>
+<script type="text/javascript">
+    var map = new BMap.Map("map_container");
+    map.centerAndZoom(new BMap.Point(121.478125, 31.229649), 12);
+
+    var cityList = new BMapLib.CityList({
+        container: 'container',
+        map: map
+    });
+
+    cityList.getBusiness("后海", function (json) {
+        console.log('-------------单个商圈-------------');
+        console.log(json);
+    });
+
+
+    cityList.addEventListener('cityclick', function (e) {
+        console.log(e);
+        console.log(e.area_name+":"+ e.geo.lat+","+ e.geo.lng);
+        console.log(e.area_code);
+    });
+
+
+</script>
+
