@@ -5,6 +5,9 @@
 import spider
 import os
 
+'''
+Save a list of pictures to local from a list of picture url
+'''
 class ListOfPhotos:
    def __init__(self):
       self.list = []

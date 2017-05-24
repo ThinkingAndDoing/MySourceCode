@@ -9,6 +9,9 @@ import threading
 import logging
 logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S',filename='test.log',filemode='w')
 
+'''
+Download all pictures by url list in out.txt
+'''
 def downloadList(list):
 	try:
 		gp = allpicsofurl.AllPicsOfUrl()

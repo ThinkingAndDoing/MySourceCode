@@ -5,6 +5,9 @@
 import spider
 import os
 
+'''
+Save one picture from a picture url
+'''
 class SinglePhoto:
 	def __init__(self, retryTimes=5, decodeCode="gbk", timeOut=5):
 		self.url = ""
