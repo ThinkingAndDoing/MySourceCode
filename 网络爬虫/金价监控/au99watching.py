@@ -76,16 +76,17 @@ def SendEmail(header="", content=""):
 	smpt.send()
 	smpt.close()
 
-localtime = time.localtime(time.time())
-auPrice = au99price.AuPrice()
-auPrice.setStartDate(getDate(localtime.tm_year-1, localtime.tm_mon, localtime.tm_mday))
-auPrice.setEndDate(getDate(localtime.tm_year, localtime.tm_mon, localtime.tm_mday))
-auPrice.run()
-auParse = au99parse.AuParse()
-auParse.setRecords(auPrice.getHistoryRecods())
-#saveHistoryPriceToDB()
-SendEmail("Au Price", auParse.getLastDayPrice())
-sys.exit(0)
+def getAuPrice():
+	localtime = time.localtime(time.time())
+	auPrice = au99price.AuPrice()
+	auPrice.setStartDate(getDate(localtime.tm_year-1, localtime.tm_mon, localtime.tm_mday))
+	auPrice.setEndDate(getDate(localtime.tm_year, localtime.tm_mon, localtime.tm_mday))
+	auPrice.run()
+	auParse = au99parse.AuParse()
+	auParse.setRecords(auPrice.getHistoryRecods())
+	#saveHistoryPriceToDB()
+	if float(auParse.getMidFinalPrice()) >float(auParse.getLastDayPrice()):
+		SendEmail("Au Price", auParse.getLastDayPrice())
 
-
+#getAuPrice()
 

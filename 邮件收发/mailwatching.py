@@ -11,6 +11,8 @@ from email.header import Header
 from email.header import decode_header
 import pickle as p
 
+import au99watching
+
 '''
 读取邮箱中所有邮件的标题
 将标题作为进程名
@@ -157,6 +159,9 @@ def run():
 			writeprocesstofile(tasknamelist)
 		except:
 			readprocessfromfile()
+		else:
+			# get au price of yesterday.
+			au99watching.getAuPrice()
 	else:
 		readprocessfromfile()
 
