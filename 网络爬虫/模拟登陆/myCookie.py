@@ -46,7 +46,7 @@ def writeToFile(page, fileName='login.html'):
 	f.close()
 
 login = Login()
-values = {'user': '17625938664', 'password': '333333a', '_xsrf':'ee0b2fa0f2aa598655d3d92b2da4f2bf'}  #'submit' : 'Login'
+values = {'user': '17625938664', 'password': '***', '_xsrf':'ee0b2fa0f2aa598655d3d92b2da4f2bf'}  #'submit' : 'Login'
 postdata = urllib.parse.urlencode(values).encode()
 request = urllib.request.Request('https://www.zhihu.com/#signin', postdata, login.getHeader(), method='PUT')
 login.setRequest('https://www.zhihu.com/#signin')
