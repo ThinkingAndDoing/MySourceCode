@@ -4,7 +4,7 @@ import re
 from robobrowser import RoboBrowser
 
 url = 'http://itest.info/courses/2'
-b = RoboBrowser(history=True)
+b = RoboBrowser(history=True, parser='html.parser')
 b.open(url)
 
 class_name = b.select('.headline h2')
