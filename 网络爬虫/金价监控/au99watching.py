@@ -7,6 +7,10 @@ import time
 import datetime
 import sys
 
+senderList = []
+senderList.append({"host":"smtp.163.com", "user":"15192535292@163.com", "pwd":"***"})
+senderList.append({"host":"smtp.sina.com", "user":"xiewei23703@sina.com", "pwd":"***"})
+
 def getStartDate():
 	localtime = time.localtime(time.time())
 	return str(datetime.date(localtime.tm_year-10, localtime.tm_mon, localtime.tm_mday))
@@ -69,12 +73,7 @@ def saveHistoryPriceToDB():
 		mydb.runSQL(insertSQL)
 
 def SendEmail(header="", content=""):
-	smpt = sendemail.sendemail()
-	smpt.login()
-	smpt.setHeader(header)
-	smpt.setContent(content)
-	smpt.send()
-	smpt.close()
+	sendemail.sendEmail(header, content, senderList)
 
 def getAuPrice():
 	localtime = time.localtime(time.time())
@@ -86,7 +85,6 @@ def getAuPrice():
 	auParse.setRecords(auPrice.getHistoryRecods())
 	#saveHistoryPriceToDB()
 	if float(auParse.getMidFinalPrice()) >float(auParse.getLastDayPrice()):
-		SendEmail("Au Price", auParse.getLastDayPrice())
+		SendEmail("提醒买入！昨日金价已经低于去年中间值，为：", auParse.getLastDayPrice())
 
 #getAuPrice()
-
