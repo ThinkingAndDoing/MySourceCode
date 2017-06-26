@@ -3,6 +3,10 @@
 
 '''
 http://www.cnblogs.com/nbkhic/p/4216149.html
+仅仅适用于采用Form登录的网站
+button link 跳转
+link = browser.find('a')[0]
+browser.follow_link(link)
 '''
 
 import re
@@ -13,6 +17,7 @@ b = RoboBrowser(history=True, parser='html.parser')
 b.open(url)
 # 获取登陆表单
 login_form = b.get_form(action='TPAMemberLogin.aspx')
+login_form = b.get_forms()[0]
 # 输入用户名和密码
 login_form['CNameLogin'].value = 'username'
 login_form['CPassword'].value = 'password'
