@@ -27,7 +27,7 @@ def readList(urllist):
 		b.open(url)
 		print(url)
 		content = b.find_all('li', class_='list-item')
-		if content=[]:
+		if content==[]:
 			print('Failed to get html tag.')
 			return
 		f = open(FileName, "a", encoding='utf-8')
