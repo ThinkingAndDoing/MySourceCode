@@ -10,7 +10,7 @@ import os
 from robobrowser import RoboBrowser
 
 
-FileName = 'out.txt'
+FileName = 'list.txt'
 
 def getUrlList():
 	urllist = []
