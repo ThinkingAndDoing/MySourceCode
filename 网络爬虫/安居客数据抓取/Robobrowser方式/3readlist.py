@@ -68,38 +68,35 @@ def removeDuplicateItems(list):
 		and ListA[i][5]==ListA[i-1][5] and ListA[i][6]==ListA[i-1][6] \
 		and ListA[i][7]==ListA[i-1][7]:
 			del ListA[i]
+
 		else:
 			i += 1
 	return ListA
 
 
 def listFormat(list):
-	listA = removeDuplicateItems(list)
 	newList = []
-	for line in listA:
+	for line in list:
 		listArea = []
-		listArea.append(line[6].split("  ")[0])
-		listArea.append(line[6].split("  ")[1].split("-")[0])
-		listArea.append(line[6].split("  ")[1].split("-")[1])
-		listArea.append(line[6].split("  ")[1].split("-")[2])
-		newList.append([line[0], line[1], line[2], line[3], line[4], line[5], listArea[0], listArea[1], listArea[2], listArea[3], line[7], line[8]])
+		listArea.append(line[6].split(" ")[0].split("-")[0])
+		listArea.append(line[6].split(" ")[0].split("-")[1])
+		listArea.append(line[6].split(" ")[1])
+		newList.append([line[0], line[1], line[2], line[3], line[4], line[5], listArea[0], listArea[1], listArea[2], line[7]])
 	return newList
 
 if __name__ == "__main__":
-	try:
-		if os.path.isfile(_OutputExcel):
-			os.remove(_OutputExcel)
-		f = open(_InputFile, "r", encoding='utf-8')
-		value = f.read()
+	if os.path.isfile(_OutputExcel):
+		os.remove(_OutputExcel)
+	f = open(_InputFile, "r", encoding='utf-8')
+	value = f.read()
 
-		#pattern = re.compile('<a data-from="" data-company=""  title="([^\"]*?)" href="([^\"]*?)"',re.S)
-		pattern = re.compile('href="(.*?)" target="_blank" title="(.*?)">.*?<span>(.*?)</span>.*?<span>(.*?)</span>.*?<span>(.*?)</span>.*?<span>(.*?)</span>.*?title=(.*?)">.*?<span class="price-det"><strong>(.*?)</strong>万</span>.*?<span class="unit-price">(.*?)</span>',re.S)
+	#pattern = re.compile('<a data-from="" data-company=""  title="([^\"]*?)" href="([^\"]*?)"',re.S)
+	pattern = re.compile('<a class="js-title value title-font".*?href="(.*?)".*?title="(.*?)".*?<span>(.*?)</span>.*?<span>(.*?)</span>.*?<span>(.*?)</span>.*?<span>(.*?)</span>.*?<span class="num">(.*?)</span>.*?<div class="time">(.*?)</div>',re.S)
+	#pattern = re.compile('filterlist" href="(.*?)" target="_blank" title="(.*?)">.*?<p class="details-item tag">(.*?)<span>.*?</span>(.*?)<span>.*?</span>(.*?)<span>.*?</span>(.*?)</p>.*?［(.*?)］.*?<strong>(.*?)</strong>',re.S)
 
-		items = re.findall(pattern, value)
-		writeToExcel(_OutputExcel, listFormat(items))
-		#writeListToFile(_OutputFile, items)
-	except Exception as e:
-		print(e)
+	items = re.findall(pattern, value)
+	writeToExcel(_OutputExcel, removeDuplicateItems(items))
+
 	
 
 
