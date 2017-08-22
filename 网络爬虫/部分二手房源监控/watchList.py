@@ -40,7 +40,7 @@ class HousePriceWatching:
 
 	def getLatestData(self):
 		retList = self.readList(self.watchList)
-		#print(self.summaryArray)
+		#print(retList)
 		for line in retList:
 			self.summaryArray.append(line)
 
@@ -59,8 +59,8 @@ class HousePriceWatching:
 			#content = b.find_all('dd', class_='info rel')
 			content = b.find_all(class_='trl-item sty1') + b.find_all(class_='trl-item1')
 			if content==[]:
-				print('Failed to get html tag.')
-				return
+				print('Failed to get html tag. at ' + url)
+				continue
 
 			#print(content)
 			content.append(url)
@@ -143,9 +143,10 @@ def dataFetchFromMatrix(list):
 	return mMatrix
 
 if __name__ == "__main__":
+	'''
 	if os.path.isfile(_OutputExcel):
 		os.remove(_OutputExcel)
-
+	'''
 	watcher = HousePriceWatching()
 	watcher.setWatchList(getListFromInputfile())
 	watcher.getLatestData()
