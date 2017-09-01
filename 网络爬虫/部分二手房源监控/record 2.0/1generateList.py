@@ -6,7 +6,6 @@ import os
 from robobrowser import RoboBrowser
 
 _FileName = 'urllist.txt'
-_UrlListName = 'list.txt'
 _StartUrl = "http://esf.nanjing.fang.com/house-a0268-b0606/c2110-d2180-l3100/"
 
 def getUrlList(fn):
@@ -52,13 +51,9 @@ def readList(url):
 	return listOutput
 
 if __name__ == "__main__":
-	'''
-	if os.path.isfile(_FileName):
-		os.remove(_FileName)
-	'''
-	listOutput = readList(_StartUrl)
+	newList = readList(_StartUrl)
 	oldList = getUrlList(_FileName)
-	mergedlist = list(set(listOutput).union(set(oldList)))
+	mergedlist = list(set(newList).union(set(oldList)))
 	writeListToFile(_FileName, mergedlist)
 
 

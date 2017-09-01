@@ -68,10 +68,6 @@ class HousePriceWatching:
 					self.watchList.remove(url)
 					continue
 
-			#content = b.find_all(has_logr)
-			#content = b.find_all('dd', class_='info rel')
-			#content = b.find_all(class_='trl-item sty1') + b.find_all(class_='trl-item1')
-
 			content.append(url)
 			contentList.append(content)
 		return contentList
@@ -95,7 +91,6 @@ def getListFromRecord(file):
 		tempL = line.split(",")
 		dictPrice.update({tempL[7]:tempL[0]})
 	f.close()
-	#print(dictPrice)
 	return dictPrice
 
 def printComparedResult(start, to):
@@ -136,7 +131,6 @@ def getListFromInputfile():
 	for item in retList:
 		if item!="" and item!="\n":
 			list.append(item.replace("\n", ""))
-	#print(list)
 	return list
 	
 def writeMatrixToTxt(output, list):
@@ -163,10 +157,6 @@ def dataFetchFromMatrix(list):
 	return mMatrix
 
 if __name__ == "__main__":
-	'''
-	if os.path.isfile(_OutputExcel):
-		os.remove(_OutputExcel)
-	'''
 	watcher = HousePriceWatching()
 	watcher.setWatchList(getListFromInputfile())
 	watcher.getLatestData()
@@ -177,6 +167,7 @@ if __name__ == "__main__":
 	
 	printResult()
 	writeBackToInputfile(watcher.watchList)
+
 
 
 	
