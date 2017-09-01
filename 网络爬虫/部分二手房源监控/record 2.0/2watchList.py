@@ -58,11 +58,14 @@ class HousePriceWatching:
 				print(url)
 			except Exception as e:
 				print(e)
+				print('Failed to get html tag. at ' + url)
+				self.watchList.remove(url)
 				continue
 			else:
 				content = b.find_all(class_='trl-item sty1') + b.find_all(class_='trl-item1')
 				if content==[]:
 					print('Failed to get html tag. at ' + url)
+					self.watchList.remove(url)
 					continue
 
 			#content = b.find_all(has_logr)
@@ -71,8 +74,19 @@ class HousePriceWatching:
 
 			content.append(url)
 			contentList.append(content)
-		#print(contentList)
 		return contentList
+
+def writeListToFile(file, list):
+	list.sort()
+	while '' in list:
+		list.remove('')
+	f = open(file, "w", encoding='utf-8')
+	for item in list:
+		f.write(str(item)+"\n")
+	f.close()
+
+def writeBackToInputfile(list):
+	writeListToFile(_InputFile, list)
 
 def getListFromRecord(file):
 	dictPrice = {}
@@ -117,7 +131,7 @@ def printResult():
 def getListFromInputfile():
 	f = open(_InputFile, "r", encoding='utf-8')
 	retList = f.readlines()
-	
+	f.close()
 	list = []
 	for item in retList:
 		if item!="" and item!="\n":
@@ -162,6 +176,7 @@ if __name__ == "__main__":
 
 	
 	printResult()
+	writeBackToInputfile(watcher.watchList)
 
 
 	

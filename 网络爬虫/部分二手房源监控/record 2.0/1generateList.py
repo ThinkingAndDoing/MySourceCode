@@ -1,23 +1,19 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
-'''
-http://www.cnblogs.com/nbkhic/p/4216115.html
-http://blog.csdn.net/abclixu123/article/details/38502993
-https://robobrowser.readthedocs.io/en/latest/api.html#module-robobrowser.browser
-http://cuiqingcai.com/1319.html
-https://www.crummy.com/software/BeautifulSoup/bs4/doc/index.zh.html
-'''
 import re
 import os
 from robobrowser import RoboBrowser
 
-FileName = 'urllist.txt'
-UrlListName = 'list.txt'
+_FileName = 'urllist.txt'
+_UrlListName = 'list.txt'
+_StartUrl = "http://esf.nanjing.fang.com/house-a0268-b0606/c2110-d2180-l3100/"
 
-def getUrlList():
-	f = open(UrlListName, 'r', encoding='utf-8')
-	return f.read().split('\n')
+def getUrlList(fn):
+	f = open(fn, 'r', encoding='utf-8')
+	urlList = f.read().split('\n')
+	f.close()
+	return urlList
 
 def has_logr(tag):
 	'''
@@ -28,36 +24,42 @@ def has_logr(tag):
 	return tag.has_attr('logr')
 
 def writeListToFile(file, list):
+	list.sort()
+	while '' in list:
+		list.remove('')
 	f = open(file, "w", encoding='utf-8')
 	for item in list:
-		f.write(str(item))
+		f.write(str(item)+"\n")
 	f.close()
 
-def readList(urllist):
+def readList(url):
 	user_agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0'
 	b = RoboBrowser(history=True, user_agent=user_agent, parser='html.parser')
 	
 	listOutput = []
-	for url in urllist:
-		if url=='':
-			continue
-
+	while url!="":
 		b.open(url)
 		print(url)
-		#content = b.find_all(has_logr)
-		#content = b.find_all('dt', class_='img rel floatl')
+		#get url list
 		content = b.select('dt[class="img rel floatl"] a')
-		#content = b.find_all(class_='f-list-item')
 		for link in content:
-			listOutput.append("http://esf.nanjing.fang.com" + link.get('href') + "\n")
-	writeListToFile(FileName, listOutput)
+			listOutput.append("http://esf.nanjing.fang.com" + link.get('href'))
+		#get the url of the next page
+		url = ""
+		nextPage = b.find_all('a', id='PageControl1_hlk_next')
+		for link in nextPage:
+			url = "http://esf.nanjing.fang.com" + link.get('href')
+	return listOutput
 
 if __name__ == "__main__":
-	if os.path.isfile(FileName):
-		os.remove(FileName)
-	readList(getUrlList())
-
-
+	'''
+	if os.path.isfile(_FileName):
+		os.remove(_FileName)
+	'''
+	listOutput = readList(_StartUrl)
+	oldList = getUrlList(_FileName)
+	mergedlist = list(set(listOutput).union(set(oldList)))
+	writeListToFile(_FileName, mergedlist)
 
 
 
