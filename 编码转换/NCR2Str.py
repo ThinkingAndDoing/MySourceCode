@@ -5,20 +5,6 @@
 
 import os
 import sys
-from langconv import *
-
-def simple2tradition(line):
-    #将简体转换成繁体  
-    #line = Converter('zh-hant').convert(line.decode('utf-8'))
-    line = Converter('zh-hant').convert(line)
-    #line = line.encode('gbk')
-    return line
-
-def tradition2simple(line):
-    # 将繁体转换成简体
-    line = Converter('zh-hans').convert(line.decode('utf-8'))
-    line = line.encode('utf-8')
-    return line
 
 def mixNcrtoStr(str):
     #NCR 字符转换为字符串
@@ -36,10 +22,10 @@ def mixNcrtoStr(str):
         i = i+1
     return distStr
 
+if __name__=="__main__":
+	print(mixNcrtoStr("你好吗？&#20013;&#22269;"))
 
-content="你好吗中国"
-print('The converted string is '+simple2tradition(content))
-print(mixNcrtoStr("你好吗？&#20013;&#22269;"))
+
 
 '''
 2.相关知识点
