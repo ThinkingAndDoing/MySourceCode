@@ -98,8 +98,9 @@ def run():
 	else:
 		readprocessfromfile()
 
-while True:
-	run()
-	#time.sleep(1)
-	time.sleep(60)
+if __name__ == "__main__":
+	while True:
+		run()
+		#time.sleep(1)
+		time.sleep(60)
 

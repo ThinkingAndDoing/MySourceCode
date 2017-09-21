@@ -87,4 +87,14 @@ def getAuPrice():
 	if float(auParse.getMidFinalPrice()) >float(auParse.getLastDayPrice()):
 		SendEmail("提醒买入！昨日金价已经低于去年中间值，为：", auParse.getLastDayPrice())
 
-#getAuPrice()
+if __name__ == "__main__":
+	localtime = time.localtime(time.time())
+	auPrice = au99price.AuPrice()
+	auPrice.setStartDate(getDate(localtime.tm_year-1, localtime.tm_mon, localtime.tm_mday))
+	auPrice.setEndDate(getDate(localtime.tm_year, localtime.tm_mon, localtime.tm_mday))
+	auPrice.run()
+	auParse = au99parse.AuParse()
+	auParse.setRecords(auPrice.getHistoryRecods())
+	#saveHistoryPriceToDB()
+	print("MidFinalPrice = " + auParse.getMidFinalPrice())
+	print("getLastDayPrice = " + auParse.getLastDayPrice())

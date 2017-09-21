@@ -53,3 +53,10 @@ class Spider:
 			return dataDecode
 		except Exception as e:
 			print(Exception,"in getDecodeResponseData:",e)
+
+if __name__ == "__main__":
+	spider = Spider(decodeCode="utf8")
+	print( spider.getResponseData("http://www.sina.com.cn/") )
+
+
+

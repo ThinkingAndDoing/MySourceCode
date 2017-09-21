@@ -78,7 +78,11 @@ def sendEmail(header, content, senderList):
 			if sendStatus==True:
 				return True
 
-#sendEmail("Hello world!", "It is amazing!")
+if __name__ == "__main__":
+	senderList = []
+	senderList.append({"host":"smtp.163.com", "user":"15192535292@163.com", "pwd":"554637you"})
+	senderList.append({"host":"smtp.sina.com", "user":"xiewei23703@sina.com", "pwd":"554637you[]"})
+	sendEmail("Hello world!", "It is amazing!", senderList)
 
 
 

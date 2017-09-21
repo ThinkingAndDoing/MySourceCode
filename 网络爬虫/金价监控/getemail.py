@@ -39,3 +39,9 @@ class GetEmail:
 		
 	def quit(self):
 		self.pp.quit()
+
+if __name__ == "__main__":
+	m = GetEmail()
+	m.login()
+	m.getemails()
+	print(m.maillist[0])
