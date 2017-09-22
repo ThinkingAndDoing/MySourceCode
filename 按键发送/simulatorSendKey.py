@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
+import sys
+import webbrowser
 import win32api
 import win32con
 import win32gui
@@ -182,16 +184,30 @@ def mouse_dclick(x=None,y=None):
 def mouse_move(x,y):
 	windll.user32.SetCursorPos(x, y)
 	
-def key_input(str=''):
+def str_input(str=''):
 	for c in str:
 		win32api.keybd_event(VK_CODE[c],0,0,0)
 		win32api.keybd_event(VK_CODE[c],0,win32con.KEYEVENTF_KEYUP,0)
 		time.sleep(0.01)
 
+def key_input(key='a'):
+	win32api.keybd_event(VK_CODE[key],0,0,0)
+	win32api.keybd_event(VK_CODE[key],0,win32con.KEYEVENTF_KEYUP,0)
+	time.sleep(0.01)
 if __name__ == "__main__":
-	''''''
+	'''
 	mouse_click(1024,680)
 	str = 'hello'
 	key_input(str)
 	print( get_mouse_point() )
+	'''
+	chromePath = r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe'
+	webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(chromePath))
+	b = webbrowser.get('chrome')
+	b.open('www.baidu.com')
+	
+	time.sleep(2)
+	str_input('hello')
+	time.sleep(1)
+	key_input('enter')
 	
