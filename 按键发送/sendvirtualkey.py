@@ -184,21 +184,23 @@ def mouse_dclick(x=None,y=None):
 def mouse_move(x,y):
 	windll.user32.SetCursorPos(x, y)
 	
-def str_input(str=''):
+def str_send(str=''):
 	for c in str:
 		win32api.keybd_event(VK_CODE[c],0,0,0)
 		win32api.keybd_event(VK_CODE[c],0,win32con.KEYEVENTF_KEYUP,0)
 		time.sleep(0.01)
 
-def key_input(key='a'):
+def key_send(key='a'):
 	win32api.keybd_event(VK_CODE[key],0,0,0)
 	win32api.keybd_event(VK_CODE[key],0,win32con.KEYEVENTF_KEYUP,0)
 	time.sleep(0.01)
+	
+
 if __name__ == "__main__":
 	'''
 	mouse_click(1024,680)
 	str = 'hello'
-	key_input(str)
+	key_send(str)
 	print( get_mouse_point() )
 	'''
 	chromePath = r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe'
@@ -207,7 +209,7 @@ if __name__ == "__main__":
 	b.open('www.baidu.com')
 	
 	time.sleep(2)
-	str_input('hello')
+	str_send('hello')
 	time.sleep(1)
-	key_input('enter')
+	key_send('enter')
 	
