@@ -3,7 +3,7 @@ import os
 import time
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
-
+import sendvirtualkey as keyboard
 '''
 chromedriver: https://sites.google.com/a/chromium.org/chromedriver/downloads
 selenium 3.4.3: https://pypi.python.org/pypi/selenium/
@@ -22,7 +22,9 @@ global _pwd
 _username = 'take a guess'
 _pwd = 'take a guess'
 
-	
+
+def str_send(str):
+	keyboard.str_send(str)
 def writeListToLocal(list, filename):
 	f = open(filename, "w", encoding="utf8")
 	for div in list:	
@@ -74,6 +76,12 @@ if __name__ == "__main__":
 	print(browser.window_handles)
 	browser.find_element_by_id("order-submit").click()
 
+	waitfortheElement(browser, "立即支付")
+	time.sleep(0.1)
+	str_send("234534")
+	#time.sleep(1)
+	browser.find_element_by_link_text("立即支付").click()
+	#browser.find_element_by_tag_name("xmp").send_keys("2345") 
 	'''
 	browser.get("https://item.jd.com/10376372227.html?jd_pop=d9924223-5bd3-40b5-a853-62977a8bcc99&abt=0")
 	'''
