@@ -3,10 +3,15 @@
 功能：
 将 D:\迅雷下载\Keep 目录下所有子目录中的内容移动到 D:\迅雷下载\Keep 下面
 '''
+#!/usr/bin/python3
 # -*- coding: UTF-8 -*-
+
 import os
 import sys
 import shutil
+
+global _DistPath
+_DistPath = r'D:\迅雷下载\Keep'
 
 def copyFiles(sourcePath, distPath):
     for item in os.listdir(sourcePath):
@@ -14,12 +19,13 @@ def copyFiles(sourcePath, distPath):
             shutil.move(sourcePath+"\\"+item, distPath)
         else:
             print(distPath+"\\"+item+" is already exist!")
-		
-distPath = r'D:\迅雷下载\Keep'
-os.chdir(distPath)
-for item in os.listdir(os.getcwd()):
-    if os.path.isdir(item)==True:
-        copyFiles(distPath+"\\"+item, distPath)
+
+if __name__=="__main__":
+
+	os.chdir(_DistPath)
+	for item in os.listdir(os.getcwd()):
+		if os.path.isdir(item)==True:
+			copyFiles(_DistPath+"\\"+item, _DistPath)
 
 
 

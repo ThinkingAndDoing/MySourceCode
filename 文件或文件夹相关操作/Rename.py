@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# -*- coding: UTF-8 -*-
 import os
 
 def getFormatStr(length, value):
@@ -41,5 +43,6 @@ def renameAll(length):
 			os.rename(item, formatStr%indexS)
 			indexS += 1
 
-renameAll(4)
-renameAll(3)
+if __name__=="__main__":
+	renameAll(4)
+	renameAll(3)
