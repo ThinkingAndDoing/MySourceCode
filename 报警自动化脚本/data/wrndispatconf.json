@@ -1,0 +1,13 @@
+{
+    "DispatcherName": "GE_FE_7DA_5DB_Display",
+    "WarningStrategy": {
+        "WSPopup": [
+            "InsertReversePrioAndSubprio",
+            "SelectCustom"
+        ],
+        "WSTT1Pos": [
+            "InsertReversePrioAndSubprio",
+            "SelectCustom"
+        ]
+    }
+}

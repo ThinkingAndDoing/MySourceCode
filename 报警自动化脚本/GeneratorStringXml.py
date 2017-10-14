@@ -15,8 +15,8 @@ import xml.dom.minidom
 
 global ColStart,ColNum
 global ErrorValue,ListLan
-import GeneratorConmonConfig as Config
-from GeneratorConmonConfig import AddRunLog
+import GeneratorCommonConfig as Config
+from GeneratorCommonConfig import AddRunLog
 
 '''
 global variable
@@ -26,14 +26,26 @@ thisFile = sys._getframe().f_code.co_filename
 #SheetNumber = 1 #read sheet number
 ErrorValue = 42 #==#N/A
 
-ColNum = Config._LangColNum + 1
-ListLan = Config._ListLan
-inputExcelName = Config._InputExcelName
-outputFile = Config._GenStrFile
+Config.requestConfig()
+
+ColNum = Config._LangSetting['_LangColNum'] + 1
+ListLan = Config._LangSetting['_ListLan']
+inputExcelName = Config._FileList['_InputExcelName']
+outputFile = Config._FileList['_GenStrFile']
 
 '''
 functions
 '''
+
+def CellValue(table, row, col):
+	value = ""
+	try:
+		value = str(table.cell(row, col).value)
+	except:
+		print("Cell value is not exist! row = "+ str(row) + ", col = " + str(col))
+	return value
+
+
 
 #function : Add warning display strings
 def AddWrnString(keyvalue,elements):
@@ -77,16 +89,16 @@ def ReadExcel():
         else:
             stringGroupList = []
             for i in range(0, table.ncols): #Find all keyword = "Generate"
-                if table.cell(0,i).value=="Generate":
+                if CellValue(table, 0, i)=="Generate":
                     stringGroupList.append(i)
             for k in stringGroupList:
                 ColStart = k
                 for i in range(0,table.nrows):
-                    if table.cell(i,ColStart).value=="Generate" or table.cell(i,ColStart).value=="Tip" or table.cell(i,ColStart+1).value=="":
+                    if CellValue(table, i,ColStart)=="Generate" or CellValue(table,i,ColStart)=="Tip" or CellValue(table,i,ColStart+1)=="":
                         continue # if the value is Generate or Tip or the string id is empty, this line will be skipped.
                     valueList = []
                     for j in range(ColStart+1,(ColStart+ColNum+1)):
-                        valueList.append(table.cell(i,j).value)  
+                        valueList.append(CellValue(table, i, j))
                     keyvalue = valueList[0]                        #String Key word
                     if(keyvalue != ErrorValue and keyvalue !=''):  #check the key word whether invaild.
                         if keyvalue[0:0] != '#':                   # key word vaild ,delete key word,in order to filled string don't care string content.

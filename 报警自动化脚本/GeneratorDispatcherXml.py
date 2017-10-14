@@ -11,24 +11,23 @@ import sys
 import xlrd
 import codecs 
 import xml.dom.minidom
-import GeneratorConmonConfig as Config
-from GeneratorConmonConfig import AddRunLog
-import GeneratorCommonHelper
-
+import GeneratorCommonConfig as Config
+from GeneratorCommonConfig import AddRunLog
 
 '''
 global variable
 '''
 thisFile = sys._getframe().f_code.co_filename
 
-StrategyName = GeneratorCommonHelper._StrategyName
-
+Config.requestConfig()
 
 TypeName = {'empty':0,'string':1,'number':2,'date':3,'boolean':4,'error':5}
 
-InputExcel = Config._InputExcelName
+InputExcel = Config._FileList['_InputExcelName']
 
-outputFile = Config._WarningDispatcherFile
+outputFile = Config._FileList['_WarningDispatcherFile']
+
+WrnDispatConf = Config._WrnDispatConf
 
 '''
 functions
@@ -51,18 +50,22 @@ def getAllIndex(table):
 	indexSubPrio = keyName.index("SubPrio")
 	indexTimeSpanList = keyName.index("TimeSpanList")
 	indexStrategyState = keyName.index("StrategyState")
-	indexTypeID = keyName.index("TypeID")
+	indexTypeID = keyName.index("Type")
 	indexDisplayMode = keyName.index("DisplayMode")
 	indexCategory = keyName.index("Category")
 	indexWarningStrategy = keyName.index("WarningStrategy")
 
 class WarningDispatcher:
-	def __init__(self, helper, sheetcfg):
-		self._Helper = helper
+	def __init__(self, sheetcfg):
 		self._sheetCfg = sheetcfg
 		impl = xml.dom.minidom.getDOMImplementation() 
 		self._dom = impl.createDocument(None,'WarningConfiguration',None)
+		self.wrnLinesStart = 1
+		self.wrnLinesEnd = self._sheetCfg.nrows
 
+	def getIndexByName(self, name):
+		keyName = self._sheetCfg.row_values(0)
+		return keyName.index(name)
 
 	def writeToXML(self):
 		ret = self.generateWarningDispatcher()
@@ -91,10 +94,7 @@ class WarningDispatcher:
 	
 	def generateWarningDispatcher(self):
 		RootElement = self._dom.createElement('WarningDispatcher')
-		if(self._Helper.getDispatcherName() == 1):
-			AddRunLog('error', 'Error!', thisFile, sys._getframe().f_lineno)
-			return 1
-		RootElement.setAttribute("Name", self._Helper.getDispatcherName())
+		RootElement.setAttribute("Name", WrnDispatConf['DispatcherName'])
 		RootElement.setAttribute("Type","WarningDispatcher")
 		
 		_contentEle = self._dom.createElement('Content')
@@ -111,10 +111,10 @@ class WarningDispatcher:
 		'''
 		add warning objects of warningdispatcher
 		'''
-
-		for i in range(self._Helper.wrnLinesStart, self._Helper.wrnLinesEnd):
+		for i in range(self.wrnLinesStart, self.wrnLinesEnd):
+			_wrnName = self._sheetCfg.cell(i, indexName).value
 			child1 = self._dom.createElement('Warning')
-			child1.setAttribute('Name', self._sheetCfg.cell(i, indexName).value)
+			child1.setAttribute('Name', _wrnName)
 			child1.setAttribute('Type',"HMI::WWS::WarningObject")
 			_contentEle.appendChild(child1)
 			
@@ -147,12 +147,13 @@ class WarningDispatcher:
 
 
 	def addWrnStrategy(self, _contentEle):
-		for i in range(self._Helper.wrnStrategyStart, self._Helper.wrnStrategyEnd):
+		for wsName in sorted(WrnDispatConf["WarningStrategy"].keys()):
+			print("*****************")
+			print(wsName)
+			_strategyname = wsName
+			_addpolicy = WrnDispatConf["WarningStrategy"][wsName][0]
+			_selectpolicy = WrnDispatConf["WarningStrategy"][wsName][1]
 
-			_strategyname = self._Helper.sheet.cell(i,StrategyName['WarningStrategy']).value
-			_addpolicy = self._Helper.sheet.cell(i,StrategyName['AddNewWarningPolicy']).value
-			_selectpolicy = self._Helper.sheet.cell(i, StrategyName['SelectNextWarningPolicy']).value
-		
 			#add warning startegy for warningdispatcher
 			childstrgy = self._dom.createElement('WarningStrategy'); 
 			childstrgy.setAttribute('Name',_strategyname)
@@ -182,13 +183,19 @@ class WarningDispatcher:
 			wrnViewsEle = self._dom.createElement('Content')
 			childstrgy.appendChild(wrnViewsEle)
             
-			self.addWrnStrategyContent(wrnViewsEle, self._Helper.sheet.cell(i,StrategyName['WarningStrategy']).value)
+			self.addWrnStrategyContent(wrnViewsEle, _strategyname)
        
 	def addWrnStrategyContent(self, element, _strategyname):
-		for j in range(self._Helper.wrnLinesStart, self._Helper.wrnLinesEnd):
+		for j in range(self.wrnLinesStart, self.wrnLinesEnd):
 			indexInsideCell = self.compareChildString(self._sheetCfg.cell(j,indexWarningStrategy).value, _strategyname)
 			if(indexInsideCell!=-1):
 				_wrnName = self._sheetCfg.cell(j,indexName).value
+				'''
+				DisplayMode_Category_UEPrio_Type_Name
+				_wrnName = self._sheetCfg.cell(j,self.getIndexByName("DisplayMode")).value + "_" + self._sheetCfg.cell(j,self.getIndexByName("Category")).value + "_"\
+				 + str(int(self._sheetCfg.cell(j,self.getIndexByName("UEPrio")).value)) + "_" + str(int(self._sheetCfg.cell(j,self.getIndexByName("Type")).value)) + "_"\
+				  + self._sheetCfg.cell(j,self.getIndexByName("Name")).value
+				'''
 				print(_wrnName)
 				_WSList = {}
 				_WSList['WarningStrategy'] = _strategyname
@@ -239,14 +246,11 @@ class WarningDispatcher:
 def Main_GeneratedDispatcher(): 
 	
 	Data = xlrd.open_workbook(InputExcel)
-	_sheetHelper = Data.sheet_by_name(u'WarningHelper')
 	_sheetCfg = Data.sheet_by_name(u'WarningConfig')
 	
 	getAllIndex(_sheetCfg)
 
-	helper = GeneratorCommonHelper.Helper(_sheetHelper)
-	helper.getHelperProperties()
-	wd = WarningDispatcher(helper, _sheetCfg)
+	wd = WarningDispatcher(_sheetCfg)
 	ret = wd.writeToXML()
 	return ret
 	

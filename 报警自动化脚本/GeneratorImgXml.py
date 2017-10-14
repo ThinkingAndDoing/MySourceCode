@@ -12,8 +12,8 @@ import sys
 import glob
 import codecs
 import xml.dom.minidom
-import GeneratorConmonConfig as Config
-from GeneratorConmonConfig import AddRunLog
+import GeneratorCommonConfig as Config
+from GeneratorCommonConfig import AddRunLog
 
 
 '''
@@ -21,13 +21,15 @@ global variable
 '''
 thisFile = sys._getframe().f_code.co_filename
 
-ListMode = Config._ListMode
+Config.requestConfig()
 
-ModeSuffix = Config._ModeSuffix
+ListMode = Config._CarType['_ListMode']
 
-ListImgPath = Config._ListImgPath
+ModeSuffix = Config._CarType['_ModeSuffix']
 
-outputFile = Config._GenImgFile
+ListImgPath = Config._ImgPathList['_ListImgPath']
+
+outputFile = Config._FileList['_GenImgFile']
 
 
 
@@ -37,10 +39,10 @@ functions
 
 
 #function : Add warning display strings
-def AddWrnImg(keyvalue,elements,ImgPath):
+def AddWrnImg(keyvalue,elements,ImgPath,_groupnum):
 	resElement = dom.createElement('Resource')
 	resElement.setAttribute("Name",keyvalue)
-	resElement.setAttribute("GroupNumber","3")
+	resElement.setAttribute("GroupNumber",_groupnum)
 	
 	if len(elements) > len(ListMode):
 		print('Warnings:Language attribute exceed the safe range ,len %d!'% len(elements))
@@ -57,7 +59,7 @@ def AddWrnImg(keyvalue,elements,ImgPath):
 	
 	return 0
 
-def ErgodicPicture(_path,_rpath, _prefix):
+def ErgodicPicture(_path,_rpath, _prefix, _groupnum):
 	if (os.path.exists(_path) == False):	   #all about warning image path
 		print('Warning : path '+_path+' not exist !\n')
 		AddRunLog('warning', 'Path '+_path+' not exist !', thisFile, sys._getframe().f_lineno)
@@ -84,14 +86,14 @@ def ErgodicPicture(_path,_rpath, _prefix):
 					#Listfilename.append(filenameWithMode.split('\\',7)[7][:-4])
 				else: 
 					Listfilename.append(Imgname)
-			ret = AddWrnImg(_sourceName,Listfilename,_rpath)
+			ret = AddWrnImg(_sourceName,Listfilename,_rpath,_groupnum)
 			if(ret):
 				return ret 
 	return 0
 			
 def ErgodicDir():
 	for item in ListImgPath:
-		ret = ErgodicPicture(item[0], item[1], item[2]) #traverse file path
+		ret = ErgodicPicture(item[0], item[1], item[2], item[3]) #traverse file path
 		if(ret):
 			return ret
 

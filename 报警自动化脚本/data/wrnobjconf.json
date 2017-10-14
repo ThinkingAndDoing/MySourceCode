@@ -1,0 +1,17 @@
+{
+    "TelltaleP14ExtensionSupportType[]": [
+        "TelltalesP14",
+        "1",
+        "No"
+    ],
+    "WarningExtensionSupportType[]": [
+        "Warnings",
+        "3",
+        "Yes",
+        "ID",
+        "Type",
+        "TextWPopup",
+        "PopupBitmap",
+        "SoundId"
+    ]
+}

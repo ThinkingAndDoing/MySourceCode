@@ -1,0 +1,12 @@
+{
+    "_ListMode": [
+        "CarType : Car_Normal",
+        "CarType : Car_SV",
+        "CarType : Car_CV"
+    ],
+    "_ModeSuffix": [
+        "",
+        "_SV",
+        "_CV"
+    ]
+}

@@ -21,8 +21,8 @@ import GeneratorDispatcherXml
 import GeneratorObjectXml
 import GeneratorImgXml
 import GeneratorCheckResource
-import GeneratorConmonConfig as Config
-from GeneratorConmonConfig import AddRunLog
+import GeneratorCommonConfig as Config
+from GeneratorCommonConfig import AddRunLog
 
 try:
     import xml.etree.cElementTree as ET
@@ -36,8 +36,9 @@ global variable
 '''
 thisFile = sys._getframe().f_code.co_filename
 
-inputExcelName = Config._InputExcelName
+Config.requestConfig()
 
+inputExcelName = Config._FileList['_InputExcelName']
 
 LogFile = Config._LogFile
 

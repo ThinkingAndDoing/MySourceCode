@@ -10,8 +10,8 @@ input  :
 import sys 
 import codecs
 import xml.dom.minidom as XML
-import GeneratorConmonConfig as Config
-from GeneratorConmonConfig import AddRunLog
+import GeneratorCommonConfig as Config
+from GeneratorCommonConfig import AddRunLog
 
 
 '''
@@ -19,9 +19,11 @@ global variable
 '''
 thisFile = sys._getframe().f_code.co_filename
 
-warningObjectFile = Config._WarningObjectFile
-stringFile = Config._GenStrFile
-imageFile = Config._GenImgFile
+Config.requestConfig()
+
+warningObjectFile = Config._FileList['_WarningObjectFile']
+stringFile = Config._FileList['_GenStrFile']
+imageFile = Config._FileList['_GenImgFile']
 
 
 '''
