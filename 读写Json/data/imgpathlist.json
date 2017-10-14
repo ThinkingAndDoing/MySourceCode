@@ -1,0 +1,19 @@
+{
+    "_ListImgPath": [
+        [
+            ".\\..\\..\\GraphicalResources\\Bitmaps\\Bitmaps\\Warning\\Telltales\\",
+            ".\\Bitmaps\\Warning\\Telltales\\",
+            "Telltale_"
+        ],
+        [
+            ".\\..\\..\\GraphicalResources\\Bitmaps\\Bitmaps\\Warning\\DoorOpen\\",
+            ".\\Bitmaps\\Warning\\DoorOpen\\",
+            "DoorOpen_"
+        ],
+        [
+            ".\\..\\..\\GraphicalResources\\Bitmaps\\Bitmaps\\Warning\\Message\\",
+            ".\\Bitmaps\\Warning\\Message\\",
+            "Message_"
+        ]
+    ]
+}
