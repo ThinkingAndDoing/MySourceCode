@@ -36,10 +36,9 @@ def writeListToLocal(list, filename):
 	
 def waitfortheElement(browser, strtext):
 	WebDriverWait(browser, 10).until(lambda the_driver: the_driver.find_element_by_link_text(strtext).is_displayed())
+	#WebDriverWait(ff, 10).until(EC.presence_of_element_located((By.ID, "myDynamicElement")))
 
-
-if __name__ == "__main__":
-
+def rushOrder():
 	chromedriver = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
 	os.environ["webdriver.chrome.driver"] = chromedriver
 	browser =  webdriver.Chrome(chromedriver)
@@ -73,12 +72,20 @@ if __name__ == "__main__":
 			break
 	#step5
 	WebDriverWait(browser, 10).until(lambda the_driver: the_driver.find_element_by_id('order-submit').is_displayed())
-	print(browser.window_handles)
+	#print(browser.window_handles)
+	prePrice = browser.find_element_by_id("warePriceId").get_attribute("v")
+	while True:
+		curPrice = browser.find_element_by_id("warePriceId").get_attribute("v")
+		if curPrice!=prePrice and int(float(curPrice))<10:
+			break
+		else:
+			print(curPrice)
+			browser.refresh()
 	browser.find_element_by_id("order-submit").click()
 
 	waitfortheElement(browser, "立即支付")
 	time.sleep(0.1)
-	str_send("234534")
+	str_send("123456")
 	#time.sleep(1)
 	browser.find_element_by_link_text("立即支付").click()
 	#browser.find_element_by_tag_name("xmp").send_keys("2345") 
@@ -90,4 +97,8 @@ if __name__ == "__main__":
 	divlist = browser.find_elements_by_tag_name("div")
 	writeListToLocal(divlist, "divlist.txt")
 	'''
+
+if __name__ == "__main__":
+	rushOrder()
+
 
