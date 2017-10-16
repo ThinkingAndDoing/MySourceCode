@@ -19,8 +19,8 @@ browser.execute_script(js)
 global _username
 global _pwd
 
-_username = 'take a guess'
-_pwd = 'take a guess'
+_username = '用户名'
+_pwd = '密码'
 
 
 def str_send(str):
@@ -85,7 +85,7 @@ def rushOrder():
 
 	waitfortheElement(browser, "立即支付")
 	time.sleep(0.1)
-	str_send("123456")
+	str_send("密码")
 	#time.sleep(1)
 	browser.find_element_by_link_text("立即支付").click()
 	#browser.find_element_by_tag_name("xmp").send_keys("2345") 
