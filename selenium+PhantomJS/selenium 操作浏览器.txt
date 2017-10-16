@@ -1,0 +1,48 @@
+参考：
+http://www.cnblogs.com/front-Thinking/p/4321720.html
+
+
+
+导入模块：
+from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+选择浏览器：	driver = webdriver.Firefox()
+打开url:	driver.get("http://www.baidu.com")
+等待：	driver.implicitly_wait(30)
+        driver.set_page_load_timeout(30)
+	driver.set_script_timeout(30)
+关闭浏览器：	driver.quit()/driver.close()
+前进/后退：	driver.forward()/driver.back()
+刷新：	driver.refresh()
+返回当前页面标题：driver.title
+返回当前页面url：driver.current_url
+返回当前浏览器的所有窗口：driver.window_handles
+返回当前浏览器的窗口句柄：driver.current_window_handle
+选择窗口：	driver.switch_to_window(“window_name”)
+对话框操作：	driver.switch_to_alert() #选择窗口对象
+	    accept()  #点击确认
+	    dismiss() #点击取消
+	    text       #获取文本值
+	    send_keys(“key”)   #输入值
+对应于webdriver中的定位方法分别是：
+driver.find_element_by_name()——最常用，简单
+driver.find_element_by_id()——最常用，简单
+driver.find_element_by_class_name()
+driver.find_element_by_tag_name()——最不靠谱
+driver.find_element_by_link_text()——定位文字连接好用
+driver.find_element_by_partial_link_text()——定位文字连接好用
+driver.find_element_by_xpath()——最灵活，万能
+driver.find_element_by_css_selector()
+上面是定位一个元素的方法，相应的webdriver也有定位一组元素的方法：
+driver.find_elements_by_name()
+driver.find_elements_by_id()
+driver.find_elements_by_class_name()
+driver.find_elements_by_tag_name()
+driver.find_elements_by_link_text()
+driver.find_elements_by_partial_link_text()
+driver.find_elements_by_xpath()
+driver.find_elements_by_css_selector()
+截取当前页面： driver.get_screenshot_as_file('/Screenshots/foo.png')
+
+
+
