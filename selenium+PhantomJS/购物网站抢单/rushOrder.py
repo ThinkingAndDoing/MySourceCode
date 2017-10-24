@@ -4,6 +4,8 @@ import time
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 import sendvirtualkey as keyboard
+import threading
+
 '''
 chromedriver: https://sites.google.com/a/chromium.org/chromedriver/downloads
 selenium 3.4.3: https://pypi.python.org/pypi/selenium/
@@ -19,32 +21,39 @@ browser.execute_script(js)
 global _username
 global _pwd
 
-_username = '用户名'
+_username = '账号'
 _pwd = '密码'
-
+base_url = 'https://passport.jd.com/new/login.aspx?ReturnUrl=https%3A%2F%2Fwww.jd.com%2F%3Fcu%3Dtrue%26utm_source%3Dbaidu-pinzhuan%26utm_medium%3Dcpc%26utm_campaign%3Dt_288551095_baidupinzhuan%26utm_term%3D0f3d30c8dba7459bb52f2eb5eba8ac7d_0_b31b8d6d73084beaa72e322277acf04e'
 
 def str_send(str):
 	keyboard.str_send(str)
-def writeListToLocal(list, filename):
-	f = open(filename, "w", encoding="utf8")
-	for div in list:	
-		try:
-			f.write(div.text+"@@@@@@")
-		except Exception as e:
-			print(e)
-	f.close()
+
+def printCurTime():
+	print(time.asctime( time.localtime(time.time()) ))
+	#print(time.time())
 	
 def waitfortheElement(browser, strtext):
 	WebDriverWait(browser, 10).until(lambda the_driver: the_driver.find_element_by_link_text(strtext).is_displayed())
 	#WebDriverWait(ff, 10).until(EC.presence_of_element_located((By.ID, "myDynamicElement")))
 
-def rushOrder():
+def initDriver():
 	chromedriver = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
 	os.environ["webdriver.chrome.driver"] = chromedriver
-	browser =  webdriver.Chrome(chromedriver)
+	driver =  webdriver.Chrome(chromedriver)
+	return driver
+
+def rushOrder(tname):
+
+	if tname=='t1':
+		time.sleep(1)
+	if tname=='t2':
+		time.sleep(2)
+
+	browser = initDriver()
+	#print(dir(browser))
 	''' '''
 	#step1
-	browser.get('https://passport.jd.com/new/login.aspx?ReturnUrl=https%3A%2F%2Fwww.jd.com%2F%3Fcu%3Dtrue%26utm_source%3Dbaidu-pinzhuan%26utm_medium%3Dcpc%26utm_campaign%3Dt_288551095_baidupinzhuan%26utm_term%3D0f3d30c8dba7459bb52f2eb5eba8ac7d_0_b31b8d6d73084beaa72e322277acf04e')
+	browser.get(base_url)
 	browser.maximize_window()
 	#browser.implicitly_wait(1) #隐形等待是设置了一个最长等待时间，如果在规定时间内网页加载完成，则执行下一步，否则一直等到时间截止，然后执行下一步。
 	waitfortheElement(browser, "账户登录")
@@ -59,8 +68,10 @@ def rushOrder():
 	#定位到新的页面
 	while len(browser.window_handles)<=1:
 		print("I am waiting for the response from browser!")
-	print(browser.window_handles)
-	browser.switch_to_window(browser.window_handles[1])	
+	print(browser.current_window_handle)
+	browser.switch_to_window(browser.window_handles[1])
+	print(browser.current_window_handle)
+	
 	#step4
 	waitfortheElement(browser, "去结算")
 	while True:
@@ -79,8 +90,11 @@ def rushOrder():
 		if curPrice!=prePrice and int(float(curPrice))<10:
 			break
 		else:
+			printCurTime()
 			print(curPrice)
+			print(tname)
 			browser.refresh()
+			#browser.execute_script("location.reload()")
 	browser.find_element_by_id("order-submit").click()
 
 	waitfortheElement(browser, "立即支付")
@@ -89,16 +103,15 @@ def rushOrder():
 	#time.sleep(1)
 	browser.find_element_by_link_text("立即支付").click()
 	#browser.find_element_by_tag_name("xmp").send_keys("2345") 
-	'''
-	browser.get("https://item.jd.com/10376372227.html?jd_pop=d9924223-5bd3-40b5-a853-62977a8bcc99&abt=0")
-	'''
-	
-	'''
-	divlist = browser.find_elements_by_tag_name("div")
-	writeListToLocal(divlist, "divlist.txt")
-	'''
 
 if __name__ == "__main__":
-	rushOrder()
+	#rushOrder()
 
+	threads = []
+	threads.append(threading.Thread(target=rushOrder,args=('t1',)))
+	threads.append(threading.Thread(target=rushOrder,args=('t2',)))
 
+	for t in threads:
+		t.setDaemon(True)
+		t.start()
+	t.join()  #等待其他线程结束
