@@ -8,8 +8,6 @@ from PIL import ImageGrab
 from time import sleep
 from tkinter import StringVar, IntVar
 
-global _imageNum
-
 _imageNum = 1
 
 class MyCapture:
@@ -56,6 +54,8 @@ class MyCapture:
 		self.canvas.bind('<B1-Motion>', onLeftButtonMove)
 		#获取鼠标左键抬起的位置，保存区域截图
 		def onLeftButtonUp(event):
+			global _imageNum
+
 			print("onLeftButtonUp")
 			self.sel = False
 			try:
@@ -73,7 +73,9 @@ class MyCapture:
 			pic = ImageGrab.grab((myleft, mytop, myright, mybottom))
    
 			#弹出保存截图对话框
-			fileName = tkinter.filedialog.asksaveasfilename(title='保存截图', filetypes=[('JPG files', '*.jpg')])
+			#fileName = tkinter.filedialog.asksaveasfilename(title='保存截图', filetypes=[('JPG files', '*.jpg')])
+			fileName = '截图' + str(_imageNum)
+			_imageNum = _imageNum + 1
 			if fileName:
 				pic.save(fileName+'.jpg')
 				pic.close()
