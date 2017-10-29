@@ -70,7 +70,7 @@ class MyCapture:
 			self.selectPosition=(myleft,myright,mytop,mybottom)
 			
 			''''''
-			pic = ImageGrab.grab((myleft, mytop, myright, mybottom))
+			pic = ImageGrab.grab((myleft+1, mytop+1, myright, mybottom))
    
 			#弹出保存截图对话框
 			#fileName = tkinter.filedialog.asksaveasfilename(title='保存截图', filetypes=[('JPG files', '*.jpg')])
