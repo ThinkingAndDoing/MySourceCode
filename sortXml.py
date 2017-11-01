@@ -1,13 +1,19 @@
 #coding=utf-8
 import sys
+import os
+import re
 import  xml.dom.minidom
 from xml.dom.minidom import Document
 
 sys.setrecursionlimit(10000)
 
-_InputXML = 'SAIC_IP31_Images.xml'
-_OutputXML = 'SAIC_IP31_Images_Sorted.xml'
+sourceFile = sys.argv[1]
 
+_InputXML = sourceFile
+_OutputXML = os.path.splitext(sourceFile)[0] + "_Sorted" + os.path.splitext(sourceFile)[1]
+
+print(_InputXML)
+print(_OutputXML)
 def quickSortByAttrib(L, low, high):
     i = low 
     j = high
@@ -27,8 +33,10 @@ def quickSortByAttrib(L, low, high):
     return L
 
 def createXml(filename, doc):
-	f = open(filename, "w", encoding='utf-8')
-	f.write(doc.toprettyxml(indent="  "))
+	f = open(filename, "w")
+	xml_str = doc.toprettyxml(indent="\t", newl="\n", encoding="utf-8")
+	pretty_str = re.sub(r'\n[\s]*\n', '\n', xml_str)
+	f.write(pretty_str)
 	f.close()
 
 def copyNodeList(childNodeList, doc):
