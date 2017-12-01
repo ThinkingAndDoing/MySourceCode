@@ -1,6 +1,7 @@
 '''
 1.例子源代码 Python 3.x
 '''
+#!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
 
