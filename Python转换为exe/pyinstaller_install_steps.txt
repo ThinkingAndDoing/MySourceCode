@@ -31,6 +31,9 @@ pyinstaller -F test.py
 如果脚本有应用程序界面
 pyinstaller -F -w test.py
 
+pyinstaller打包使用pyqt5模块的时候，在win平台下，由于pyinstaller无法准确获取QT动态库文件路径，会报错导致无法打开运行程序，并提示错误信息pyinstaller failed to execute script pyi_rth_qt5plugins此时我们需要在打包的时候直接告诉pyinstaller到哪里去找，这个路径分隔符需要是unix形式：
+pyinstaller --paths "D:\Program Files (x86)\Python35-32\Lib\site-packages\PyQt5\Qt\bin" -F -w shutdownnotice.py
+
 如果想获取当前应用程序路径，不能用如下方式
 def getScriptPath():    #获取脚本路径    
 path = sys.path[0]    
