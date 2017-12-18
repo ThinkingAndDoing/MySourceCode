@@ -1,0 +1,131 @@
+@echo off
+set "username=用户名"
+set "password=密码"
+start "163邮箱登录中" "https://reg.163.com/logins.jsp?username=%username%&password=%password%&url=http://fm163.163.com/coremail/fcg/ntesdoor2"
+
+start iexplore.exe http://www.hao123.com/
+//以下为登录163邮箱
+@echo off 
+< "%~f0" more +4 > t.vbs 
+cscript //nologo t.vbs & del t.vbs 
+goto :eof 
+set ierunner = CreateObject("wscript.shell") 
+ierunner.run "cmd /c start iexplore http://email.163.com/",0 
+wscript.sleep 3000 
+ierunner.sendkeys "xiewei23703" 
+ierunner.sendkeys "{TAB}" 
+ierunner.sendkeys "" 
+ierunner.sendkeys "{TAB}" 
+os.sendkeys "{ENTER}" 
+//以下为登录126邮箱
+@echo off 
+< "%~f0" more +4 > t.vbs 
+cscript //nologo t.vbs & del t.vbs 
+goto :eof 
+set ierunner = CreateObject("wscript.shell") 
+ierunner.run "cmd /c start iexplore http://www.126.com/",0 
+wscript.sleep 3000 
+ierunner.sendkeys "xiewei23703" 
+ierunner.sendkeys "{TAB}"
+ierunner.sendkeys ""
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{ENTER}"
+//以下为预订发票小程序
+@echo off 
+< "%~f0" more +4 > t.vbs 
+cscript //nologo t.vbs & del t.vbs 
+goto :eof 
+set ierunner = CreateObject("wscript.shell") 
+ierunner.run "cmd /c start iexplore http://172.16.15.228/dinner/index.asp",0 
+wscript.sleep 3000
+REM 将光标移动到输入框
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+REM 输入用户名和密码
+ierunner.sendkeys "xiewei" 
+ierunner.sendkeys "{TAB}"
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+ierunner.sendkeys ""
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{ENTER}"
+REM 预订饭票
+wscript.sleep 3000
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{ENTER}"
+REM 退出，保证下次执行成功
+wscript.sleep 1000
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{TAB}" 
+wscript.sleep 100
+ierunner.sendkeys "{ENTER}"
+REM 注意，网速不好时可能会执行不成功。
+REM 如果网页记录了登录状态也会执行不成功。
