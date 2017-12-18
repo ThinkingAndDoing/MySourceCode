@@ -1,0 +1,30 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: upgrade - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Release/upgrade.res" /d "NDEBUG" /d "_AFXDLL" "D:\个人数据文档\桌面\upgrade\upgrade.rc"" 
+Creating command line "link.exe /nologo /subsystem:windows /incremental:no /pdb:"Release/upgrade.pdb" /machine:I386 /out:"Release/upgrade.exe"  ".\Release\StdAfx.obj" ".\Release\upgrade.obj" ".\Release\upgradeDlg.obj" ".\Release\upgrade.res" "
+<h3>Output Window</h3>
+Compiling resources...
+Linking...
+
+
+
+<h3>Results</h3>
+upgrade.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: upgrade - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+upgrade.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

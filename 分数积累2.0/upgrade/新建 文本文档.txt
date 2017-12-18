@@ -1,0 +1,6 @@
+	double totals;//总分
+	double singlehighs;//单日最高分
+	tm today_last;//当前日期或上次退出时间
+	double todays;//今日记录
+
+

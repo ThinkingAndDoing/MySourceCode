@@ -1,0 +1,42 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: MutiTree - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\GENGSH~1\AppData\Local\Temp\RSPDE02.bat" with contents
+[
+@echo off
+copyright.bat
+]
+Creating command line "C:\Users\GENGSH~1\AppData\Local\Temp\RSPDE02.bat"
+Creating temporary file "C:\Users\GENGSH~1\AppData\Local\Temp\RSPDE03.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/MutiTree.pdb" /debug /machine:I386 /out:"Debug/MutiTree.exe" /pdbtype:sept 
+.\Debug\BaseTree.obj
+.\Debug\MutiTree.obj
+.\Debug\MutiTreeCtrl.obj
+.\Debug\MutiTreeDlg.obj
+.\Debug\StdAfx.obj
+.\Debug\MutiTree.res
+]
+Creating command line "link.exe @C:\Users\GENGSH~1\AppData\Local\Temp\RSPDE03.tmp"
+
+===本程序下载于VC知识库(www.vckbase.com)===
+-------技术支持由UIPower提供(www.uipower.com)------
+......如遇到任何技术问题请发邮件vckbase@vckbase.com......
+<h3>Output Window</h3>
+Linking...
+Creating command line "bscmake.exe /nologo /o"Debug/MutiTree.bsc"  .\Debug\StdAfx.sbr .\Debug\BaseTree.sbr .\Debug\MutiTree.sbr .\Debug\MutiTreeCtrl.sbr .\Debug\MutiTreeDlg.sbr"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+MutiTree.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

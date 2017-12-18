@@ -1,0 +1,52 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: MutiTree - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Release/MutiTree.res" /d "NDEBUG" /d "_AFXDLL" "F:\code\winui\tree\MutiTree\MutiTree\MutiTree.rc"" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPDD4.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/MutiTree.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\code\winui\tree\MutiTree\MutiTree\MutiTree.cpp"
+"F:\code\winui\tree\MutiTree\MutiTree\MutiTreeCtrl.cpp"
+"F:\code\winui\tree\MutiTree\MutiTree\MutiTreeDlg.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPDD4.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPDD5.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/MutiTree.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\code\winui\tree\MutiTree\MutiTree\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPDD5.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPDD6.bat" with contents
+[
+@echo off
+copyright.bat
+]
+Creating command line "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPDD6.bat"
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+MutiTree.cpp
+MutiTreeCtrl.cpp
+MutiTreeDlg.cpp
+Generating Code...
+Creating command line "link.exe /nologo /subsystem:windows /incremental:no /pdb:"Release/MutiTree.pdb" /machine:I386 /out:"Release/MutiTree.exe"  .\Release\MutiTree.obj .\Release\MutiTreeCtrl.obj .\Release\MutiTreeDlg.obj .\Release\StdAfx.obj .\Release\MutiTree.res "
+
+===本程序下载于VC知识库(www.vckbase.com)===
+-------技术支持由UIPower提供(www.uipower.com)------
+......如遇到任何技术问题请发邮件vckbase@vckbase.com......
+<h3>Output Window</h3>
+Linking...
+
+
+
+<h3>Results</h3>
+MutiTree.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
