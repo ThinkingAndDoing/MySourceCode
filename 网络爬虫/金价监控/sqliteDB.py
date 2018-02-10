@@ -25,29 +25,29 @@ def printCursor(cursor):
 		print("ADDRESS = ", row[2])
 		print("SALARY = ", row[3], "\n")
 
-"""
-mydb = SqliteDB()
-mydb.openDB('test.db')
-mydb.runSQL("CREATE TABLE COMPANY\
-       (ID INT PRIMARY KEY     NOT NULL,\
-       NAME           TEXT    NOT NULL,\
-       AGE            INT     NOT NULL,\
-       ADDRESS        CHAR(50),\
-       SALARY         REAL);")
 
-mydb.runSQL("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
-      VALUES (1, 'Paul', 32, 'California', 20000.00 )")
-mydb.runSQL("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
-      VALUES (2, 'Allen', 25, 'Texas', 15000.00 )")
-cursor = mydb.select("SELECT id, name, address, salary  from COMPANY")
-printCursor(cursor)
+if __name__=="__main__":
+	mydb = SqliteDB()
+	mydb.openDB('test.db')
+	mydb.runSQL("CREATE TABLE COMPANY\
+		   (ID INT PRIMARY KEY     NOT NULL,\
+		   NAME           TEXT    NOT NULL,\
+		   AGE            INT     NOT NULL,\
+		   ADDRESS        CHAR(50),\
+		   SALARY         REAL);")
 
-mydb.runSQL("UPDATE COMPANY set SALARY = 25000.00 where ID=1")
-cursor = mydb.select("SELECT id, name, address, salary  from COMPANY")
-printCursor(cursor)
+	mydb.runSQL("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
+		  VALUES (1, 'Paul', 32, 'California', 20000.00 )")
+	mydb.runSQL("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
+		  VALUES (2, 'Allen', 25, 'Texas', 15000.00 )")
+	cursor = mydb.select("SELECT id, name, address, salary  from COMPANY")
+	printCursor(cursor)
+	mydb.runSQL("UPDATE COMPANY set SALARY = 25000.00 where ID=1")
+	cursor = mydb.select("SELECT id, name, address, salary  from COMPANY")
+	printCursor(cursor)
 
-mydb.runSQL("DELETE from COMPANY where ID=1;")
-cursor = mydb.select("SELECT id, name, address, salary  from COMPANY")
-printCursor(cursor)
-"""
+	mydb.runSQL("DELETE from COMPANY where ID=1;")
+	cursor = mydb.select("SELECT id, name, address, salary  from COMPANY")
+	printCursor(cursor)
+
 

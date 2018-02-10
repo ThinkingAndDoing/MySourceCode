@@ -5,6 +5,9 @@ import re
 import time
 import datetime
 
+def getDate(year, month, day):
+	return str(datetime.date(year, month, day))
+	
 class AuPrice:
 	def __init__(self, retryTimes=5, decodeCode="gbk", timeOut=5):
 		self.startDate = "2017-05-20"
@@ -73,3 +76,17 @@ class AuPrice:
 	def getHistoryRecods(self):
 		return self.history
 
+if __name__=='__main__':
+
+	auPrice = AuPrice()
+	localtime = time.localtime(time.time())
+	auPrice.setStartDate(getDate(2017, 5, 1))
+	auPrice.setEndDate(getDate(2017, 5, 10))
+	auPrice.run()
+	print(auPrice.getHistoryRecods())
+	
+	
+	
+	
+	
+		
