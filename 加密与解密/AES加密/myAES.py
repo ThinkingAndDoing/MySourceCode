@@ -36,7 +36,7 @@ if __name__ == '__main__':
 	d = pc.decrypt(e)
 	print('*****************')
 	print(e, d)
-	e = pc.encrypt("xiewei")
+	e = pc.encrypt("11111111")
 	d = pc.decrypt(e)
 	print('*****************')
 	print(e, d)
