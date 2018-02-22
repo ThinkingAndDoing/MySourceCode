@@ -1,0 +1,1 @@
+http://vip.stock.finance.sina.com.cn/q/view/vFutures_History.php?jys=LIFFE&pz=XAU&hy=&breed=XAU&type=global&start=2017-01-01&end=2018-02-01
