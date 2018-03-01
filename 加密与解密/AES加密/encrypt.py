@@ -3,12 +3,13 @@
 import myAES
 import os
 import time
+import base64
 
 _distDir = '.\\base'
 
 def loadFromLoacl(filename):
 	try:
-		f = open(filename, "r")
+		f = open(filename, "r", encoding='utf8')
 		data = f.read()
 		f.close()
 	except:
@@ -19,7 +20,7 @@ def loadFromLoacl(filename):
 
 def saveToLocal(filename, data):
 	try:
-		f = open(filename, "w")
+		f = open(filename, "w", encoding='utf8')
 		f.write(data)
 		f.close()
 	except:
@@ -32,6 +33,9 @@ def getPassword():
 	else:
 		return ""
 
+def encryptByBase64(str):
+	return base64.b64encode(str.encode('utf-8')).decode('utf-8')
+
 if __name__ == '__main__':
 	
 	myaes = myAES.AEScrypt(getPassword())
@@ -41,11 +45,13 @@ if __name__ == '__main__':
 			try:
 				filename = os.path.join(root, name)
 				d = loadFromLoacl(filename)
-				e = myaes.encrypt(d)
+				de = encryptByBase64(d)
+				e = myaes.encrypt(de)
 				saveToLocal(filename+'_encrypted', e)
 				os.remove(filename)
 			except Exception as e:
-				print("Password error! Failed to encrypt file: " + filename + ". The length of password should be 16, 24 or 32")
+				print("Failed to encrypt file: " + filename + ". Please input the correct password, the length of password should be 16, 24 or 32")
+				print(e)
 			else:
 				print("Encrypt success! File: " + filename)
 	
