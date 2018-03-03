@@ -45,12 +45,10 @@ if __name__ == '__main__':
 		for name in files:
 			try:
 				filename = os.path.join(root, name)
-				if filename.rfind('_encrypted')!=-1:
-					e = loadFromLoacl(filename)
-					d = myaes.decrypt(e)
-					ed = decryptByBase64(d)
-					saveToLocal(filename[:-10], ed)
-					os.remove(filename)
+				e = loadFromLoacl(filename)
+				d = myaes.decrypt(e)
+				ed = decryptByBase64(d)
+				saveToLocal(filename, ed)
 			except:
 				print("Password error! Failed to decrypt file: " + filename + ". The length of password should be 16, 24 or 32")
 			else:

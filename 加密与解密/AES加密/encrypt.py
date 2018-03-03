@@ -47,8 +47,7 @@ if __name__ == '__main__':
 				d = loadFromLoacl(filename)
 				de = encryptByBase64(d)
 				e = myaes.encrypt(de)
-				saveToLocal(filename+'_encrypted', e)
-				os.remove(filename)
+				saveToLocal(filename, e)
 			except Exception as e:
 				print("Failed to encrypt file: " + filename + ". Please input the correct password, the length of password should be 16, 24 or 32")
 				print(e)
