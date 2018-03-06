@@ -4,12 +4,23 @@ import myAES
 import os
 import time
 import base64
+import chardet
 
 _distDir = '.\\base'
+_encoding = 'utf8'
+
+def detectEncode(filename):
+	file = open(filename, "rb")#要有"rb"，如果没有这个的话，默认使用gbk读文件。          
+	buf = file.read()
+	result = chardet.detect(buf)
+	return result["encoding"]
 
 def loadFromLoacl(filename):
+	global _encoding
+	
+	_encoding = detectEncode(filename)
 	try:
-		f = open(filename, "r", encoding='utf8')
+		f = open(filename, "r", encoding=_encoding)
 		data = f.read()
 		f.close()
 	except:
@@ -20,7 +31,7 @@ def loadFromLoacl(filename):
 
 def saveToLocal(filename, data):
 	try:
-		f = open(filename, "w", encoding='utf8')
+		f = open(filename, "w")
 		f.write(data)
 		f.close()
 	except:
@@ -34,10 +45,13 @@ def getPassword():
 		return ""
 
 def encryptByBase64(str):
-	return base64.b64encode(str.encode('utf-8')).decode('utf-8')
+	global _encoding
+	
+	return base64.b64encode(str.encode(_encoding)).decode('ascii')
 
 if __name__ == '__main__':
 	
+
 	myaes = myAES.AEScrypt(getPassword())
 
 	for root, dirs, files in os.walk(_distDir, topdown=False):
@@ -54,5 +68,4 @@ if __name__ == '__main__':
 			else:
 				print("Encrypt success! File: " + filename)
 	
-	time.sleep(0.5)
 	

@@ -4,12 +4,14 @@ import myAES
 import os
 import time
 import base64
+import chardet
 
 _distDir = '.\\base'
+_encoding = 'utf8'
 
 def loadFromLoacl(filename):
 	try:
-		f = open(filename, "r", encoding='utf8')
+		f = open(filename, "r")
 		data = f.read()
 		f.close()
 	except:
@@ -19,8 +21,10 @@ def loadFromLoacl(filename):
 		return data
 
 def saveToLocal(filename, data):
+	global _encoding
+	
 	try:
-		f = open(filename, "w", encoding='utf8')
+		f = open(filename, "w", encoding=_encoding)
 		f.write(data)
 		f.close()
 	except:
@@ -34,7 +38,12 @@ def getPassword():
 		return ""
 
 def decryptByBase64(str):
-	return base64.b64decode(str.encode('utf-8')).decode('utf-8')
+	global _encoding
+	
+	data = base64.b64decode(str.encode('ascii'))
+	result = chardet.detect(data)
+	_encoding = result["encoding"]
+	return data.decode(_encoding)
 
 
 if __name__ == '__main__':
@@ -49,9 +58,9 @@ if __name__ == '__main__':
 				d = myaes.decrypt(e)
 				ed = decryptByBase64(d)
 				saveToLocal(filename, ed)
-			except:
+			except Exception as e:
 				print("Password error! Failed to decrypt file: " + filename + ". The length of password should be 16, 24 or 32")
+				print(e)
 			else:
 				print("Decrypt success! File: " + filename)
-	time.sleep(0.5)
 	
