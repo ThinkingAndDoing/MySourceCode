@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#-*- coding:cp936 -*-
+#-*- coding:utf8 -*-
 
 import shutil
 import os
@@ -10,19 +10,12 @@ _TempDir = _MyDesktop + "\\Temp"
 
 _DictEnvs = {}
 
-def readJson(fn):
-	with open(fn, 'r') as f:
-		data = json.load(f)
-		return eval(str(data))
-
-def ClearPrevious():
+def ClearAll():
 	global _DictEnvs
 	
 	for i in _DictEnvs.keys():
-		filename = _TempDir + "\\" + _DictEnvs[i]
-		f = open(filename, "r")
-		filelist = f.readlines()
-		f.close()
+		foldername = _DictEnvs[i]
+		filelist = os.listdir(foldername)
 		for i in filelist:
 			i = i.rstrip('\n')
 			try:
@@ -30,59 +23,58 @@ def ClearPrevious():
 			except:
 				continue
 	
-def setEnv(filename):
-	filename = _TempDir + "\\" + filename
-	print(filename)
-	f = open(filename, "r")
-	filelist = f.readlines()
-	f.close()
-	
+def setEnv(foldername):
+	print(foldername)
+	filelist = os.listdir(foldername)
 	for i in filelist:
 		i = i.rstrip('\n')
-		shutil.copy(_TempDir+"\\"+i, _MyDesktop)
+		if i!="start.bat":
+			shutil.copy(foldername+"\\"+i, _MyDesktop)
 	print(filelist)
+	batshell = foldername+"\\start.bat"
+	if os.path.exists(batshell):
+		print(batshell)
+		os.system(batshell)
 
 def inputhelp():
 	global _DictEnvs
 	
-	print("请输入ID选择环境")
+	print("璇疯緭鍏D锛岄�夋嫨涓嶅悓鐜")
 	dictSorted = sorted(_DictEnvs.keys())
 	for i in range(0, len(dictSorted)):
 		print(str(i)+": "+dictSorted[i])
 	print("c: Clear")
 	print("a: All")
-	print("q: Quit")
-
-def requestConfig():
-	global _DictEnvs
 	
-	_DictEnvs = readJson(_TempDir + "\\Envlist.json")
-	print(_DictEnvs)
+def initDict():
+	for fn in os.listdir(_TempDir):
+		if os.path.isdir(_TempDir+"\\"+fn):
+			_DictEnvs[fn] = _TempDir+"\\"+fn
 
-if __name__=="__main__":
-	requestConfig()
-	
+def run():
 	while True:
 		inputhelp()
 		envID = input()
-		if envID=="q":
+		if envID=="c":
+			ClearAll()
 			break
-		elif envID=="c":
-			ClearPrevious()
 		elif envID=="a":
-			ClearPrevious()
+			ClearAll()
 			for i in _DictEnvs.keys():
 				setEnv(_DictEnvs[i])
+			break
 		else:
 			dictSorted = sorted(_DictEnvs.keys())
 			for i in range(0, len(dictSorted)):
 				if str(i)==envID:
-					ClearPrevious()
+					ClearAll()
 					setEnv(_DictEnvs[dictSorted[i]])
-					batshell = _TempDir+"\\"+dictSorted[i]+".bat"
-					if os.path.exists(batshell):
-						print(batshell)
-						os.system(batshell)
+			break
+
+if __name__=="__main__":
+	initDict()
+	run()
+
 
 
 	
