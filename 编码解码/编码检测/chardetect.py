@@ -3,14 +3,12 @@
 
 import chardet
 
-def getcharencode(f_input):
-	f = open(f_input,'rb')
-	content = f.read()
-	fencoding=chardet.detect(content)
-	#print(fencoding)
-	f.close()
-	return fencoding
-
+def getcharencode(filename):
+	file = open(filename, "rb")#要有"rb"，如果没有这个的话，默认使用gbk读文件。          
+	buf = file.read()
+	file.close()
+	result = chardet.detect(buf)
+	return result["encoding"]
 
 if __name__=='__main__':
 	getcharencode('base\\test.py')
