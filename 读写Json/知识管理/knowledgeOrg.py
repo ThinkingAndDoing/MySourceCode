@@ -3,11 +3,21 @@
 
 import os
 import json
+import chardet
 
+_Encode = "utf8"
 _InputDir = ".\\addNewKey"
 _DictFile = ".\\data\\theDict.json"
 
 _Dict = {}
+
+
+def getcharencode(filename):
+	file = open(filename, "rb")#要有"rb"，如果没有这个的话，默认使用gbk读文件。          
+	buf = file.read()
+	file.close()
+	result = chardet.detect(buf)
+	return result["encoding"]
 
 def writeJson(fn, js):
 	with open(fn, 'w') as f:
@@ -19,7 +29,10 @@ def readJson(fn):
 		return eval(str(data))
 
 def loadListFromLocal(fn):
-	f = open(fn, "r")
+	global _Encode
+	
+	_Encode = getcharencode(fn)
+	f = open(fn, "r", encoding=_Encode)
 	theList = []
 	for line in f.readlines():
 		theList.append(line.replace("\n", "").replace("\t", " "))
