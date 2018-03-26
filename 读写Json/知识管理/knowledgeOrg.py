@@ -6,6 +6,7 @@ import json
 import chardet
 #每个KEY加一个关键词
 #在不同Key之间计算相关度，内容含有相同关键词的，相似度高--那和百度知道有何区别？我想做的是一个知识体系，一个知识体系应该用因果联系串联
+#打印出知识网络
 #https://www.zhihu.com/question/21929143
 #http://www.sohu.com/a/140258152_367117
 #https://zhidao.baidu.com/question/167778108.html
@@ -94,33 +95,33 @@ def addNewKeys(foldername):
 		newkey = loadKey(fn)
 		addKey(newkey)
 
-def saveKeyList():
+def saveToLocal(fn, data):
+	f = open(fn, "w")
+	f.write(data)
+	f.close()
+	
+def genAttribs():
 	global _Dict
 	
-	keyList = {}
-	keyList["keylist"] = list(_Dict.keys())
-	writeJson("MyDict.json", keyList)
+	content = ""
+	for key in _Dict.keys():
+		content +="["+key+"]\n"
+		content +="什么是" + key + "？\n"
+		content +=_Dict[key]["what"]
+		content +="如何" + key + "？\n"
+		content +=_Dict[key]["how"]
+		content +="\n"
+	
+	saveToLocal("外汇领域.txt", content)
 	
 if __name__ == "__main__":
 	initDict()
 	
 	addNewKeys(_InputDir)
 	
-	"""
-	print(list(_Dict.keys()))
-	
-	key = input("Tell me what you want!")
-	
-	if key in _Dict.keys():
-		print("***********************************************")
-		print(_Dict[key])
-	else:
-		print("Not found!")
-	"""
-	
 	writeJson(_DictFile, _Dict)
 	
-	saveKeyList()
+	genAttribs()
 	
 	
 	
