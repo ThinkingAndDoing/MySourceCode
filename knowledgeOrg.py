@@ -18,8 +18,10 @@ from tkinter.scrolledtext import ScrolledText
 #http://gaozhongwuli.com/zongjie/
 #https://blog.csdn.net/bnanoou/article/details/38434443
 #https://www.cnblogs.com/wwf828/p/7418181.html
-_InputDir = ".\\addNewKey"
+_InputDir = ".\\HMI Warning开发"
 _DictFile = ".\\data\\theDict.json"
+_RootKey = "HMI Warning开发"
+_ScrollText = None
 
 _Dict = {}
 
@@ -160,8 +162,41 @@ def addNewKeys(foldername):
 #--------------------------------------------------
 #UI 显示部分
 #--------------------------------------------------
-def callback(event):
-    print("clicked at", event.x, event.y)
+def drawGUI():
+	global _ScrollText
+	
+	root=tkinter.Tk()
+	root.title("领域知识")
+	root.geometry("800x480")
+	root.resizable(width=False, height=False)
+	#part one
+	_ScrollText = ScrolledText(root, x=240, y=0, width=80, height=480, background='#f0f0f0')
+	_ScrollText.pack(side=RIGHT, fill=Y)
+	#part two
+	tree=ttk.Treeview(root)
+	vbar = ttk.Scrollbar(root,orient=tkinter.VERTICAL,command=tree.yview)
+	vbar.place(x=200,width=20,height=480)
+	hbar = ttk.Scrollbar(root,orient=tkinter.HORIZONTAL,command=tree.yview)
+	hbar.place(y=460,width=200,height=20)
+	myid=tree.insert("", 0, _Dict[_RootKey]["name"], text=_Dict[_RootKey]["name"])
+	createTree(tree, _Dict[_RootKey]["childs"], myid)
+	tree.configure(yscrollcommand=vbar.set)
+	tree.configure(yscrollcommand=hbar.set)
+	tree.bind("<<TreeviewSelect>>", treeCB)
+	tree.pack(side=LEFT, fill=Y)
+
+	
+	root.mainloop()
+
+def treeCB(event):
+	#event.widget获取Treeview对象，调用selection获取选择对象名称
+	sels= event.widget.selection()
+	_ScrollText.delete(1.0, END)
+	_ScrollText.insert(INSERT, "name:"+_Dict[sels[0]]["name"] + "\n")
+	_ScrollText.insert(INSERT, "how:"+_Dict[sels[0]]["how"] + "\n")
+	_ScrollText.insert(INSERT, "what:"+_Dict[sels[0]]["what"] + "\n")
+	_ScrollText.insert(INSERT, "decision:"+_Dict[sels[0]]["decision"] + "\n")
+	print(sels[0])
 
 def createTree(tree, childList, parentID):
 	print(childList)
@@ -177,29 +212,7 @@ if __name__ == "__main__":
 	writeJson(_DictFile, _Dict)
 	
 	genAttribs()
-	
 	#restoreSrc()
-	
-	root=tkinter.Tk()
-	root.title("领域")
-	root.geometry("800x480")
-	root.resizable(width=False, height=False)
-	#part two
-	t = ScrolledText(root, x=240, y=0, width=400, height=20, background='#f0f0f0')
-	t.pack(side=RIGHT, fill=Y)
-	#part one
-	tree=ttk.Treeview(root)
-	tree.bind("<Button-1>", callback)
-	vbar = ttk.Scrollbar(root,orient=tkinter.VERTICAL,command=tree.yview)
-	vbar.place(x=200,width=20,height=480)
-	hbar = ttk.Scrollbar(root,orient=tkinter.HORIZONTAL,command=tree.yview)
-	hbar.place(y=460,width=200,height=20)
-	myid=tree.insert("", 0, _Dict["HMI Warning开发"]["name"], text=_Dict["HMI Warning开发"]["name"])
-	createTree(tree, _Dict["HMI Warning开发"]["childs"], myid)
-	tree.configure(yscrollcommand=vbar.set)
-	tree.configure(yscrollcommand=hbar.set)
-	tree.pack(side=LEFT, fill=Y)
+	drawGUI()
 
-	
-	root.mainloop()
 	
