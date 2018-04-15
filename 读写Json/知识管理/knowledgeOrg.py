@@ -8,6 +8,7 @@ import chardet
 import tkinter
 from tkinter import *
 from tkinter import ttk
+from tkinter.font import Font
 from tkinter.scrolledtext import ScrolledText
 #每个KEY加一个关键词
 #在不同Key之间计算相关度，内容含有相同关键词的，相似度高--那和百度知道有何区别？我想做的是一个知识体系，一个知识体系应该用因果联系串联
@@ -68,7 +69,7 @@ def getcharencode(filename):
 	return result["encoding"]
 	
 def loadKey(fn):
-	f = open(_InputDir+"\\"+fn, "r", encoding=getcharencode(_InputDir+"\\"+fn))
+	f = open(_InputDir+"\\"+fn, "r", encoding=getcharencode(_InputDir+"\\"+fn), errors='ignore')
 	data = f.read()
 	f.close()
 	
@@ -170,18 +171,21 @@ def drawGUI():
 	root.geometry("800x480")
 	root.resizable(width=False, height=False)
 	#part one
-	_ScrollText = ScrolledText(root, x=240, y=0, width=80, height=480, background='#f0f0f0')
+	_ScrollText = ScrolledText(root, borderwidth=2, width=79, background='#ffffff')
 	_ScrollText.pack(side=RIGHT, fill=Y)
 	#part two
-	tree=ttk.Treeview(root)
+	myfont=Font(family='宋体', size=18)
+	fontheight=myfont.metrics()['linespace']
+	ttk.Style().configure('Filter.Treeview', font=myfont, rowheight=fontheight, background='#10253F', foreground='#FFFFFF')
+	tree=ttk.Treeview(root, show='tree', style='Filter.Treeview')
+	hbar = ttk.Scrollbar(root,orient=tkinter.HORIZONTAL,command=tree.xview)
+	hbar.place(y=460,width=200,height=20)
 	vbar = ttk.Scrollbar(root,orient=tkinter.VERTICAL,command=tree.yview)
 	vbar.place(x=200,width=20,height=480)
-	hbar = ttk.Scrollbar(root,orient=tkinter.HORIZONTAL,command=tree.yview)
-	hbar.place(y=460,width=200,height=20)
 	myid=tree.insert("", 0, _Dict[_RootKey]["name"], text=_Dict[_RootKey]["name"])
 	createTree(tree, _Dict[_RootKey]["childs"], myid)
+	tree.configure(xscrollcommand=hbar.set)
 	tree.configure(yscrollcommand=vbar.set)
-	tree.configure(yscrollcommand=hbar.set)
 	tree.bind("<<TreeviewSelect>>", treeCB)
 	tree.pack(side=LEFT, fill=Y)
 
@@ -192,10 +196,10 @@ def treeCB(event):
 	#event.widget获取Treeview对象，调用selection获取选择对象名称
 	sels= event.widget.selection()
 	_ScrollText.delete(1.0, END)
-	_ScrollText.insert(INSERT, "name:"+_Dict[sels[0]]["name"] + "\n")
-	_ScrollText.insert(INSERT, "how:"+_Dict[sels[0]]["how"] + "\n")
-	_ScrollText.insert(INSERT, "what:"+_Dict[sels[0]]["what"] + "\n")
-	_ScrollText.insert(INSERT, "decision:"+_Dict[sels[0]]["decision"] + "\n")
+	_ScrollText.insert(INSERT, "name:\n"+_Dict[sels[0]]["name"] + "\n\n")
+	_ScrollText.insert(INSERT, "how:\n"+_Dict[sels[0]]["how"] + "\n")
+	_ScrollText.insert(INSERT, "what:\n"+_Dict[sels[0]]["what"] + "\n")
+	_ScrollText.insert(INSERT, "decision:\n"+_Dict[sels[0]]["decision"] + "\n")
 	print(sels[0])
 
 def createTree(tree, childList, parentID):
