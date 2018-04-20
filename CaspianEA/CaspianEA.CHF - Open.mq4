@@ -72,7 +72,7 @@ double gd_228 = 0.0;
 int g_count_236 = 0;
 double gd_unused_240 = 0.0;
 double gd_248 = 0.0;
-double g_point_256 = 0.01;
+double g_point_256 = 0.01;  //每单位（点）的价格
 double gd_264 = 0.0;
 int gi_272 = 0;
 int gi_unused_276 = 0;
@@ -398,7 +398,8 @@ int start() {
    return (0);
 }
 
-void ForceCloseAll(int a_magic_0, int a_cmd_4, color a_color_8) {//强制平仓所有单
+//强制平仓所有卖单或者买单
+void ForceCloseAll(int a_magic_0, int a_cmd_4, color a_color_8) {
    for (int l_pos_12 = OrdersTotal() - 1; l_pos_12 >= 0; l_pos_12--) {
       OrderSelect(l_pos_12, SELECT_BY_POS, MODE_TRADES);
       if (OrderSymbol() == Symbol() && OrderMagicNumber() == a_magic_0) {
@@ -410,7 +411,8 @@ void ForceCloseAll(int a_magic_0, int a_cmd_4, color a_color_8) {//强制平仓�
    }
 }
 
-int Tradetime() {//设置交易时间
+//判断当前时间是否为交易时间
+int Tradetime() {
    bool li_ret_0 = FALSE;
    if (StartHour > EndHour)
       if (Hour() <= EndHour || Hour() >= StartHour) li_ret_0 = TRUE;
@@ -452,6 +454,7 @@ double GetLots(int ai_0) {
    return (ld_ret_4);
 }
 
+//关闭盈利点数超过ai_8的单子
 int CloseProfitOrder(int a_magic_0, int a_cmd_4, int ai_8, double ad_12, double ad_20) {
    int li_40;
    bool l_ord_close_28 = FALSE;
@@ -469,6 +472,7 @@ int CloseProfitOrder(int a_magic_0, int a_cmd_4, int ai_8, double ad_12, double 
    return (l_ord_close_28);
 }
 
+//关闭亏损超过ai_8的单子
 int CloseLossOrder(int a_magic_0, int a_cmd_4, int ai_8) {
    bool l_ord_close_12 = FALSE;
    int li_unused_16 = 0;
@@ -485,6 +489,7 @@ int CloseLossOrder(int a_magic_0, int a_cmd_4, int ai_8) {
    return (l_ord_close_12);
 }
 
+//计算当前EA所开的全部单子数量
 int TotalOrder(int a_magic_0, int a_cmd_4) {
    int l_count_8 = 0;
    for (int l_pos_12 = OrdersTotal() - 1; l_pos_12 >= 0; l_pos_12--) {
@@ -587,12 +592,14 @@ int CloseByTiket(int ai_unused_0) {
    return (l_ord_close_4 + l_ord_close_8 + l_ord_close_12 + l_ord_close_16);
 }
 
+//在屏幕左上角输出文字
 void mycomment() {
    string ls_0 = "\n" 
    + "    CaspianEA.CHF V2.1" + " \n" + " \n" + "   *******************" + " \n" + "    Current Time:     " + TimeToStr(TimeCurrent(), TIME_MINUTES) + " \n" + " \n" + "    Working Hours:" + "   Start: " + StartHour + " \n" + "                           " + " End: " + EndHour + " \n" + " \n" + "   *******************" + " \n" + "    Spread:  " + DoubleToStr(gd_248, 2) + " \n" + "    Balance: " + DoubleToStr(AccountBalance(), 2) + " \n" + "    Equity:  " + DoubleToStr(AccountEquity(), 2);
    Comment(ls_0);
 }
 
+//统计当前EA所有买单或者卖单的收益
 double TotalProfit(int a_magic_0, int a_cmd_4) {
    double ld_ret_8 = 0;
    for (int l_pos_24 = OrdersTotal() - 1; l_pos_24 >= 0; l_pos_24--) {
