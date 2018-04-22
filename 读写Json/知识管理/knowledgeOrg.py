@@ -44,6 +44,65 @@ class Node:
 	def setDecision(self, data):
 		self.decision = data
 
+class MyTreeView:
+	def __init__(self, root):
+		self.root = root
+		treeItemFont=Font(family='宋体', size=16)
+		fontheight=treeItemFont.metrics()['linespace']
+		ttk.Style().configure('Filter.Treeview', font=treeItemFont, rowheight=fontheight, background='white', foreground='blue')
+		self.treeView=ttk.Treeview(root, show='tree', style='Filter.Treeview')
+		
+		#放置水平方向滚动条
+		hbar = ttk.Scrollbar(self.root,orient=tkinter.HORIZONTAL,command=self.treeView.xview)
+		hbar.place(y=460,width=200,height=20)
+		
+		#放置垂直方向滚动条
+		vbar = ttk.Scrollbar(root,orient=tkinter.VERTICAL,command=self.treeView.yview)
+		vbar.place(x=200,width=20,height=480)
+		
+		self.treeView.configure(xscrollcommand=hbar.set)
+		self.treeView.configure(yscrollcommand=vbar.set)
+		self.treeView.bind("<<TreeviewSelect>>", self.leftClick)
+		self.treeView.bind('<3>', self.rightClickMenu)
+		#放置树形目录
+		self.treeView.place(x=0, y=0, width=201, height=480)
+
+	def rightClickMenu(self, event):
+		def delete():
+			print(rowID)
+			print("delete!")
+			
+		def edit():
+			print(rowID)
+			print("edit!")
+		
+		rowID = self.treeView.identify('item', event.x, event.y)
+		if rowID:
+			self.treeView.selection_set(rowID)
+			self.treeView.focus_set()
+			self.treeView.focus(rowID)
+			
+			menu = Menu(self.root, tearoff=0)
+			menu.add_command(label="Delete", command=delete)
+			menu.add_command(label="Edit", command=edit)
+			menu.post(event.x_root, event.y_root)
+		else:
+			pass
+
+	def createMyTree(self, mydict):
+		myid=self.treeView.insert("", 0, mydict[_RootKey]["name"], text=mydict[_RootKey]["name"])
+		self.createTree(self.treeView, mydict[_RootKey]["childs"], myid, mydict)
+
+	def createTree(self, tree, childList, parentID, mydict):
+		for child in childList:
+			childID=tree.insert(parentID, childList.index(child), mydict[child]["name"], text=mydict[child]["name"])
+			self.createTree(tree, mydict[child]["childs"], childID, mydict)
+		
+	def leftClick(self, event):
+		#event.widget获取Treeview对象，调用selection获取选择对象名称
+		sels= event.widget.selection()
+		setTextArea(sels[0])
+
 #--------------------------------------------------
 #存储
 #--------------------------------------------------
@@ -163,6 +222,15 @@ def addNewKeys(foldername):
 #--------------------------------------------------
 #UI 显示部分
 #--------------------------------------------------
+def setTextArea(item):
+	global _ScrollText
+	
+	_ScrollText.delete(1.0, END)
+	_ScrollText.insert(INSERT, "name:\n"+_Dict[item]["name"] + "\n\n")
+	_ScrollText.insert(INSERT, "how:\n"+_Dict[item]["how"] + "\n")
+	_ScrollText.insert(INSERT, "what:\n"+_Dict[item]["what"] + "\n")
+	_ScrollText.insert(INSERT, "decision:\n"+_Dict[item]["decision"] + "\n")
+		
 def drawGUI():
 	global _ScrollText
 	
@@ -170,44 +238,16 @@ def drawGUI():
 	root.title("领域知识")
 	root.geometry("800x480")
 	root.resizable(width=False, height=False)
-	#part one
-	_ScrollText = ScrolledText(root, borderwidth=2, width=79, background='#ffffff')
+	textFont=Font(family='宋体', size=12)
+	fontheight = textFont.metrics()['linespace']
+	#带ScrollBar的文本区域
+	_ScrollText = ScrolledText(root, padx=10, pady=10, font=textFont, borderwidth=2, width=68, background='white')
 	_ScrollText.pack(side=RIGHT, fill=Y)
-	#part two
-	myfont=Font(family='宋体', size=18)
-	fontheight=myfont.metrics()['linespace']
-	ttk.Style().configure('Filter.Treeview', font=myfont, rowheight=fontheight, background='#10253F', foreground='#FFFFFF')
-	tree=ttk.Treeview(root, show='tree', style='Filter.Treeview')
-	hbar = ttk.Scrollbar(root,orient=tkinter.HORIZONTAL,command=tree.xview)
-	hbar.place(y=460,width=200,height=20)
-	vbar = ttk.Scrollbar(root,orient=tkinter.VERTICAL,command=tree.yview)
-	vbar.place(x=200,width=20,height=480)
-	myid=tree.insert("", 0, _Dict[_RootKey]["name"], text=_Dict[_RootKey]["name"])
-	createTree(tree, _Dict[_RootKey]["childs"], myid)
-	tree.configure(xscrollcommand=hbar.set)
-	tree.configure(yscrollcommand=vbar.set)
-	tree.bind("<<TreeviewSelect>>", treeCB)
-	tree.pack(side=LEFT, fill=Y)
-
-	
+	#新建树形目录
+	tree = MyTreeView(root)
+	tree.createMyTree(_Dict)
 	root.mainloop()
 
-def treeCB(event):
-	#event.widget获取Treeview对象，调用selection获取选择对象名称
-	sels= event.widget.selection()
-	_ScrollText.delete(1.0, END)
-	_ScrollText.insert(INSERT, "name:\n"+_Dict[sels[0]]["name"] + "\n\n")
-	_ScrollText.insert(INSERT, "how:\n"+_Dict[sels[0]]["how"] + "\n")
-	_ScrollText.insert(INSERT, "what:\n"+_Dict[sels[0]]["what"] + "\n")
-	_ScrollText.insert(INSERT, "decision:\n"+_Dict[sels[0]]["decision"] + "\n")
-	print(sels[0])
-
-def createTree(tree, childList, parentID):
-	print(childList)
-	for child in childList:
-		childID=tree.insert(parentID, childList.index(child), _Dict[child]["name"], text=_Dict[child]["name"])
-		createTree(tree, _Dict[child]["childs"], childID)
-	
 if __name__ == "__main__":
 	initDict()
 	
