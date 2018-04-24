@@ -3,26 +3,31 @@
 
 import re
 import os
-import json
 import chardet
 import tkinter
+import threading
+import time
 from tkinter import *
 from tkinter import ttk
 from tkinter.font import Font
 from tkinter.scrolledtext import ScrolledText
-#Ã¿¸öKEY¼ÓÒ»¸ö¹Ø¼ü´Ê
-#ÔÚ²»Í¬KeyÖ®¼ä¼ÆËãÏà¹Ø¶È£¬ÄÚÈİº¬ÓĞÏàÍ¬¹Ø¼ü´ÊµÄ£¬ÏàËÆ¶È¸ß--ÄÇºÍ°Ù¶ÈÖªµÀÓĞºÎÇø±ğ£¿ÎÒÏë×öµÄÊÇÒ»¸öÖªÊ¶ÌåÏµ£¬Ò»¸öÖªÊ¶ÌåÏµÓ¦¸ÃÓÃÒò¹ûÁªÏµ´®Áª
-#´òÓ¡³öÖªÊ¶ÍøÂç
+import jsoner 
+import txter 
+#æ¯ä¸ªKEYåŠ ä¸€ä¸ªå…³é”®è¯
+#åœ¨ä¸åŒKeyä¹‹é—´è®¡ç®—ç›¸å…³åº¦ï¼Œå†…å®¹å«æœ‰ç›¸åŒå…³é”®è¯çš„ï¼Œç›¸ä¼¼åº¦é«˜--é‚£å’Œç™¾åº¦çŸ¥é“æœ‰ä½•åŒºåˆ«ï¼Ÿæˆ‘æƒ³åšçš„æ˜¯ä¸€ä¸ªçŸ¥è¯†ä½“ç³»ï¼Œä¸€ä¸ªçŸ¥è¯†ä½“ç³»åº”è¯¥ç”¨å› æœè”ç³»ä¸²è”
+#æ‰“å°å‡ºçŸ¥è¯†ç½‘ç»œ
+#å¢åŠ æé—®åŠŸèƒ½
 #https://www.zhihu.com/question/21929143
 #http://www.sohu.com/a/140258152_367117
 #https://zhidao.baidu.com/question/167778108.html
 #http://gaozhongwuli.com/zongjie/
 #https://blog.csdn.net/bnanoou/article/details/38434443
 #https://www.cnblogs.com/wwf828/p/7418181.html
-_InputDir = ".\\HMI Warning¿ª·¢"
+_InputDir = ".\\addNewKey"
 _DictFile = ".\\data\\theDict.json"
-_RootKey = "HMI Warning¿ª·¢"
+_RootKey = "ç‚’å¤–æ±‡"
 _ScrollText = None
+_Interval = 0.2
 
 _Dict = {}
 
@@ -33,7 +38,7 @@ class Node:
 		self.childs = []
 		self.what = ""
 		self.how = ""
-		self.decision = ""
+		self.question = "" 
 
 	def setWhat(self, data):
 		self.what = data
@@ -41,22 +46,22 @@ class Node:
 	def setHow(self, data):
 		self.how = data
 		
-	def setDecision(self, data):
-		self.decision = data
+	def setQuestion(self, data): 
+		self.question = data
 
 class MyTreeView:
 	def __init__(self, root):
 		self.root = root
-		treeItemFont=Font(family='ËÎÌå', size=16)
+		treeItemFont=Font(family='å®‹ä½“', size=16)
 		fontheight=treeItemFont.metrics()['linespace']
 		ttk.Style().configure('Filter.Treeview', font=treeItemFont, rowheight=fontheight, background='white', foreground='blue')
 		self.treeView=ttk.Treeview(root, show='tree', style='Filter.Treeview')
 		
-		#·ÅÖÃË®Æ½·½Ïò¹ö¶¯Ìõ
+		#æ”¾ç½®æ°´å¹³æ–¹å‘æ»šåŠ¨æ¡
 		hbar = ttk.Scrollbar(self.root,orient=tkinter.HORIZONTAL,command=self.treeView.xview)
 		hbar.place(y=460,width=200,height=20)
 		
-		#·ÅÖÃ´¹Ö±·½Ïò¹ö¶¯Ìõ
+		#æ”¾ç½®å‚ç›´æ–¹å‘æ»šåŠ¨æ¡
 		vbar = ttk.Scrollbar(root,orient=tkinter.VERTICAL,command=self.treeView.yview)
 		vbar.place(x=200,width=20,height=480)
 		
@@ -64,7 +69,7 @@ class MyTreeView:
 		self.treeView.configure(yscrollcommand=vbar.set)
 		self.treeView.bind("<<TreeviewSelect>>", self.leftClick)
 		self.treeView.bind('<3>', self.rightClickMenu)
-		#·ÅÖÃÊ÷ĞÎÄ¿Â¼
+		#æ”¾ç½®æ ‘å½¢ç›®å½•
 		self.treeView.place(x=0, y=0, width=201, height=480)
 
 	def rightClickMenu(self, event):
@@ -99,14 +104,14 @@ class MyTreeView:
 			self.createTree(tree, mydict[child]["childs"], childID, mydict)
 		
 	def leftClick(self, event):
-		#event.widget»ñÈ¡Treeview¶ÔÏó£¬µ÷ÓÃselection»ñÈ¡Ñ¡Ôñ¶ÔÏóÃû³Æ
+		#event.widgetè·å–Treeviewå¯¹è±¡ï¼Œè°ƒç”¨selectionè·å–é€‰æ‹©å¯¹è±¡åç§°
 		sels= event.widget.selection()
 		setTextArea(sels[0])
 
 #--------------------------------------------------
-#´æ´¢
+#å­˜å‚¨
 #--------------------------------------------------
-def restoreSrc():
+def restoreSrcTXT(): 
 	global _Dict
 	
 	for key in _Dict.keys():
@@ -115,10 +120,10 @@ def restoreSrc():
 		content +=removeEmptyLines(_Dict[key]["how"])+ "\n"
 		content +="@what\n"
 		content +=removeEmptyLines(_Dict[key]["what"])+ "\n"
-		content +="@decision\n"
-		content +=removeEmptyLines(_Dict[key]["decision"])+ "\n"
+		content +="@question\n" 
+		content +=removeEmptyLines(_Dict[key]["question"])+ "\n" 
 		content +="@"
-		saveToLocal(_InputDir+"\\"+_Dict[key]["parent"]+"-"+_Dict[key]["name"]+".txt", content)
+		txter.saveToLocal(_InputDir+"\\"+_Dict[key]["parent"]+"-"+_Dict[key]["name"]+".txt", content) 
 
 def getcharencode(filename):
 	file = open(filename, "rb")          
@@ -135,45 +140,45 @@ def loadKey(fn):
 	newkey = Node(fn.split("-")[0].strip(), fn.split("-")[1].split(".")[0].strip())
 	newkey.setWhat(getType(data, "@what"))
 	newkey.setHow(getType(data, "@how"))
-	newkey.setDecision(getType(data, "@decision"))
+	newkey.setQuestion(getType(data, "@question")) 
 	return newkey
-	
-def writeJson(fn, js):
-	with open(fn, 'w') as f:
-		json.dump(js, f, indent=4, ensure_ascii=False)
-
-def readJson(fn):
-	with open(fn, 'r') as f:
-		data = json.load(f)
-		return eval(str(data))
 	
 def initDict():
 	global _Dict
 	
 	if os.path.exists(_DictFile):
-		_Dict = readJson(_DictFile)
-		
-def saveToLocal(fn, data):
-	f = open(fn, "w")
-	f.write(data)
-	f.close()
+		_Dict = jsoner.readJson(_DictFile) 
+
+def updateDict(content):
 	
-def genAttribs():
+	try:
+		name = getType(content, "@name")
+		if name!=None:
+			name=name.strip("\n")
+			if name in list(_Dict.keys()):
+				if getType(content, "@question")!=None:
+					_Dict[name]["question"] = getType(content, "@question")
+			else:
+				print("name:"+name + " is not in list:"+ str(list(_Dict.keys())))
+	except Exception as e:
+		print(e)
+	
+def createKnowledgeList(): 
 	global _Dict
 	
 	content = ""
 	for key in _Dict.keys():
 		content +="["+_Dict[key]["parent"]+"->"+key+"]\n"
-		content +="\nÊ²Ã´ÊÇ" + key + "£¿\n"
+		content +="\nä»€ä¹ˆæ˜¯" + key + "ï¼Ÿ\n"
 		content +=_Dict[key]["what"]
-		content +="\nÈçºÎ" + key + "£¿\n"
+		content +="\nå¦‚ä½•" + key + "ï¼Ÿ\n"
 		content +=_Dict[key]["how"]
 		content +="\n"
 	
-	saveToLocal("ÁìÓòÖªÊ¶.txt", content)
+	txter.saveToLocal("é¢†åŸŸçŸ¥è¯†.txt", content) 
 
 #--------------------------------------------------
-#Êı¾İ´¦Àí£¬×ª»»
+#æ•°æ®å¤„ç†ï¼Œè½¬æ¢
 #--------------------------------------------------
 def removeEmptyLines(data):
 	
@@ -207,7 +212,7 @@ def addKey(key):
 	dictkey["childs"] = key.childs
 	dictkey["what"] = key.what
 	dictkey["how"] = key.how
-	dictkey["decision"] = key.decision
+	dictkey["question"] = key.question 
 	_Dict[key.name] = dictkey
 	
 def addNewKeys(foldername):
@@ -220,30 +225,43 @@ def addNewKeys(foldername):
 	addRelationship()
 
 #--------------------------------------------------
-#UI ÏÔÊ¾²¿·Ö
+#UI æ˜¾ç¤ºéƒ¨åˆ†
 #--------------------------------------------------
+def syncQuestionArea(scrollText):
+    content = scrollText.get(1.0, END)
+    updateDict(content)
+    #print(content)
+	
+    global timer
+    timer = threading.Timer(_Interval, syncQuestionArea, [scrollText])
+    timer.setDaemon(True)
+    timer.start()
+
 def setTextArea(item):
 	global _ScrollText
 	
 	_ScrollText.delete(1.0, END)
-	_ScrollText.insert(INSERT, "name:\n"+_Dict[item]["name"] + "\n\n")
-	_ScrollText.insert(INSERT, "how:\n"+_Dict[item]["how"] + "\n")
-	_ScrollText.insert(INSERT, "what:\n"+_Dict[item]["what"] + "\n")
-	_ScrollText.insert(INSERT, "decision:\n"+_Dict[item]["decision"] + "\n")
+	_ScrollText.insert(INSERT, "@name\n"+_Dict[item]["name"] + "\n\n")
+	_ScrollText.insert(INSERT, "@how\n"+_Dict[item]["how"] + "\n")
+	_ScrollText.insert(INSERT, "@what\n"+_Dict[item]["what"] + "\n")
+	_ScrollText.insert(INSERT, "@question\n"+_Dict[item]["question"] + "\n") 
 		
 def drawGUI():
 	global _ScrollText
 	
 	root=tkinter.Tk()
-	root.title("ÁìÓòÖªÊ¶")
+	root.title("é¢†åŸŸçŸ¥è¯†")
 	root.geometry("800x480")
 	root.resizable(width=False, height=False)
-	textFont=Font(family='ËÎÌå', size=12)
+	textFont=Font(family='å®‹ä½“', size=12)
 	fontheight = textFont.metrics()['linespace']
-	#´øScrollBarµÄÎÄ±¾ÇøÓò
+	#å¸¦ScrollBarçš„æ–‡æœ¬åŒºåŸŸ
 	_ScrollText = ScrolledText(root, spacing3=8, padx=10, pady=10, font=textFont, borderwidth=2, width=68, background='white')
 	_ScrollText.pack(side=RIGHT, fill=Y)
-	#ĞÂ½¨Ê÷ĞÎÄ¿Â¼
+	timer = threading.Timer(_Interval, syncQuestionArea, [_ScrollText])
+	timer.setDaemon(True)
+	timer.start()
+	#æ–°å»ºæ ‘å½¢ç›®å½•
 	tree = MyTreeView(root)
 	tree.createMyTree(_Dict)
 	root.mainloop()
@@ -251,12 +269,17 @@ def drawGUI():
 if __name__ == "__main__":
 	initDict()
 	
+	#ä»TXTsä¸­å¢åŠ æ–°çš„çŸ¥è¯†åˆ°å­—å…¸ä¸­
 	addNewKeys(_InputDir)
 	
-	writeJson(_DictFile, _Dict)
+	#åˆ›å»ºçŸ¥è¯†åˆ—è¡¨ç”¨ä½œæ‰“å°
+	#createKnowledgeList() 
 	
-	genAttribs()
-	#restoreSrc()
+	#æ˜¾ç¤ºé˜…è¯»ç•Œé¢
 	drawGUI()
-
+	
+	#æ ¹æ®æœ€æ–°çš„å­—å…¸æ›´æ–°TXTs
+	restoreSrcTXT()
+	#ä¿å­˜æœ€æ–°çš„å­—å…¸
+	jsoner.writeJson(_DictFile, _Dict)
 	
