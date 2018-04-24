@@ -241,7 +241,7 @@ def drawGUI():
 	textFont=Font(family='宋体', size=12)
 	fontheight = textFont.metrics()['linespace']
 	#带ScrollBar的文本区域
-	_ScrollText = ScrolledText(root, padx=10, pady=10, font=textFont, borderwidth=2, width=68, background='white')
+	_ScrollText = ScrolledText(root, spacing3=8, padx=10, pady=10, font=textFont, borderwidth=2, width=68, background='white')
 	_ScrollText.pack(side=RIGHT, fill=Y)
 	#新建树形目录
 	tree = MyTreeView(root)
