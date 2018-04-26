@@ -1,12 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
-import re
 import os
 import chardet
 import tkinter
 import threading
-import time
 from tkinter import *
 from tkinter import ttk
 from tkinter.font import Font
@@ -15,17 +13,18 @@ import jsoner
 import txter 
 #每个KEY加一个关键词
 #在不同Key之间计算相关度，内容含有相同关键词的，相似度高--那和百度知道有何区别？我想做的是一个知识体系，一个知识体系应该用因果联系串联
-#打印出知识网络
-#增加提问功能
+#如果你希望精确熟练地掌握你所总结的知识树，那么最好是打印出知识网络，经常查阅思考
+#增加提问功能，用于在阅读知识点时，记录所思考到的问题
+#那些储存了“以后慢慢看”的东西，你基本不会再看。所以本项目的正确用法是用作组织原创，自己理解的知识体系，不求全面，只要实用
 #https://www.zhihu.com/question/21929143
 #http://www.sohu.com/a/140258152_367117
 #https://zhidao.baidu.com/question/167778108.html
 #http://gaozhongwuli.com/zongjie/
 #https://blog.csdn.net/bnanoou/article/details/38434443
 #https://www.cnblogs.com/wwf828/p/7418181.html
-_InputDir = ".\\addNewKey"
-_DictFile = ".\\data\\theDict.json"
-_RootKey = "炒外汇"
+_InputDir = ".\\知识管理"
+_DictFile = ".\\字典库\\theDict.json"
+_RootKey = ""
 _ScrollText = None
 _Interval = 0.2
 
@@ -224,6 +223,16 @@ def addNewKeys(foldername):
 		addKey(newkey)
 	addRelationship()
 
+def getRootKey():
+	global _Dict
+	global _RootKey
+	
+	for k in list(_Dict.keys()):
+		if "ROOT"==_Dict[k]["parent"]:
+			_RootKey = k
+			return True
+	return False
+
 #--------------------------------------------------
 #UI 显示部分
 #--------------------------------------------------
@@ -272,14 +281,16 @@ if __name__ == "__main__":
 	#从TXTs中增加新的知识到字典中
 	addNewKeys(_InputDir)
 	
-	#创建知识列表用作打印
-	#createKnowledgeList() 
-	
-	#显示阅读界面
-	drawGUI()
-	
-	#根据最新的字典更新TXTs
-	restoreSrcTXT()
-	#保存最新的字典
-	jsoner.writeJson(_DictFile, _Dict)
-	
+	if getRootKey()==True:
+		#创建知识列表用作打印
+		#createKnowledgeList() 
+		#显示阅读界面
+		drawGUI()
+		#根据最新的字典更新TXTs
+		restoreSrcTXT()
+		#保存最新的字典
+		jsoner.writeJson(_DictFile, _Dict)
+	else:
+		print("Please create root node file. For example, the filename should be ROOT-HMI 报警开发")
+		
+
