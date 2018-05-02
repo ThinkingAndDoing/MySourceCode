@@ -1,10 +1,13 @@
 #coding:utf-8
 import os
+import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.action_chains import ActionChains
 
 _username = 'yb'
 _pwd = 'yb'
@@ -44,6 +47,18 @@ def grab():
 	browser.find_element_by_link_text("数据查询").click()
 	
 	#step3
+	actions = ActionChains(browser)
+	# 先定位到下拉菜单
+	drop_down = browser.find_element_by_xpath("//div[@id='ContentHolder_dataNameList_Panel1']/table/tbody/tr/td[@class='combo-ddb-cell']")
+	actions.move_to_element(drop_down).click().perform()
+	# 再对下拉菜单中的选项进行选择
+	browser.find_element_by_link_text(u"监测点分钟数据").click() 
+	
+	
+	WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.ID, "btnUpdateX")))
+	browser.find_element_by_id('btnUpdateX').click()
+	time.sleep(0.2)
+	
 	#gridview是动态生成的HTML Tag，需要等待此元素可见，才能保存page_source
 	WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, "gridview")))
 	html_source = browser.page_source
@@ -51,7 +66,8 @@ def grab():
 
 	soup = BeautifulSoup(html_source, "html.parser")
 	saveToLocal("output.txt", html_source)
-	print(soup.h1.string)
+	#--------------------------------------------------------------------------
+	#print(soup.h1.string)
 	
 if __name__ == "__main__":
 	grab()
