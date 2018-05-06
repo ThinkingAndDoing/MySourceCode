@@ -16,14 +16,16 @@ import txter
 #如果你希望精确熟练地掌握你所总结的知识树，那么最好是打印出知识网络，经常查阅思考
 #增加提问功能，用于在阅读知识点时，记录所思考到的问题
 #那些储存了“以后慢慢看”的东西，你基本不会再看。所以本项目的正确用法是用作组织原创，自己理解的知识体系，不求全面，只要实用
+#在知识传承中，如果接受者是初学者，那么至今最好的方法是给出按步骤操作的实例，再加以解释。舍此别无他法。本项目不适用。
+#本项目更适合掌握基本知识的读者，做精读，反复思考，修改，知识精华的提炼。
 #https://www.zhihu.com/question/21929143
 #http://www.sohu.com/a/140258152_367117
 #https://zhidao.baidu.com/question/167778108.html
 #http://gaozhongwuli.com/zongjie/
 #https://blog.csdn.net/bnanoou/article/details/38434443
 #https://www.cnblogs.com/wwf828/p/7418181.html
-_InputDir = ".\\知识管理"
-_DictFile = ".\\字典库\\theDict.json"
+_Suffix = "外汇"
+_InputDir = "\\知识管理"
 _RootKey = ""
 _ScrollText = None
 _Interval = 0.2
@@ -110,7 +112,7 @@ class MyTreeView:
 #--------------------------------------------------
 #存储
 #--------------------------------------------------
-def restoreSrcTXT(): 
+def restoreSrcTXT(inputDir): 
 	global _Dict
 	
 	for key in _Dict.keys():
@@ -122,7 +124,7 @@ def restoreSrcTXT():
 		content +="@question\n" 
 		content +=removeEmptyLines(_Dict[key]["question"])+ "\n" 
 		content +="@"
-		txter.saveToLocal(_InputDir+"\\"+_Dict[key]["parent"]+"-"+_Dict[key]["name"]+".txt", content) 
+		txter.saveToLocal(inputDir+"\\"+_Dict[key]["parent"]+"-"+_Dict[key]["name"]+".txt", content) 
 
 def getcharencode(filename):
 	file = open(filename, "rb")          
@@ -131,8 +133,8 @@ def getcharencode(filename):
 	result = chardet.detect(buf)
 	return result["encoding"]
 	
-def loadKey(fn):
-	f = open(_InputDir+"\\"+fn, "r", encoding=getcharencode(_InputDir+"\\"+fn), errors='ignore')
+def loadKey(fn, inputdir):
+	f = open(inputdir+"\\"+fn, "r", encoding=getcharencode(inputdir+"\\"+fn), errors='ignore')
 	data = f.read()
 	f.close()
 	
@@ -142,11 +144,10 @@ def loadKey(fn):
 	newkey.setQuestion(getType(data, "@question")) 
 	return newkey
 	
-def initDict():
-	global _Dict
+def initDict(thedict):
 	
-	if os.path.exists(_DictFile):
-		_Dict = jsoner.readJson(_DictFile) 
+	if os.path.exists(thedict):
+		_Dict = jsoner.readJson(thedict) 
 
 def updateDict(content):
 	
@@ -219,7 +220,7 @@ def addNewKeys(foldername):
 	
 	filelist = os.listdir(foldername)
 	for fn in filelist:
-		newkey = loadKey(fn)
+		newkey = loadKey(fn, foldername)
 		addKey(newkey)
 	addRelationship()
 
@@ -276,10 +277,16 @@ def drawGUI():
 	root.mainloop()
 
 if __name__ == "__main__":
-	initDict()
+	try:
+		if os.path.exists( sys.argv[1] ):
+			_Suffix = sys.argv[1]
+	except Exception as e:
+		print(e)
+	
+	initDict(_Suffix+"\\"+_Suffix+".json")
 	
 	#从TXTs中增加新的知识到字典中
-	addNewKeys(_InputDir)
+	addNewKeys(_Suffix+_InputDir)
 	
 	if getRootKey()==True:
 		#创建知识列表用作打印
@@ -287,9 +294,9 @@ if __name__ == "__main__":
 		#显示阅读界面
 		drawGUI()
 		#根据最新的字典更新TXTs
-		restoreSrcTXT()
+		restoreSrcTXT(_Suffix+_InputDir)
 		#保存最新的字典
-		jsoner.writeJson(_DictFile, _Dict)
+		jsoner.writeJson(_Suffix+"\\"+_Suffix+".json", _Dict)
 	else:
 		print("Please create root node file. For example, the filename should be ROOT-HMI 报警开发")
 		
