@@ -1,0 +1,19 @@
+@how
+http://www.desynced.net/fx/eas/mq4script-1269.php
+
+@what
+这个ea是2009年在国外非常火，争议也大的一个ea，官方宣称是“行星地球第一大ea”，提供的测试报告数据，也是好的惊人。暂不论好坏，这也说明坛子里有好多宝贝，需要各位汇友认真发掘，吸取前人包括洋鬼子的精华之处，为我所用。这个EA似乎是阿拉伯人搞的，后来被其它人指出是大尺寸剽窃Dragonpips EA（我比较了一下，确实95%以上雷同），而后者是从Thunder4WD改造来的，另有人反映后者（Dragonpips EA）会制造巨大损失，而前者（CaspianEA)不会。是不是好用，需要各位测试，小手数用于实盘试试。我很纳闷的地方是，这个ea是剥头皮的，每次赢利1点到数点，但原ea的测试结果，显示单次大量赢利，已不是剥头皮的风格呀，看懂源码，也没发现有什么特别的地方，所以感觉很奇怪真有宣称的超高胜率和盈亏比么？
+可能受此影响，CapianEA的官方网站、demo账户、官方测试报告，我已从google搜索不到了，但还能找到国外坛子里一些残留的信息，用来反思这个EA。
+http://bbs.520fx.com/thread-49614-1-1.html
+
+@question
+https://eareview.net/outdated-review/caspian-ea
+时间曲线选择15分钟
+这个EA是一个剥头皮的EA。某些研究表明EURCHF几乎完全拷贝Dragonpips。
+EURGBP是拷贝自EuroCross的一个老的版本。
+尽管它是盈利的，但是明显不值得花费550美金来买。你可以用相同的价格买到Dragonpips，免费获取到VS EuroCross。
+It’s not hard to conclude that this EA is extremely sensitive to broker spreads and execution.
+这个EA对点差非常敏感，点差超过3就会非常不稳定。
+最佳配置：risk 5	spread 3 M15 MaxTrades 1 和 risk 5	spread 3 M5 MaxTrades 1 同时运行
+
+@

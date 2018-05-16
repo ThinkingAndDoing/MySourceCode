@@ -1,0 +1,15 @@
+@how
+Na
+
+@what
+监管机构：ASIC 335692
+最低入金：MT4最低入金200美元、cTrader最低入金200美元
+点差类型：浮动点差：0点差起
+平台软件：MT4、cTrader、MT5
+真正的ECN交易商，ASIC监管，欧美平均0.1点，黄金平均1.3点，中美专线网络，成交稳定迅速，出入金免手续费。
+https://brokers.fx110.com/broker/917
+
+@question
+ICMarkets标准账户和ECN账户有什么区别？
+
+@

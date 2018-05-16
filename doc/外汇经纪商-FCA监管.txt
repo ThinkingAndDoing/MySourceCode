@@ -1,0 +1,21 @@
+@how
+[ http://www.fca.org.uk/ FINANCIAL SERVICES REGISTER ]
+查询流程
+https://www.fx110.com/special/389
+https://jingyan.baidu.com/article/0bc808fc325f9b1bd485b91f.html
+
+@what
+英国FCA金融监管牌照大致分为：
+第一种：欧盟牌照。根据欧盟现行监管法律，任何一个在欧盟某一个国家获得的监管，其他国家均应予以承认。这种牌照是最弱的一种。事实上这些公司是不受FCA监管的。查询的结果Status中会显示：EEA Authorised。
+第二种：basic lincense。符合英国的监管，但在英国没有办公室或分公司。大多是发给一些白标。
+这一种和第一种通常来说都是unable to hold clients money，也就是没有资质持有客户资金。
+查询结果Status中会显示：Authorised，但是会是unable to hold or control money from its customers。
+第三种：full license。必须经过FCA审核，且在英国设实体办公室。
+这种多数都是able to hold clients money的，即有资质持有客户资金。
+查询结果Status中会显示：Authorised，而且会有 able to hold or control money from its customers。
+FCA里有有一个金融服务补偿计划（FSCS）。当一个金融服务补偿计划(FSCS)的成员出现问题面临倒闭时，会对存款人或投资人作出赔偿，赔偿金额可高达五万英镑，客户资金全面受到保障。如果unable to hold client money这种外汇公司倒闭或者因为其他的任何原因而消失，FCA是不用赔偿这笔钱的。也就是说unable to hold client money的外汇公司是不在金融服务补偿计划(FSCS)里的。而Able to hold and control client money的外汇公司就不一样了。如果Able to hold and control client money的外汇公司出现问题而倒闭，FCA会根据规定对投资者做出相应的赔偿。
+
+@question
+符合FCA监管的平台，点差太高，不一定非选择这种平台不可。
+
+@

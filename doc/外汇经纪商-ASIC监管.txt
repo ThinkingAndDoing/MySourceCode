@@ -1,0 +1,34 @@
+@how
+第一步：在开始查询之前先要了解AFSL，ABN，ACN的区别。
+因为我们注意到有不少套牌公司拿ACN或者是ABN号忽悠不懂英文的投资者说是澳洲监管号。通常投资者可以根据数字的位数就可以把这三者区分开来。
+ACN 全称 Australian Company Number，澳洲公司注册代码，共9位数字。所有在澳洲的企业都必须注册ACN，相当于国内的工商注册。
+ABN 全称Australian Business Number，澳洲公司商业代码，共11位数（两位税号+9位数ACN号码构成）。有ACN不一定有ABN，像有的休眠公司没有ABN，有ABN号码就必有ACN号码。
+AFSL 全称Australian Financial Services Licensee，澳洲金融服务牌照，通常是6位数居多，只有从事金融服务的企业才有AFSL。业内通常讲的澳洲监管号就是AFSL牌照号。
+因此ACN和ABN只是最普通的注册而已，只单独有ACN、ABN的公司是没有资质做金融衍生品的。
+防骗小知识：
+如果有外汇交易商宣传受澳洲监管，监管号是9位数或11位数，那么这家公司肯定有问题，因为9位数是ACN，11位数是ABN，ACN或ABN根本不是监管号。
+第二步：查交易商是否拥有AFSL牌照，牌照经营范围是否包含零售外汇业务。
+1.登陆翻墙软件（VPN），打开ASIC官网
+www.asic.gov.au，如图选择Professional  Registers
+2.在A处输入待查询的公司名字或在B处输入AFSL牌照号，在select register的下拉菜单中选择Australian Financial Services Licensee，然后点击Search查询。
+3.如果输入公司名字直接搜索监管情况的话，会匹配多个名称相似度较高的搜索结果，因此要注意对比公司名字的一致性，常见的两种监管状态为current（目前受监管），ceased(监管已注销）。 
+4.如果知道交易商的AFSL监管号的话，搜索是非常便捷的，不会担心搜到其他公司，因为输入监管号点击搜索是直接跳到查询结果页面。如下图status处显示current说明目前这家公司是受监管的。有External Dispute Resolution(外部纠纷解决机构）简称EDR，说明这家公司是能够向零售客户提供服务的，通过EDR可以查到受监管的公司的基本的联系方式。
+5.查看受监管的业务范畴，通常要有这两个大类provide financial product advice （金融产品建议）和deal in a financial products （金融产品交易），同时这两个大类通常要有derivatives（金融衍生品）和foreign exchange contracts外汇合约，面向的客户群体要包含retail clients(零售客户），因为绝大多数投资者都是零售客户。
+现在我们总结一下一家受ASIC监管的外汇交易商要注意以下几点：
+一看监管状态current。
+二看EDR，说明接受零售客户。
+三看derivatives（金融衍生品）和foreign exchange contracts外汇合约。
+四要确认真正受监管公司的网站（重点！），通过EDR查询。
+上文我们讲到有不少套牌公司用ACN或ABN谎称是澳洲监管，接下来小编教大家如何查ACN和ABN↓
+查询流程
+https://www.fx110.com/special/395
+
+@what
+澳大利亚证券和投资委员会(Australian Securities and Investment Commission)，简称：ASIC，于2001年根据澳大利亚《证券和投资委员会法》依法成立。
+凡接受ASIC澳大利亚证券和投资委员会监管的，具有交易金融衍生品资格的企业，必须同时具有澳大利亚金融业务许可证（AFSL）和澳大利亚公司代码（ACN）。
+亚太地区的那么多国家中，哪个国家更靠谱一点呢？答案是：澳大利亚。有一位分析师曾写道：“澳大利亚最近几年在零售外汇业务的发展上面突飞猛进，已经是全球瞩目的新星，澳大利亚已经开设了零售外汇公司，这些公司还在海外其他国家设立了分部。”澳大利亚经济和金融环境稳定，有良好的商业道德，此外，澳大利亚证券投资委员会（AustralianSecuritiesandInvestmentsCommission，ASIC）作为澳大利亚的金融监管机构，在金融监管方面做的非常不错，其权威性和执行效力得到了世界的认可。
+
+@question
+NA
+
+@
