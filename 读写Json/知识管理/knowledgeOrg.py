@@ -24,8 +24,7 @@ import txter
 #http://gaozhongwuli.com/zongjie/
 #https://blog.csdn.net/bnanoou/article/details/38434443
 #https://www.cnblogs.com/wwf828/p/7418181.html
-_Suffix = "外汇"
-_InputDir = "\\知识管理"
+_InputDir = "外汇"
 _RootKey = ""
 _ScrollText = None
 _Interval = 0.2
@@ -145,6 +144,7 @@ def loadKey(fn, inputdir):
 	return newkey
 	
 def initDict(thedict):
+	global _Dict
 	
 	if os.path.exists(thedict):
 		_Dict = jsoner.readJson(thedict) 
@@ -220,8 +220,11 @@ def addNewKeys(foldername):
 	
 	filelist = os.listdir(foldername)
 	for fn in filelist:
-		newkey = loadKey(fn, foldername)
-		addKey(newkey)
+		if fn.rfind(".txt")!=-1:
+			newkey = loadKey(fn, foldername)
+			addKey(newkey)
+		else:
+			print(fn+" is skipped!")
 	addRelationship()
 
 def getRootKey():
@@ -277,16 +280,19 @@ def drawGUI():
 	root.mainloop()
 
 if __name__ == "__main__":
+
 	try:
 		if os.path.exists( sys.argv[1] ):
-			_Suffix = sys.argv[1]
+			_InputDir = sys.argv[1]
+		else:
+			print(sys.argv[1]+": Path is not exist!")
 	except Exception as e:
 		print(e)
-	
-	initDict(_Suffix+"\\"+_Suffix+".json")
+
+	initDict(_InputDir+"\\theDict.json")
 	
 	#从TXTs中增加新的知识到字典中
-	addNewKeys(_Suffix+_InputDir)
+	addNewKeys(_InputDir)
 	
 	if getRootKey()==True:
 		#创建知识列表用作打印
@@ -294,9 +300,9 @@ if __name__ == "__main__":
 		#显示阅读界面
 		drawGUI()
 		#根据最新的字典更新TXTs
-		restoreSrcTXT(_Suffix+_InputDir)
+		restoreSrcTXT(_InputDir)
 		#保存最新的字典
-		jsoner.writeJson(_Suffix+"\\"+_Suffix+".json", _Dict)
+		#jsoner.writeJson(_InputDir+"\\theDict.json", _Dict)
 	else:
 		print("Please create root node file. For example, the filename should be ROOT-HMI 报警开发")
 		
