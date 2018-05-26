@@ -15,6 +15,12 @@ def getFormatStr(length, value):
 		prefix += "0"
 		x -= 1
 	return prefix
+
+def renameVideo(origin, target):
+	if os.path.exists(target):
+		print(target + " is already exist! " + origin +" will not be renamed!")
+	else:
+		os.rename(origin, target)
 	
 def renameAll(length):
 	videolist = []
@@ -30,19 +36,22 @@ def renameAll(length):
 	for item in videolist:
 		if item.find("A")!=-1:
 			formatStr = "A"+getFormatStr(length, indexA)+"%d."+item.split(".")[1]
-			os.rename(item, formatStr%indexA)
+			renameVideo(item, formatStr%indexA)
 			indexA += 1
 	
 		if item.find("B")!=-1:
 			formatStr = "B"+getFormatStr(length, indexB)+"%d."+item.split(".")[1]
-			os.rename(item, formatStr%indexB)
+			renameVideo(item, formatStr%indexB)
 			indexB += 1
 
 		if item.find("S")!=-1:
 			formatStr = "S"+getFormatStr(length, indexS)+"%d."+item.split(".")[1]
-			os.rename(item, formatStr%indexS)
+			renameVideo(item, formatStr%indexS)
 			indexS += 1
 
 if __name__=="__main__":
+	
+	renameAll(3)
 	renameAll(4)
 	renameAll(3)
+	
