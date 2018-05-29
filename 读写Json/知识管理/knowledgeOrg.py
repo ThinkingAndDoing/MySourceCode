@@ -24,12 +24,17 @@ import txter
 #http://gaozhongwuli.com/zongjie/
 #https://blog.csdn.net/bnanoou/article/details/38434443
 #https://www.cnblogs.com/wwf828/p/7418181.html
-_InputDir = "外汇"
-_RootKey = ""
-_ScrollText = None
-_Interval = 0.2
 
-_Dict = {}
+class GloableVariables:
+	_Dict = {}
+	_InputDir = ""
+	_KnowledgeSegment = ""
+	_RootKey = ""
+	_ScrollText = None
+	_Interval = 0.2
+	_StopThread = False
+	_Root = None
+	_TimerThread = None
 
 class Node:
 	def __init__(self, p, n):
@@ -73,6 +78,7 @@ class MyTreeView:
 		self.treeView.place(x=0, y=0, width=201, height=480)
 
 	def rightClickMenu(self, event):
+		'''
 		def delete():
 			print(rowID)
 			print("delete!")
@@ -80,7 +86,7 @@ class MyTreeView:
 		def edit():
 			print(rowID)
 			print("edit!")
-		
+		'''
 		rowID = self.treeView.identify('item', event.x, event.y)
 		if rowID:
 			self.treeView.selection_set(rowID)
@@ -95,8 +101,8 @@ class MyTreeView:
 			pass
 
 	def createMyTree(self, mydict):
-		myid=self.treeView.insert("", 0, mydict[_RootKey]["name"], text=mydict[_RootKey]["name"])
-		self.createTree(self.treeView, mydict[_RootKey]["childs"], myid, mydict)
+		myid=self.treeView.insert("", 0, mydict[GV._RootKey]["name"], text=mydict[GV._RootKey]["name"])
+		self.createTree(self.treeView, mydict[GV._RootKey]["childs"], myid, mydict)
 
 	def createTree(self, tree, childList, parentID, mydict):
 		for child in childList:
@@ -112,18 +118,17 @@ class MyTreeView:
 #存储
 #--------------------------------------------------
 def restoreSrcTXT(inputDir): 
-	global _Dict
 	
-	for key in _Dict.keys():
+	for key in GV._Dict.keys():
 		content = ""
 		content +="@how\n"
-		content +=removeEmptyLines(_Dict[key]["how"])+ "\n"
+		content +=removeEmptyLines(GV._Dict[key]["how"])+ "\n"
 		content +="@what\n"
-		content +=removeEmptyLines(_Dict[key]["what"])+ "\n"
+		content +=removeEmptyLines(GV._Dict[key]["what"])+ "\n"
 		content +="@question\n" 
-		content +=removeEmptyLines(_Dict[key]["question"])+ "\n" 
+		content +=removeEmptyLines(GV._Dict[key]["question"])+ "\n" 
 		content +="@"
-		txter.saveToLocal(inputDir+"\\"+_Dict[key]["parent"]+"-"+_Dict[key]["name"]+".txt", content) 
+		txter.saveToLocal(inputDir+"\\"+GV._Dict[key]["parent"]+"-"+GV._Dict[key]["name"]+".txt", content) 
 
 def getcharencode(filename):
 	file = open(filename, "rb")          
@@ -140,39 +145,36 @@ def loadKey(fn, inputdir):
 	newkey = Node(fn.split("-")[0].strip(), fn.split("-")[1].split(".")[0].strip())
 	newkey.setWhat(getType(data, "@what"))
 	newkey.setHow(getType(data, "@how"))
-	newkey.setQuestion(getType(data, "@question")) 
+	newkey.setQuestion(getType(data, "@question"))
 	return newkey
 	
 def initDict(thedict):
-	global _Dict
-	
 	if os.path.exists(thedict):
-		_Dict = jsoner.readJson(thedict) 
+		GV._Dict = jsoner.readJson(thedict)
 
 def updateDict(content):
-	
 	try:
 		name = getType(content, "@name")
 		if name!=None:
 			name=name.strip("\n")
-			if name in list(_Dict.keys()):
+			if name in list(GV._Dict.keys()):
 				if getType(content, "@question")!=None:
-					_Dict[name]["question"] = getType(content, "@question")
+					GV._Dict[name]["question"] = getType(content, "@question")
 			else:
-				print("name:"+name + " is not in list:"+ str(list(_Dict.keys())))
+				#print("name:"+name + " is not in list:"+ str(list(GV._Dict.keys())))
+				pass
 	except Exception as e:
-		print(e)
+		#print(e)
+		pass
 	
-def createKnowledgeList(): 
-	global _Dict
-	
+def createKnowledgeList(): 	
 	content = ""
-	for key in _Dict.keys():
-		content +="["+_Dict[key]["parent"]+"->"+key+"]\n"
+	for key in GV._Dict.keys():
+		content +="["+GV._Dict[key]["parent"]+"->"+key+"]\n"
 		content +="\n什么是" + key + "？\n"
-		content +=_Dict[key]["what"]
+		content +=GV._Dict[key]["what"]
 		content +="\n如何" + key + "？\n"
-		content +=_Dict[key]["how"]
+		content +=GV._Dict[key]["how"]
 		content +="\n"
 	
 	txter.saveToLocal("领域知识.txt", content) 
@@ -181,7 +183,6 @@ def createKnowledgeList():
 #数据处理，转换
 #--------------------------------------------------
 def removeEmptyLines(data):
-	
 	lines = data.split("\n")
 	newdata = ""
 	for line in lines:
@@ -195,17 +196,13 @@ def getType(data, type):
 		indexend = data.find("@", indexstart) - 1
 		return removeEmptyLines(data[indexstart:indexend])
 
-def addRelationship():
-	global _Dict
-	
-	for key in _Dict.keys():
-		if _Dict[key]["parent"] in list(_Dict.keys()):
-			if _Dict[key]["name"] not in _Dict[_Dict[key]["parent"]]["childs"]:
-				_Dict[_Dict[key]["parent"]]["childs"].append(_Dict[key]["name"])
+def addRelationship():	
+	for key in GV._Dict.keys():
+		if GV._Dict[key]["parent"] in list(GV._Dict.keys()):
+			if GV._Dict[key]["name"] not in GV._Dict[GV._Dict[key]["parent"]]["childs"]:
+				GV._Dict[GV._Dict[key]["parent"]]["childs"].append(GV._Dict[key]["name"])
 
 def addKey(key):
-	global _Dict
-
 	dictkey = {}
 	dictkey["parent"] = key.parent
 	dictkey["name"] = key.name
@@ -213,27 +210,23 @@ def addKey(key):
 	dictkey["what"] = key.what
 	dictkey["how"] = key.how
 	dictkey["question"] = key.question 
-	_Dict[key.name] = dictkey
+	GV._Dict[key.name] = dictkey
 	
 def addNewKeys(foldername):
-	global _Dict
-	
 	filelist = os.listdir(foldername)
 	for fn in filelist:
 		if fn.rfind(".txt")!=-1:
 			newkey = loadKey(fn, foldername)
 			addKey(newkey)
 		else:
-			print(fn+" is skipped!")
+			#print(fn+" is skipped!")
+			pass
 	addRelationship()
 
 def getRootKey():
-	global _Dict
-	global _RootKey
-	
-	for k in list(_Dict.keys()):
-		if "ROOT"==_Dict[k]["parent"]:
-			_RootKey = k
+	for k in list(GV._Dict.keys()):
+		if "ROOT"==GV._Dict[k]["parent"]:
+			GV._RootKey = k
 			return True
 	return False
 
@@ -241,58 +234,69 @@ def getRootKey():
 #UI 显示部分
 #--------------------------------------------------
 def syncQuestionArea(scrollText):
-    content = scrollText.get(1.0, END)
-    updateDict(content)
-    #print(content)
-	
-    global timer
-    timer = threading.Timer(_Interval, syncQuestionArea, [scrollText])
-    timer.setDaemon(True)
-    timer.start()
+	if GV._StopThread==False:
+		content = scrollText.get(1.0, END)
+		updateDict(content)
+		
+		GV._TimerThread = threading.Timer(GV._Interval, syncQuestionArea, [scrollText])
+		GV._TimerThread.setDaemon(True)
+		GV._TimerThread.start()
 
 def setTextArea(item):
-	global _ScrollText
-	
-	_ScrollText.delete(1.0, END)
-	_ScrollText.insert(INSERT, "@name\n"+_Dict[item]["name"] + "\n\n")
-	_ScrollText.insert(INSERT, "@how\n"+_Dict[item]["how"] + "\n")
-	_ScrollText.insert(INSERT, "@what\n"+_Dict[item]["what"] + "\n")
-	_ScrollText.insert(INSERT, "@question\n"+_Dict[item]["question"] + "\n") 
+	GV._ScrollText.delete(1.0, END)
+	GV._ScrollText.insert(INSERT, "@name\n"+GV._Dict[item]["name"] + "\n\n")
+	GV._ScrollText.insert(INSERT, "@how\n"+GV._Dict[item]["how"] + "\n")
+	GV._ScrollText.insert(INSERT, "@what\n"+GV._Dict[item]["what"] + "\n")
+	GV._ScrollText.insert(INSERT, "@question\n"+GV._Dict[item]["question"] + "\n") 
 		
 def drawGUI():
-	global _ScrollText
-	
-	root=tkinter.Tk()
-	root.title("领域知识")
-	root.geometry("800x480")
-	root.resizable(width=False, height=False)
+	GV._StopThread = False
+	GV._Root=tkinter.Tk()
+	GV._Root.title("领域知识")
+	GV._Root.geometry("800x480")
+	GV._Root.resizable(width=False, height=False)
 	textFont=Font(family='宋体', size=12)
 	fontheight = textFont.metrics()['linespace']
 	#带ScrollBar的文本区域
-	_ScrollText = ScrolledText(root, spacing3=8, padx=10, pady=10, font=textFont, borderwidth=2, width=68, background='white')
-	_ScrollText.pack(side=RIGHT, fill=Y)
-	timer = threading.Timer(_Interval, syncQuestionArea, [_ScrollText])
-	timer.setDaemon(True)
-	timer.start()
+	GV._ScrollText = ScrolledText(GV._Root, spacing3=8, padx=10, pady=10, font=textFont, borderwidth=2, width=68, background='white')
+	GV._ScrollText.pack(side=RIGHT, fill=Y)
+	GV._TimerThread = threading.Timer(GV._Interval, syncQuestionArea, [GV._ScrollText])
+	GV._TimerThread.setDaemon(True)
+	GV._TimerThread.start()
 	#新建树形目录
-	tree = MyTreeView(root)
-	tree.createMyTree(_Dict)
-	root.mainloop()
+	tree = MyTreeView(GV._Root)
+	tree.createMyTree(GV._Dict)
+	GV._Root.protocol('WM_DELETE_WINDOW', closeWindow)
+	GV._Root.mainloop()
+
+def closeWindow():
+	GV._StopThread = True
+	GV._Root.destroy()
+
+
+def initGlobalVar(inputdir="."):
+	GV._InputDir = inputdir
+	GV._KnowledgeSegment = GV._InputDir + "\\知识管理"
 
 if __name__ == "__main__":
-
+	global GV
+	
+	GV = GloableVariables()
 	try:
 		if os.path.exists( sys.argv[1] ):
-			_InputDir = sys.argv[1]
+			initGlobalVar(sys.argv[1])
 		else:
-			print(sys.argv[1]+": Path is not exist!")
+			initGlobalVar()
+			#print(sys.argv[1]+": Path is not exist!")
+			pass
 	except Exception as e:
-		print(e)
-
-	initDict(_InputDir+"\\theDict.json")
+		#print(e)
+		pass
+	
+	initDict(GV._InputDir+"\\theDict.json")
 	
 	#从TXTs中增加新的知识到字典中
-	addNewKeys(_InputDir)
+	addNewKeys(GV._KnowledgeSegment)
 	
 	if getRootKey()==True:
 		#创建知识列表用作打印
@@ -300,10 +304,12 @@ if __name__ == "__main__":
 		#显示阅读界面
 		drawGUI()
 		#根据最新的字典更新TXTs
-		restoreSrcTXT(_InputDir)
+		restoreSrcTXT(GV._KnowledgeSegment)
 		#保存最新的字典
-		#jsoner.writeJson(_InputDir+"\\theDict.json", _Dict)
+		#jsoner.writeJson(GV._InputDir+"\\theDict.json", GV._Dict)
 	else:
-		print("Please create root node file. For example, the filename should be ROOT-HMI 报警开发")
-		
+		#print("Please create root node file. For example, the filename should be ROOT-HMI 报警开发")
+		pass
+	
+
 
