@@ -1,0 +1,23 @@
+@how
+【用法】
+1、CCI读数在-100~+100之间，市场处于震荡阶段;
+2、CCI读数小于-100，市场处于超卖阶段;
+3、CCI读数大于+100，市场处于超买阶段
+【语法】
+double iCCI( string symbol, int timeframe, int period, int applied_price, int shift)
+1、symbol 指定货币对，NULL为默认当前货币对
+2、timeframe 时间周期，0为当前时间周期
+3、period 计算平均周期。默认选14
+4、applied_price 选择价格，默认选典型价PRICE_TYPICAL
+5、shift 指定柱值，0为当前柱，1为前一个柱，以此类推
+【代码】
+iCCI(NULL,0,14,PRICE_TYPICAL,0)
+
+@what
+iCCI商品通道指标(Commodity Channel Index)
+iCCI属于趋势指标，又叫顺势指标，能较准确的标示市场的超买超卖，适合短线操作。
+
+@question
+NA
+
+@
