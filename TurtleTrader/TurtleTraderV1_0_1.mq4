@@ -142,84 +142,86 @@ double ModeLotStep;
 //+------------------------------------------------------------------+
 
 int GetMarketInfo()
-  {
-   ModeLow = MarketInfo(Symbol(), MODE_LOW);
-   ModeHigh = MarketInfo(Symbol(), MODE_HIGH);
-   ModeTime = MarketInfo(Symbol(), MODE_TIME);
-   ModeBid = MarketInfo(Symbol(), MODE_BID);
-   ModeAsk = MarketInfo(Symbol(), MODE_ASK);
-   ModePoint = MarketInfo(Symbol(), MODE_POINT);
-   ModeDigits = MarketInfo(Symbol(), MODE_DIGITS);
-   ModeSpread = MarketInfo(Symbol(), MODE_SPREAD);
-   ModeStopLevel = MarketInfo(Symbol(), MODE_STOPLEVEL);
-   ModeLotSize = MarketInfo(Symbol(), MODE_LOTSIZE);
-   ModeTickValue = MarketInfo(Symbol(), MODE_TICKVALUE);
-   ModeTickSize = MarketInfo(Symbol(), MODE_TICKSIZE);
-   ModeSwapLong = MarketInfo(Symbol(), MODE_SWAPLONG);
-   ModeSwapShort = MarketInfo(Symbol(), MODE_SWAPSHORT);
-   ModeStarting = MarketInfo(Symbol(), MODE_STARTING);
-   ModeExpiration = MarketInfo(Symbol(), MODE_EXPIRATION);
-   ModeTradeAllowed = MarketInfo(Symbol(), MODE_TRADEALLOWED);
-   ModeMinLot = MarketInfo(Symbol(), MODE_MINLOT);
-   ModeLotStep = MarketInfo(Symbol(), MODE_LOTSTEP);
+{
+	ModeLow = MarketInfo(Symbol(), MODE_LOW);
+	ModeHigh = MarketInfo(Symbol(), MODE_HIGH);
+	ModeTime = MarketInfo(Symbol(), MODE_TIME);
+	ModeBid = MarketInfo(Symbol(), MODE_BID);
+	ModeAsk = MarketInfo(Symbol(), MODE_ASK);
+	ModePoint = MarketInfo(Symbol(), MODE_POINT);
+	ModeDigits = MarketInfo(Symbol(), MODE_DIGITS);
+	ModeSpread = MarketInfo(Symbol(), MODE_SPREAD);
+	ModeStopLevel = MarketInfo(Symbol(), MODE_STOPLEVEL);
+	ModeLotSize = MarketInfo(Symbol(), MODE_LOTSIZE);
+	ModeTickValue = MarketInfo(Symbol(), MODE_TICKVALUE);
+	ModeTickSize = MarketInfo(Symbol(), MODE_TICKSIZE);
+	ModeSwapLong = MarketInfo(Symbol(), MODE_SWAPLONG);
+	ModeSwapShort = MarketInfo(Symbol(), MODE_SWAPSHORT);
+	ModeStarting = MarketInfo(Symbol(), MODE_STARTING);
+	ModeExpiration = MarketInfo(Symbol(), MODE_EXPIRATION);
+	ModeTradeAllowed = MarketInfo(Symbol(), MODE_TRADEALLOWED);
+	ModeMinLot = MarketInfo(Symbol(), MODE_MINLOT);
+	ModeLotStep = MarketInfo(Symbol(), MODE_LOTSTEP);
 
-   // It is concluded information about the market
-   if ( ShowMarketInfo == True )
-     {
-       Print("ModeLow:",ModeLow);
-       Print("ModeHigh:",ModeHigh);
-       Print("ModeTime:",ModeTime);
-       Print("ModeBid:",ModeBid);
-       Print("ModeAsk:",ModeAsk);
-       Print("ModePoint:",ModePoint);
-       Print("ModeDigits:",ModeDigits);
-       Print("ModeSpread:",ModeSpread);
-       Print("ModeStopLevel:",ModeStopLevel);
-       Print("ModeLotSize:",ModeLotSize);
-       Print("ModeTickValue:",ModeTickValue);
-       Print("ModeTickSize:",ModeTickSize);
-       Print("ModeSwapLong:",ModeSwapLong);
-       Print("ModeSwapShort:",ModeSwapShort);
-       Print("ModeStarting:",ModeStarting);
-       Print("ModeExpiration:",ModeExpiration);
-       Print("ModeTradeAllowed:",ModeTradeAllowed);
-       Print("ModeMinLot:",ModeMinLot);
-       Print("ModeLotStep:",ModeLotStep);
-     }
-   return (0);
-  }
-
-
+	// It is concluded information about the market
+	if ( ShowMarketInfo == True )
+	{
+		Print("Show market information!")
+	/*
+		Print("ModeLow:",ModeLow);
+		Print("ModeHigh:",ModeHigh);
+		Print("ModeTime:",ModeTime);
+		Print("ModeBid:",ModeBid);
+		Print("ModeAsk:",ModeAsk);
+		Print("ModePoint:",ModePoint);
+		Print("ModeDigits:",ModeDigits);
+		Print("ModeSpread:",ModeSpread);
+		Print("ModeStopLevel:",ModeStopLevel);
+		Print("ModeLotSize:",ModeLotSize);
+		Print("ModeTickValue:",ModeTickValue);
+		Print("ModeTickSize:",ModeTickSize);
+		Print("ModeSwapLong:",ModeSwapLong);
+		Print("ModeSwapShort:",ModeSwapShort);
+		Print("ModeStarting:",ModeStarting);
+		Print("ModeExpiration:",ModeExpiration);
+		Print("ModeTradeAllowed:",ModeTradeAllowed);
+		Print("ModeMinLot:",ModeMinLot);
+		Print("ModeLotStep:",ModeLotStep);*/
+	}
+	return (0);
+}
 //+------------------------------------------------------------------+
 //|   Initialize Adviser                                             |
 //+------------------------------------------------------------------+
 int init()
-  {
-   Print("Ethan Wisdom Trade is Ready");
-   CCI_Status     = DECISION_UNKNOWN;
-   RSI_Status     = DECISION_UNKNOWN;
-   STOCH_Status   = DECISION_UNKNOWN;
-   
-   Decision       = DECISION_UNKNOWN;
-   PrevDecision   = DECISION_UNKNOWN;
-   CandleStatus   = DECISION_UNKNOWN;
-   
-   return(0);
-  }
+{
+	Print("Ethan Wisdom Trade is Ready");
+	CCI_Status     = DECISION_UNKNOWN;
+	RSI_Status     = DECISION_UNKNOWN;
+	STOCH_Status   = DECISION_UNKNOWN;
 
-
+	Decision       = DECISION_UNKNOWN;
+	PrevDecision   = DECISION_UNKNOWN;
+	CandleStatus   = DECISION_UNKNOWN;
+	
+	return(0);
+}
 //+------------------------------------------------------------------+
 //| Entering the market                                              |
 //+------------------------------------------------------------------+
 int EnterMarket()
 {
+	if ( ShowMarketInfo == True )
+	{
+		Print("Step3 Enter market");
+	}
 	double MAFastCurrent,MAFastPrev,MASlow,diffMA;
-//double CSell,CBuy;
+	//double CSell,CBuy;
 	double Lowest,Highest,diffFibo;
 	double P1000,P000,P236,P382,P500,P618,P786;
 	int CountLow=0;
 	int CountHigh=0;
-// If there is no means leave
+	// If there is no means leave
 	if(Lots == 0)
 	{
 		return (0);
@@ -235,14 +237,14 @@ int EnterMarket()
 		return(0);
 	}
     
-// Enter the market if there is no command to exit the market
+	// Enter the market if there is no command to exit the market
 	if(StopLoss>0){
 		StopLossIndex  =  StopLoss/Lots;
 	}
 	if(TakeProfit>0){
 		TakeProfitIndex   =  TakeProfit/Lots;
 	}
-//----- Fibonacci--------------
+	//----- Fibonacci--------------
 	Lowest = Low[iLowest(NULL,0,MODE_LOW,180,1)];
 	Highest = High[iHighest(NULL,0,MODE_HIGH,180,1)];
 	diffFibo= Highest-Lowest;
@@ -253,7 +255,7 @@ int EnterMarket()
 	P500  =  Lowest+(diffFibo*0.5);
 	P618  =  Lowest+(diffFibo*0.618);
 	P786  =  Lowest+(diffFibo*0.786);
-//---// Fibonacci--------------
+	//---// Fibonacci--------------
 	AskRSI();
 	AskStochastic();
 	AskCCI();
@@ -403,137 +405,130 @@ int EnterMarket()
 	return (0);
 }   
 //+------------------------------------------------------------------+
-//| TradeBuy                                                         |
+//| TradeBuy             		买单		                         |
 //+------------------------------------------------------------------+
-int TradeBuy(){
-   if(StopLoss>0){
-         StopLossValue  =  Bid-(Point*StopLossIndex*mMultiply);
-      }
-      if(TakeProfit>0){
-         TakeProfitValue   = Ask+(Point*TakeProfitIndex*mMultiply);
-      }
-      
-       //ticket = OrderSend(Symbol(),OP_BUY,Lots*mMultiply,Ask,3,StopLossValue,TakeProfitValue,"TurtleTrader(BUY)",0,3,Green);
-       ticket = OrderSend(Symbol(),OP_BUY,Lots*mMultiply,Ask,3,0,0,"TurtleTrader(BUY)",MAGIC,3,Green);
-       if(ticket  > 0){
-        if(OrderSelect(ticket,SELECT_BY_TICKET,MODE_TRADES)) {
-           OrderModify(OrderTicket(), OrderOpenPrice(), StopLossValue, TakeProfitValue, 3, Green);
+int TradeBuy()
+{
+	if(StopLoss>0){
+		StopLossValue  =  Bid-(Point*StopLossIndex*mMultiply);
 	}
-            PrevDecision=Decision;
-            Print("Buy order is opened: ",OrderOpenPrice());
-       }else{
-            Print("Error opening BUY order:",GetLastError());
-            
-       }
-       return(0);
+	if(TakeProfit>0){
+		TakeProfitValue   = Ask+(Point*TakeProfitIndex*mMultiply);
+	}
+      
+	//ticket = OrderSend(Symbol(),OP_BUY,Lots*mMultiply,Ask,3,StopLossValue,TakeProfitValue,"TurtleTrader(BUY)",0,3,Green);
+	ticket = OrderSend(Symbol(),OP_BUY,Lots*mMultiply,Ask,3,0,0,"TurtleTrader(BUY)",MAGIC,3,Green);
+	if(ticket  > 0){
+		if(OrderSelect(ticket,SELECT_BY_TICKET,MODE_TRADES)) {
+			OrderModify(OrderTicket(), OrderOpenPrice(), StopLossValue, TakeProfitValue, 3, Green);
+		}
+		PrevDecision=Decision;
+		Print("Buy order is opened: ",OrderOpenPrice());
+	}else{
+		Print("Error opening BUY order:",GetLastError());
+	}
+	return(0);
 }
 //+------------------------------------------------------------------+
-//| Trade Sell                                                       |
+//| Trade Sell                 卖单                                  |
 //+------------------------------------------------------------------+
-int TradeSell(){
-      if(StopLoss>0){
-         StopLossValue  =  Bid+(Point*StopLossIndex*mMultiply);
-      }
-      if(TakeProfit>0){
-         TakeProfitValue   = Ask-(Point*TakeProfitIndex*mMultiply);
-      }
+int TradeSell()
+{
+	if(StopLoss>0){
+		StopLossValue =  Bid+(Point*StopLossIndex*mMultiply);
+	}
+	if(TakeProfit>0){
+		TakeProfitValue = Ask-(Point*TakeProfitIndex*mMultiply);
+	}
       
-      //ticket = OrderSend(Symbol(),OP_SELL,Lots*mMultiply,Bid,3,StopLossValue,TakeProfitValue,"TurtleTrader(SELL)",0,3,Red);
-      ticket = OrderSend(Symbol(),OP_SELL,Lots*mMultiply,Bid,3,0,0,"TurtleTrader(SELL)",MAGIC,3,Red);
-      if(ticket  > 0){
-         if(OrderSelect(ticket,SELECT_BY_TICKET,MODE_TRADES)) {
+	//ticket = OrderSend(Symbol(),OP_SELL,Lots*mMultiply,Bid,3,StopLossValue,TakeProfitValue,"TurtleTrader(SELL)",0,3,Red);
+	ticket = OrderSend(Symbol(),OP_SELL,Lots*mMultiply,Bid,3,0,0,"TurtleTrader(SELL)",MAGIC,3,Red);
+	if(ticket > 0){
+		if(OrderSelect(ticket,SELECT_BY_TICKET,MODE_TRADES)) {
             OrderModify(OrderTicket(), OrderOpenPrice(), StopLossValue, TakeProfitValue, 3, Green);
-         }
-         PrevDecision=Decision;
-         Print("Sell order is opened: ",OrderOpenPrice());
-      }else{
-         Print("Error opening SELL order:",GetLastError());
-         
-      }
-      return(0);
+		}
+		PrevDecision=Decision;
+		Print("Sell order is opened: ",OrderOpenPrice());
+	}else{
+		Print("Error opening SELL order:",GetLastError());
+	}
+	return(0);
 }
   
 //+------------------------------------------------------------------+
-//| Ask Stochastic                                                   |
+//| Ask Stochastic        随机震荡指标                               |
 //+------------------------------------------------------------------+
 int AskStochastic()
 {
-   CHOCurrent = iCustom(NULL,0,"CHO",CHOTime,3,0,1,0);
-   CHOPrevious = iCustom(NULL,0,"CHO",CHOTime,3,0,1,1);
+	CHOCurrent = iCustom(NULL,0,"CHO",CHOTime,3,0,1,0);
+	CHOPrevious = iCustom(NULL,0,"CHO",CHOTime,3,0,1,1);
   
-      // STOCHASTIC VALUE 
-   STOCHCurrent = iStochastic(NULL,0,StoKperiod,StoDperiod,StoSlowing,MODE_SMA,0,MODE_MAIN,0);
-   STOCHPrevious = iStochastic(NULL,0,StoKperiod,StoDperiod,StoSlowing,MODE_SMA,0,MODE_MAIN,1);
+	// STOCHASTIC VALUE 
+	STOCHCurrent = iStochastic(NULL,0,StoKperiod,StoDperiod,StoSlowing,MODE_SMA,0,MODE_MAIN,0);
+	STOCHPrevious = iStochastic(NULL,0,StoKperiod,StoDperiod,StoSlowing,MODE_SMA,0,MODE_MAIN,1);
    
-  // STOCH_Status   =  DECISION_UNKNOWN;
-   
-   if(STOCHCurrent>50 && STOCHCurrent<88 ){
-         if(CHOCurrent>10){
-            STOCH_Status   =  DECISION_BUY;
+	// STOCH_Status   =  DECISION_UNKNOWN;
+	if(STOCHCurrent>50 && STOCHCurrent<88 ){
+		if(CHOCurrent>10){
+			STOCH_Status   =  DECISION_BUY;
             
-         }else if(CHOCurrent<-10){
-            STOCH_Status   =  DECISION_SELL;
-           
-        }
-   }else if(STOCHCurrent<=12){
-        STOCH_Status   =  DECISION_SELL;
+		}else if(CHOCurrent<-10){
+			STOCH_Status   =  DECISION_SELL;
+		}
+	}else if(STOCHCurrent<=12){
+		STOCH_Status   =  DECISION_SELL;
         
-   }else if(STOCHCurrent>=88){
-        STOCH_Status   =  DECISION_BUY;
+	}else if(STOCHCurrent>=88){
+		STOCH_Status   =  DECISION_BUY;
         
-   }else if(STOCHCurrent<50 && STOCHCurrent>12){
-        if(CHOCurrent>10){
-            STOCH_Status   =  DECISION_BUY;
+	}else if(STOCHCurrent<50 && STOCHCurrent>12){
+		if(CHOCurrent>10){
+			STOCH_Status   =  DECISION_BUY;
             
-         }else if(CHOCurrent<-10){
-            STOCH_Status   =  DECISION_SELL;
-            
-        }
-   }
-   return (0);
+		}else if(CHOCurrent<-10){
+			STOCH_Status   =  DECISION_SELL;
+		}
+	}
+	return (0);
 }
 
 //-------------------------------------------------------------------  
 
-
-
 //+------------------------------------------------------------------+
-//| Ask CCI                                                       |
+//| Ask CCI           顺势指标                                       |
 //+------------------------------------------------------------------+
 int AskCCI()
 {
-      // CCI VALUE 
-   CCICurrent = iCCI(NULL,0,CCITime,PRICE_TYPICAL,0);
-   CCIPrevious = iCCI(NULL,0,CCITime,PRICE_TYPICAL,1);
-//   CCI_Status   =  DECISION_UNKNOWN;
+	// CCI VALUE 
+	CCICurrent = iCCI(NULL,0,CCITime,PRICE_TYPICAL,0);
+	CCIPrevious = iCCI(NULL,0,CCITime,PRICE_TYPICAL,1);
+	// CCI_Status   =  DECISION_UNKNOWN;
    
-   if((CCICurrent>CCIPrevious)&&(CCICurrent<75)){
-        CCI_Status   =  DECISION_BUY;
-       
-   }else if((CCICurrent<CCIPrevious)&&(CCICurrent>=-75)){
-        CCI_Status   =  DECISION_SELL;
-        
-   }
-   return (0);
+	if((CCICurrent>CCIPrevious)&&(CCICurrent<75)){
+		CCI_Status   =  DECISION_BUY;
+	}else if((CCICurrent<CCIPrevious)&&(CCICurrent>=-75)){
+		CCI_Status   =  DECISION_SELL;
+	}
+	return (0);
 }
 
 //------------------------------------------------------------------- 
-
+//+------------------------------------------------------------------+
+//| Ask RSI           相对强弱指标(http://www.myeatrade.com/zh/191/) |
+//+------------------------------------------------------------------+
 int AskRSI()
 {
-      // RSI VALUE 
-   RSICurrent = iRSI(NULL,0,RSITime,PRICE_CLOSE,0);
-   RSIPrevious = iRSI(NULL,0,RSITime,PRICE_CLOSE,1);
-   RSI_Status   =  DECISION_UNKNOWN;
+	// RSI VALUE 
+	RSICurrent  = iRSI(NULL,0,RSITime,PRICE_CLOSE,0);
+	RSIPrevious = iRSI(NULL,0,RSITime,PRICE_CLOSE,1);
+	RSI_Status  =  DECISION_UNKNOWN;
    
-   if(RSICurrent>=50){
-        RSI_Status   =  DECISION_BUY;
-        
-   }else if(RSICurrent<50){
-        RSI_Status   =  DECISION_SELL;
-        
-   }
-   return (0);
+	if(RSICurrent>=50){
+		RSI_Status   =  DECISION_BUY;
+	}else if(RSICurrent<50){
+		RSI_Status   =  DECISION_SELL;
+	}
+	return (0);
 }
 
 //------------------------------------------------------------------- 
@@ -607,274 +602,218 @@ int ExitMarket ()
 
 
 //+--------------------------------------------------------------------------+
-//| Ask Candle                                                               |
+//| Ask Candle             查询蜡烛图                                        |
 //+--------------------------------------------------------------------------+
- int AskCandle(){
-   //-----------------------------------------------------------------
-   // Bar checks
-   //-----------------------------------------------------------------
-   double Range, AvgRange;
-   int counter, setalert;
-   static datetime prevtime = 0;
-   int shift;
-   int shift1;
-   int shift2;
-   int shift3;
-   string pattern, period;
-   int setPattern = 0;
-   int alert = 0;
-  // int arrowShift;
-   //int textShift;
-   double O, O1, O2, C, C1, C2, L, L1, L2, H, H1, H2;
+int AskCandle(){
+	//-----------------------------------------------------------------
+	// Bar checks
+	//-----------------------------------------------------------------
+	double Range, AvgRange;
+	int counter, setalert;
+	static datetime prevtime = 0;
+	int shift;
+	int shift1;
+	int shift2;
+	int shift3;
+	string pattern, period;
+	int setPattern = 0;
+	int alert = 0;
+	// int arrowShift;
+	//int textShift;
+	double O, O1, O2, C, C1, C2, L, L1, L2, H, H1, H2;
      
-   if(prevtime == Time[0]) {
-      return(0);
-   }
-   prevtime = Time[0];
-   //ModePoint
-   switch (Period()) {
-      case 1:
-         period = "M1";
-         break;
-      case 5:
-         period = "M5";
-         break;
-      case 15:
-         period = "M15";
-         break;
-      case 30:
-         period = "M30";
-         break;      
-      case 60:
-         period = "H1";
-         break;
-      case 240:
-         period = "H4";
-         break;
-      case 1440:
-         period = "D1";
-         break;
-      case 10080:
-         period = "W1";
-         break;
-      case 43200:
-         period = "MN";
-         break;
-   }
+	if(prevtime == Time[0]) {
+		return(0);
+	}
+	prevtime = Time[0];
+	//ModePoint
+	switch (Period()) {
+		case 1:
+			period = "M1";
+			break;
+		case 5:
+			period = "M5";
+			break;
+		case 15:
+			period = "M15";
+			break;
+		case 30:
+			period = "M30";
+			break;      
+		case 60:
+			period = "H1";
+			break;
+		case 240:
+			period = "H4";
+			break;
+		case 1440:
+			period = "D1";
+			break;
+		case 10080:
+			period = "W1";
+			break;
+		case 43200:
+			period = "MN";
+			break;
+	}
    
-   /*for (int j = 0; j < Bars; j++) { 
-         PatternText[j] = "pattern-" + j;
-   }*/
+	/*for (int j = 0; j < Bars; j++) { 
+		PatternText[j] = "pattern-" + j;
+	}*/
    
-   //for (shift = 0; shift < Bars; shift++) {
+	//for (shift = 0; shift < Bars; shift++) {
       
-      setalert = 0;
-      counter=shift;
-      Range=0;
-      AvgRange=0;
-      for (counter=shift ;counter<=shift+9;counter++) {
-         AvgRange=AvgRange+MathAbs(High[counter]-Low[counter]);
-      }
-      Range=AvgRange/10;
-      shift1 = shift + 1;
-      shift2 = shift + 2;
-      shift3 = shift + 3;
+	setalert = 0;
+	counter=shift;
+	Range=0;
+	AvgRange=0;
+	for (counter=shift ;counter<=shift+9;counter++) {
+		AvgRange=AvgRange+MathAbs(High[counter]-Low[counter]);
+	}
+	Range=AvgRange/10;
+	shift1 = shift + 1;
+	shift2 = shift + 2;
+	shift3 = shift + 3;
       
-      O = Open[shift1];
-      O1 = Open[shift2];
-      O2 = Open[shift3];
-      H = High[shift1];
-      H1 = High[shift2];
-      H2 = High[shift3];
-      L = Low[shift1];
-      L1 = Low[shift2];
-      L2 = Low[shift3];
-      C = Close[shift1];
-      C1 = Close[shift2];
-      C2 = Close[shift3];
-      CandleStatus   =  DECISION_UNKNOWN;
-
-      // Bearish Patterns
-   
-      // Check for Bearish Engulfing pattern
-      if ((C1>O1)&&(O>C)&&(O>=C1)&&(O1>=C)&&((O-C)>(C1-O1))) {
-          pattern = "Bearish Engulfing Pattern";
-          setalert = 1;
-         
-      }
-      
-      // Check for a Three Outside Down pattern
-      if ((C2>O2)&&(O1>C1)&&(O1>=C2)&&(O2>=C1)&&((O1-C1)>(C2-O2))&&(O>C)&&(C<C1)) {
-           pattern="Three Oustide Down Pattern";
-           setalert = 1;
-         
-      }
-      
-      // Check for a Dark Cloud Cover pattern
-      if ((C1>O1)&&(((C1+O1)/2)>C)&&(O>C)&&(O>C1)&&(C>O1)&&((O-C)/(0.001+(H-L))>0.6)) {
-            pattern="Dark Cloud Cover Pattern";
-            setalert = 1;
-         
-      }
-      
-      // Check for Evening Doji Star pattern
-      if ((C2>O2)&&((C2-O2)/(0.001+H2-L2)>0.6)&&(C2<O1)&&(C1>O1)&&((H1-L1)>(3*(C1-O1)))&&(O>C)&&(O<O1)) {
-           pattern="Evening Doji Star Pattern";
-           setalert = 1;
-         
-      }
-      
-      // Check for Bearish Harami pattern
-      
-      if ((C1>O1)&&(O>C)&&(O<=C1)&&(O1<=C)&&((O-C)<(C1-O1))) {
-            pattern="Bearish Harami Pattern";
-            setalert = 1;
-         
-      }
-      
-      // Check for Three Inside Down pattern
-      
-      if ((C2>O2)&&(O1>C1)&&(O1<=C2)&&(O2<=C1)&&((O1-C1)<(C2-O2))&&(O>C)&&(C<C1)&&(O<O1)) {
-            pattern="Three Inside Down Pattern";
-            setalert = 1;
-         
-      }
-      
-      // Check for Three Black Crows pattern
-      
-      if ((O > C * 1.01)&&(O1 > C1 * 1.01)&&(O2 > C2*1.01)&&(C < C1)&&(C1 < C2)&&(O > C1)&&(O < O1)&&(O1 > C2)&&(O1 < O2)&&(((C - L)/(H - L+0.000001))<0.2)&&(((C1 - L1)/(H1 - L1+0.000001))<0.2)&&(((C2 - L2)/(H2 - L2+0.000001))<0.2)){
-            pattern="Three Black Crows Pattern";
-            setalert = 1;
-            alert=2;
-         
-      }
-      // Check for Evening Star Pattern
-      
-      if ((C2>O2)&&((C2-O2)/(0.001+H2-L2)>0.6)&&(C2<O1)&&(C1>O1)&&((H1-L1)>(3*(C1-O1)))&&(O>C)&&(O<O1)) {
-            pattern = "Evening Star Pattern";
-            setalert = 1;
-         
-      }
-      if(setalert==1){
-         CandleStatus   =  DECISION_SELL;
-        // Alert(Symbol(), " ", period, " ", pattern);
-         setalert = 0;
-         return(alert);      
-      }
-   // End of Bearish Patterns
-   
-   // Bullish Patterns
-   
-      // Check for Bullish Engulfing pattern
-      
-      if ((O1>C1)&&(C>O)&&(C>=O1)&&(C1>=O)&&((C-O)>(O1-C1))) {
-            pattern="Bullish Engulfing Pattern";
-            setalert = 1;
-         
-      }
-      
-      // Check for Three Outside Up pattern
-      
-      if ((O2>C2)&&(C1>O1)&&(C1>=O2)&&(C2>=O1)&&((C1-O1)>(O2-C2))&&(C>O)&&(C>C1)) {
-            pattern="Three Outside Up Pattern";
-            setalert = 1;
-         
-      }
-      
-      // Check for Bullish Harami pattern
-      
-      if ((O1>C1)&&(C>O)&&(C<=O1)&&(C1<=O)&&((C-O)<(O1-C1))) {
-            pattern="Bullish Harami Pattern";
-            setalert = 1;
-         
-      }
-      
-      // Check for Three Inside Up pattern
-      
-      if ((O2>C2)&&(C1>O1)&&(C1<=O2)&&(C2<=O1)&&((C1-O1)<(O2-C2))&&(C>O)&&(C>C1)&&(O>O1)) {
-            pattern="Three Inside Up Pattern";
-            setalert = 1;
-         
-      }
-      
-      // Check for Piercing Line pattern
-      
-      if ((C1<O1)&&(((O1+C1)/2)<C)&&(O<C)&&(O<C1)&&(C<O1)&&((C-O)/(0.001+(H-L))>0.6)) {
-            pattern="Piercing Line Pattern";
-            setalert = 1;
-         
-      }
-      
-      // Check for Three White Soldiers pattern
-      
-      if ((C>O*1.01)&&(C1>O1*1.01)&&(C2>O2*1.01)&&(C>C1)&&(C1>C2)&&(O<C1)&&(O>O1)&&(O1<C2)&&(O1>O2)&&(((H-C)/(H-L+0.000001))<0.2)&&(((H1-C1)/(H1-L1+0.000001))<0.2)&&(((H2-C2)/(H2-L2+0.000001))<0.2)) {
-            pattern="Three White Soldiers Pattern";
-            setalert = 1;
-            alert =  1;
-         
-      }
-      
-      // Check for Morning Doji Star
-      
-      if ((O2>C2)&&((O2-C2)/(0.001+H2-L2)>0.6)&&(C2>O1)&&(O1>C1)&&((H1-L1)>(3*(C1-O1)))&&(C>O)&&(O>O1)) {
-            pattern="Morning Doji Star Pattern";
-            setalert = 1;
-         
-      }
-      if(setalert==1){
-         CandleStatus   =  DECISION_BUY;
-         
-         setalert = 0;
-         return(alert);      
-      }
-      
-      
+	O = Open[shift1];
+	O1 = Open[shift2];
+	O2 = Open[shift3];
+	H = High[shift1];
+	H1 = High[shift2];
+	H2 = High[shift3];
+	L = Low[shift1];
+	L1 = Low[shift2];
+	L2 = Low[shift3];
+	C = Close[shift1];
+	C1 = Close[shift2];
+	C2 = Close[shift3];
+	CandleStatus   =  DECISION_UNKNOWN;
+	// Bearish Patterns
+	// Check for Bearish Engulfing pattern
+	if ((C1>O1)&&(O>C)&&(O>=C1)&&(O1>=C)&&((O-C)>(C1-O1))) {
+		pattern = "Bearish Engulfing Pattern";
+		setalert = 1;
+	}
+	// Check for a Three Outside Down pattern
+	if ((C2>O2)&&(O1>C1)&&(O1>=C2)&&(O2>=C1)&&((O1-C1)>(C2-O2))&&(O>C)&&(C<C1)) {
+		pattern="Three Oustide Down Pattern";
+		setalert = 1;
+	}
+	// Check for a Dark Cloud Cover pattern
+	if ((C1>O1)&&(((C1+O1)/2)>C)&&(O>C)&&(O>C1)&&(C>O1)&&((O-C)/(0.001+(H-L))>0.6)) {
+		pattern="Dark Cloud Cover Pattern";
+		setalert = 1;
+	}
+	// Check for Evening Doji Star pattern
+	if ((C2>O2)&&((C2-O2)/(0.001+H2-L2)>0.6)&&(C2<O1)&&(C1>O1)&&((H1-L1)>(3*(C1-O1)))&&(O>C)&&(O<O1)) {
+		pattern="Evening Doji Star Pattern";
+		setalert = 1;
+	}
+	// Check for Bearish Harami pattern
+	if ((C1>O1)&&(O>C)&&(O<=C1)&&(O1<=C)&&((O-C)<(C1-O1))) {
+		pattern="Bearish Harami Pattern";
+		setalert = 1;
+	}
+	// Check for Three Inside Down pattern
+	if ((C2>O2)&&(O1>C1)&&(O1<=C2)&&(O2<=C1)&&((O1-C1)<(C2-O2))&&(O>C)&&(C<C1)&&(O<O1)) {
+		pattern="Three Inside Down Pattern";
+		setalert = 1;
+	}
+	// Check for Three Black Crows pattern
+	if ((O > C * 1.01)&&(O1 > C1 * 1.01)&&(O2 > C2*1.01)&&(C < C1)&&(C1 < C2)&&(O > C1)&&(O < O1)&&(O1 > C2)&&(O1 < O2)&&(((C - L)/(H - L+0.000001))<0.2)&&(((C1 - L1)/(H1 - L1+0.000001))<0.2)&&(((C2 - L2)/(H2 - L2+0.000001))<0.2)){
+		pattern="Three Black Crows Pattern";
+		setalert = 1;
+		alert=2;
+	}
+	// Check for Evening Star Pattern
+	if ((C2>O2)&&((C2-O2)/(0.001+H2-L2)>0.6)&&(C2<O1)&&(C1>O1)&&((H1-L1)>(3*(C1-O1)))&&(O>C)&&(O<O1)) {
+		pattern = "Evening Star Pattern";
+		setalert = 1;
+	}
+	if(setalert==1){
+		CandleStatus   =  DECISION_SELL;
+		// Alert(Symbol(), " ", period, " ", pattern);
+		setalert = 0;
+		return(alert);      
+	}
+	// End of Bearish Patterns
+	// Bullish Patterns
+	// Check for Bullish Engulfing pattern
+	if ((O1>C1)&&(C>O)&&(C>=O1)&&(C1>=O)&&((C-O)>(O1-C1))) {
+		pattern="Bullish Engulfing Pattern";
+		setalert = 1;
+	}
+	// Check for Three Outside Up pattern
+	if ((O2>C2)&&(C1>O1)&&(C1>=O2)&&(C2>=O1)&&((C1-O1)>(O2-C2))&&(C>O)&&(C>C1)) {
+		pattern="Three Outside Up Pattern";
+		setalert = 1;
+	}
+	// Check for Bullish Harami pattern
+	if ((O1>C1)&&(C>O)&&(C<=O1)&&(C1<=O)&&((C-O)<(O1-C1))) {
+		pattern="Bullish Harami Pattern";
+		setalert = 1;
+	}
+	// Check for Three Inside Up pattern
+	if ((O2>C2)&&(C1>O1)&&(C1<=O2)&&(C2<=O1)&&((C1-O1)<(O2-C2))&&(C>O)&&(C>C1)&&(O>O1)) {
+		pattern="Three Inside Up Pattern";
+		setalert = 1;
+	}
+	// Check for Piercing Line pattern
+	if ((C1<O1)&&(((O1+C1)/2)<C)&&(O<C)&&(O<C1)&&(C<O1)&&((C-O)/(0.001+(H-L))>0.6)) {
+		pattern="Piercing Line Pattern";
+		setalert = 1;
+	}
+	// Check for Three White Soldiers pattern
+	if ((C>O*1.01)&&(C1>O1*1.01)&&(C2>O2*1.01)&&(C>C1)&&(C1>C2)&&(O<C1)&&(O>O1)&&(O1<C2)&&(O1>O2)&&(((H-C)/(H-L+0.000001))<0.2)&&(((H1-C1)/(H1-L1+0.000001))<0.2)&&(((H2-C2)/(H2-L2+0.000001))<0.2)) {
+		pattern="Three White Soldiers Pattern";
+		setalert = 1;
+		alert =  1;
+	}
+	// Check for Morning Doji Star
+	if ((O2>C2)&&((O2-C2)/(0.001+H2-L2)>0.6)&&(C2>O1)&&(O1>C1)&&((H1-L1)>(3*(C1-O1)))&&(C>O)&&(O>O1)) {
+		pattern="Morning Doji Star Pattern";
+		setalert = 1;
+	}
+	if(setalert==1){
+		CandleStatus   =  DECISION_BUY;
+		setalert = 0;
+		return(alert);      
+	}
 //   } // End of for loop
-     
-   
-      
    return(0);
-
    //-------------------------------------------------------------------
-   
-   
- }
+}
  //+-------------------------------------------------------------------------+
- //+      Ask Trend or Side Way                                              |
+ //+      Ask Trend or Side Way(平均趋向指数)                                |
  //+-------------------------------------------------------------------------+
 int AskADX()
 {
- //set ADX Trend
-   int Trend = 0; // 1 = to buy , 2 = to sell
-   double ADXMinus = 0;
-   double ADXPlus = 0;
-   int ADXTrend = 0;  //1 = buy, 2 = sell
+	//set ADX Trend
+	int Trend = 0; // 1 = to buy , 2 = to sell
+	double ADXMinus = 0;
+	double ADXPlus = 0;
+	int ADXTrend = 0;  //1 = buy, 2 = sell
  
-   ADXMinus = iADX(Symbol(),0,ADX,PRICE_LOW,MODE_MINUSDI,0);
-   ADXPlus = iADX(Symbol(),0,ADX,PRICE_LOW,MODE_PLUSDI,0);
+	ADXMinus = iADX(Symbol(),0,ADX,PRICE_LOW,MODE_MINUSDI,0);
+	ADXPlus = iADX(Symbol(),0,ADX,PRICE_LOW,MODE_PLUSDI,0);
    
-   //ADX Main Value
-   double ADXMain = 0;
-   ADXMain = iADX(Symbol(),0,ADX,PRICE_LOW,MODE_MAIN,0);
-   double ADXMain1 = 0;
-   ADXMain1 = iADX(Symbol(),0,ADX,PRICE_LOW,MODE_MAIN,1);
+	//ADX Main Value
+	double ADXMain = 0;
+	ADXMain = iADX(Symbol(),0,ADX,PRICE_LOW,MODE_MAIN,0);
+	double ADXMain1 = 0;
+	ADXMain1 = iADX(Symbol(),0,ADX,PRICE_LOW,MODE_MAIN,1);
    
-   //end ADX Main Value
-   
-   if (ADXMinus < ADXPlus && ADXMain > ADXMain1 && ADXMain1>20 && ADXMain1<40)
-   {
-      Trend = 1;
-   }
-   else if (ADXMinus > ADXPlus && ADXMain > ADXMain1 && ADXMain1>20 && ADXMain1<40) 
-   {
-      Trend = 2;
-   }
-   //end ADX
-   
-
-
-   return (Trend);
-
+	//end ADX Main Value
+	if (ADXMinus < ADXPlus && ADXMain > ADXMain1 && ADXMain1>20 && ADXMain1<40)
+	{
+		Trend = 1;
+	}
+	else if (ADXMinus > ADXPlus && ADXMain > ADXMain1 && ADXMain1>20 && ADXMain1<40) 
+	{
+		Trend = 2;
+	}
+	//end ADX
+	return (Trend);
 }
  
  
@@ -958,9 +897,20 @@ int Trade ()
 	}else{
 		Decision = DECISION_UNKNOWN;
 	}
+	
+	if ( ShowMarketInfo == True )
+	{
+		Print("Step2 Decision:",Decision);
+		Print("CCI_Status:",CCI_Status);
+		Print("RSI_Status:",RSI_Status);
+		Print("STOCH_Status:",STOCH_Status);
+		Print("CandleStatus:",CandleStatus);
+		Print("AskADX():",AskADX());
+	}
 
-//---- If open orders on simaolu no chance of entering the market
-//---- Warning - it is important that the order of consideration of technologies to enter the market (MoneyTrain, LogicTrading, Pipsator)
+	//---- If open orders on simaolu no chance of entering the market
+	//---- Warning - it is important that the order of consideration of technologies to enter the market (MoneyTrain, LogicTrading, Pipsator)
+	//--- 为类似时间序列的缓冲区设置指标
 	ArraySetAsSeries(New_Time,true);
    
 	copied = CopyTime(_Symbol,_Period,0,1,New_Time);
@@ -969,7 +919,7 @@ int Trade ()
 			Old_Time=New_Time[0];
 			IsNewBar=true;
 		}else{
-		IsNewBar=false;
+			IsNewBar=false;
 		}
 	}
 	if(FoundOpenedOrder == false)
@@ -983,12 +933,10 @@ int Trade ()
 				return(0);  
 			}
 		}
-	}
-	else
-	{
+	}else{
 		ExitMarket();
 	}
-//---- End of processing I / O from the market
+	//---- End of processing I / O from the market
 	return(0);
 }
  //+-----------------------------------------------------------------+
@@ -1067,8 +1015,6 @@ int checkForRecovery(){
 	return(0);
 }
 //-------------------------------------------------------------------------
- 
-  
 //+------------------------------------------------------------------+
 //| Check Exist Order     检查EA是否已经开单                         |
 //+------------------------------------------------------------------+
@@ -1089,67 +1035,65 @@ int FindSymbolOrder()
 	return (0);
 }
 //+------------------------------------------------------------------+
-//| Calculation of lot quantity                                      |
+//| Calculation of lot quantity(自动计算仓位)                        |
 //+------------------------------------------------------------------+
-
 int SetAutoLots()
-  {
-   GetMarketInfo();
-   // Sum of the calculation
-   double S;
-   // Cost of the lot
-  // double L;
-   // Lot quantity
-   //double k;
-   // Cost of one pip
-   if( AutoLots == true )
-     {
-       if(SymbolsCount != OrdersTotal())
-         {
-           S = (AccountBalance()* Risk - AccountMargin()) * AccountLeverage() / 
+{
+	GetMarketInfo();
+	// Sum of the calculation
+	double S;
+	// Cost of the lot
+	// double L;
+	// Lot quantity
+	//double k;
+	// Cost of one pip
+	if( AutoLots == true )
+	{
+		if(SymbolsCount != OrdersTotal())
+		{
+			S = (AccountBalance()* Risk - AccountMargin()) * AccountLeverage() / 
                 (SymbolsCount - OrdersTotal());
-         }
-       else
-         {
-           S = 0;
-         }
-       // We check, does currency appear to be EURUSD?
-       if(StringFind( Symbol(), "USD") == -1)
-         {
-           if(StringFind( Symbol(), "EUR") == -1)
-             {
-               S = 0;
-             }
-           else
-             {
-               S = S / iClose ("EURUSD", 0, 0);
-               if(StringFind( Symbol(), "EUR") != 0)
-                  {
-                  S /= Bid;
-                  }
-             }
-         }
-       else
-         {
-           if(StringFind(Symbol(), "USD") != 0)
-             {
-               S /= Bid;
-             }
-         }
-       S /= ModeLotSize;
-       S -= ModeMinLot;
-       S /= ModeLotStep;
-       S = NormalizeDouble(S, 0);
-       S *= ModeLotStep;
-       S += ModeMinLot;
-       Lots = S;
-       if (Lots>MAXLots){ Lots=MAXLots; }
-       
-     }
-   return (0);
-  }
+		}
+		else
+		{
+			S = 0;
+		}
+		// We check, does currency appear to be EURUSD?
+		if(StringFind( Symbol(), "USD") == -1)
+		{
+			if(StringFind( Symbol(), "EUR") == -1)
+			{
+				S = 0;
+			}
+			else
+			{
+				S = S / iClose ("EURUSD", 0, 0);
+				if(StringFind( Symbol(), "EUR") != 0)
+				{
+					S /= Bid;
+				}
+			}
+		}
+		else
+		{
+			if(StringFind(Symbol(), "USD") != 0)
+			{
+				S /= Bid;
+			}
+		}
+		S /= ModeLotSize;
+		S -= ModeMinLot;
+		S /= ModeLotStep;
+		S = NormalizeDouble(S, 0);
+		S *= ModeLotStep;
+		S += ModeMinLot;
+		Lots = S;
+		if (Lots>MAXLots){ Lots=MAXLots; }
+	}
+	return (0);
+}
 //+------------------------------------------------------------------+
-//| expert start function (Trading)                                 |
+//| expert start function (Trading)                                  |
 //+------------------------------------------------------------------+
 int start()
 {
@@ -1158,10 +1102,13 @@ int start()
 	}
 	GetMarketInfo();	//获取市场最新数据
 	SetAutoLots();	//自动计算仓位
+	if ( ShowMarketInfo == True )
+	{
+		Print("Step1 Lots:",Lots);
+	}
 	if(BeforeLoss<AccountBalance()){	//记录最高盈利
 		BeforeLoss=AccountBalance();
 		mMultiply=1;
-      
 	}
 	Trade();
 	SaveStat();
