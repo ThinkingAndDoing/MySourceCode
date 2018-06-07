@@ -23,7 +23,7 @@ extern string Autor = "Thrinai Chankong";
 extern string Desc1 = "If you want to donate me";
 extern string Desc2 = "can pay to paypal: thrinai@hotmail.com";
 extern string Desc3 = "Thanks a lot";
-extern bool ShowMarketInfo = false;
+extern bool ShowMarketInfo = true;
 extern double SlipPage = 1; // Slippage rates
 extern double Lots = 0.1; // Number of lots
 extern double StopLoss = 0;
@@ -39,8 +39,8 @@ extern double MAXLots = 10;
 extern double SymbolsCount = 2;
 extern double Risk = 0.7;
 extern int PauseMin  =  0;
-extern int FromHourStop1  =  25;
-extern int ToHourStop1  =  25;
+extern int FromHourStop1  =  0;
+extern int ToHourStop1  =  21;
 extern int FromHourStop2  =  25;
 extern int ToHourStop2  =  25;
 extern int FromHourStop3  =  25;
@@ -166,7 +166,7 @@ int GetMarketInfo()
 	// It is concluded information about the market
 	if ( ShowMarketInfo == True )
 	{
-		Print("Show market information!")
+		Print("Show market information!");
 	/*
 		Print("ModeLow:",ModeLow);
 		Print("ModeHigh:",ModeHigh);
@@ -846,7 +846,17 @@ int Trade ()
 	AskRSI();
 	AskStochastic();
 	AskCandle();
-  
+	
+	if ( ShowMarketInfo == True )
+	{
+		Print("Step2 Decision:",Decision);
+		Print("CCI_Status:",CCI_Status);
+		Print("RSI_Status:",RSI_Status);
+		Print("STOCH_Status:",STOCH_Status);
+		Print("CandleStatus:",CandleStatus);
+		Print("AskADX():",AskADX());
+	}
+
 	if(CCI_Status==DECISION_BUY){
 		ToBuy=ToBuy+1;
 		CCI_Status=DECISION_UNKNOWN;
@@ -896,16 +906,6 @@ int Trade ()
 		Decision = DECISION_BUY ;
 	}else{
 		Decision = DECISION_UNKNOWN;
-	}
-	
-	if ( ShowMarketInfo == True )
-	{
-		Print("Step2 Decision:",Decision);
-		Print("CCI_Status:",CCI_Status);
-		Print("RSI_Status:",RSI_Status);
-		Print("STOCH_Status:",STOCH_Status);
-		Print("CandleStatus:",CandleStatus);
-		Print("AskADX():",AskADX());
 	}
 
 	//---- If open orders on simaolu no chance of entering the market
