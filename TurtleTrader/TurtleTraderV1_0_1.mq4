@@ -213,110 +213,96 @@ int init()
 //+------------------------------------------------------------------+
 int EnterMarket()
 {
-   double MAFastCurrent,MAFastPrev,MASlow,diffMA;
-   //double CSell,CBuy;
-   double Lowest,Highest,diffFibo;
-   double P1000,P000,P236,P382,P500,P618,P786;
-   int CountLow=0;
-   int CountHigh=0;
+	double MAFastCurrent,MAFastPrev,MASlow,diffMA;
+//double CSell,CBuy;
+	double Lowest,Highest,diffFibo;
+	double P1000,P000,P236,P382,P500,P618,P786;
+	int CountLow=0;
+	int CountHigh=0;
 // If there is no means leave
-   if(Lots == 0)
-     {
-       return (0);
-     }
+	if(Lots == 0)
+	{
+		return (0);
+	}
 
-   int h=TimeHour(CurTime());
-   int hadj=TimeHour(CurTime());
+	int h=TimeHour(CurTime());
+	int hadj=TimeHour(CurTime());
 
-   
-   if (((hadj >= FromHourStop1) &&(hadj <= ToHourStop1)) || ((hadj >= FromHourStop2) &&(hadj <= ToHourStop2)) || ((hadj >= FromHourStop3) &&(hadj <= ToHourStop3))|| ((hadj >= FromHourStop4) &&(hadj <= ToHourStop4))) {
-         return (0);
-      }
-    if(CurTime()<PauseTo){
-         return(0);
-    }
+	if (((hadj >= FromHourStop1) &&(hadj <= ToHourStop1)) || ((hadj >= FromHourStop2) &&(hadj <= ToHourStop2)) || ((hadj >= FromHourStop3) &&(hadj <= ToHourStop3))|| ((hadj >= FromHourStop4) &&(hadj <= ToHourStop4))) {	//交易时间设置
+		return (0);
+	}
+	if(CurTime()<PauseTo){
+		return(0);
+	}
     
 // Enter the market if there is no command to exit the market
-   if(StopLoss>0){
-      StopLossIndex  =  StopLoss/Lots;
-   }
-   if(TakeProfit>0){
-      TakeProfitIndex   =  TakeProfit/Lots;
-   }
-   //----- Fibonacci--------------
-   
-   
-   Lowest = Low[iLowest(NULL,0,MODE_LOW,180,1)];
-   Highest = High[iHighest(NULL,0,MODE_HIGH,180,1)];
-   diffFibo= Highest-Lowest;
-   P1000 =  Highest;
-   P000  =  Lowest;
-   P236  =  Lowest+(diffFibo*0.236);
-   P382  =  Lowest+(diffFibo*0.382);
-   P500  =  Lowest+(diffFibo*0.5);
-   P618  =  Lowest+(diffFibo*0.618);
-   P786  =  Lowest+(diffFibo*0.786);
-   
-   //---// Fibonacci--------------
-   
-   AskRSI();
-   AskStochastic();
-   AskCCI();
-   
-  
-   
-    if(Decision==DECISION_BUY && NotBuy==false){
-      
-      MAFastCurrent=iMA(NULL,0,MAFastTime,0,MODE_SMMA,PRICE_CLOSE,0);
-      MAFastPrev=iMA(NULL,0,MAFastTime,0,MODE_SMMA,PRICE_CLOSE,1);
-      MASlow=iMA(NULL,0,MASlowTime,1,MODE_SMMA,PRICE_CLOSE,0);
-      diffMA   =  MathAbs(MAFastCurrent-MASlow/Point);
-      if((MAFastCurrent<MASlow || MAFastCurrent<MAFastPrev) || (diffMA<20)){
-         return(0);
-      }
-      if(STOCHCurrent<88){
-         if(CCIPrevious>CCICurrent){
-            return(0);
-         }
+	if(StopLoss>0){
+		StopLossIndex  =  StopLoss/Lots;
+	}
+	if(TakeProfit>0){
+		TakeProfitIndex   =  TakeProfit/Lots;
+	}
+//----- Fibonacci--------------
+	Lowest = Low[iLowest(NULL,0,MODE_LOW,180,1)];
+	Highest = High[iHighest(NULL,0,MODE_HIGH,180,1)];
+	diffFibo= Highest-Lowest;
+	P1000 =  Highest;
+	P000  =  Lowest;
+	P236  =  Lowest+(diffFibo*0.236);
+	P382  =  Lowest+(diffFibo*0.382);
+	P500  =  Lowest+(diffFibo*0.5);
+	P618  =  Lowest+(diffFibo*0.618);
+	P786  =  Lowest+(diffFibo*0.786);
+//---// Fibonacci--------------
+	AskRSI();
+	AskStochastic();
+	AskCCI();
+	if(Decision==DECISION_BUY && NotBuy==false){
+		MAFastCurrent=iMA(NULL,0,MAFastTime,0,MODE_SMMA,PRICE_CLOSE,0);
+		MAFastPrev=iMA(NULL,0,MAFastTime,0,MODE_SMMA,PRICE_CLOSE,1);
+		MASlow=iMA(NULL,0,MASlowTime,1,MODE_SMMA,PRICE_CLOSE,0);
+		diffMA   =  MathAbs(MAFastCurrent-MASlow/Point);
+		if((MAFastCurrent<MASlow || MAFastCurrent<MAFastPrev) || (diffMA<20)){
+			return(0);
+		}
+		if(STOCHCurrent<88){
+			if(CCIPrevious>CCICurrent){
+				return(0);
+			}
 
-         if((RSIPrevious>RSICurrent)|| (RSICurrent>70)){
-            return(0);
-         }
-      }
+			if((RSIPrevious>RSICurrent)|| (RSICurrent>70)){
+				return(0);
+			}
+		}
       
-      if(CHOPrevious>CHOCurrent){
-         return(0);
-      }
-      MomentCurrent = iMomentum(NULL,0,MomentTime,PRICE_CLOSE,0);
-      MomentPrevious = iMomentum(NULL,0,MomentTime,PRICE_CLOSE,1);
+		if(CHOPrevious>CHOCurrent){
+			return(0);
+		}
+		MomentCurrent = iMomentum(NULL,0,MomentTime,PRICE_CLOSE,0);
+		MomentPrevious = iMomentum(NULL,0,MomentTime,PRICE_CLOSE,1);
      
-      if(MomentPrevious>MomentCurrent){
-         return(0);
-      }
+		if(MomentPrevious>MomentCurrent){
+			return(0);
+		}
       //+--------------------- Check Cancle ----------------+
-       if(Ask<Highest && Ask>Lowest){
+		if(Ask<Highest && Ask>Lowest){
          
-         if(Ask>=(P236-(Point*5))&& Ask<=(P236+(Point*5))){
-            return(0);
-         }
-          if(Ask>=(P382-(Point*5))&& Ask<=(P382+(Point*5))){
-             return(0);
-          }
-          if(Ask>=(P500-(Point*5))&&Ask<=(P500+(Point*5))){
-            return(0);
-          }
-          if(Ask>=(P618-(Point*5)) && Ask<=(P618+(Point*5))){
-          return(0);
-          
-          }
-          if(Ask>=(P786-(Point*5))&& Ask<=(P786+(Point*5))){
-            return(0);
-          }
-         
-          
-          
-      
-      }
+			if(Ask>=(P236-(Point*5))&& Ask<=(P236+(Point*5))){
+				return(0);
+			}
+			if(Ask>=(P382-(Point*5))&& Ask<=(P382+(Point*5))){
+				return(0);
+			}
+			if(Ask>=(P500-(Point*5))&&Ask<=(P500+(Point*5))){
+				return(0);
+			}
+			if(Ask>=(P618-(Point*5)) && Ask<=(P618+(Point*5))){
+				return(0);
+			}
+			if(Ask>=(P786-(Point*5))&& Ask<=(P786+(Point*5))){
+				return(0);
+			}
+		}
       
      /* for(int i=1;i<90;i++){
          if(iOpen(NULL,0,i)>iClose(NULL,0,i)){
@@ -340,61 +326,55 @@ int EnterMarket()
          }
       }*/
       //+---------------------------------------------------+
-      TradeBuy();
-      return(0);
+		TradeBuy();
+		return(0);
+	}else if(Decision==DECISION_SELL && NotSell==false){
+		MAFastCurrent=iMA(NULL,0,MAFastTime,0,MODE_SMMA,PRICE_OPEN,0);
+		MAFastPrev=iMA(NULL,0,MAFastTime,0,MODE_SMMA,PRICE_OPEN,1);
+		MASlow=iMA(NULL,0,MASlowTime,1,MODE_SMMA,PRICE_OPEN,0);
+		diffMA   =  MathAbs(MAFastCurrent-MASlow/Point);
+		if((MAFastCurrent>MASlow || MAFastCurrent>MAFastPrev) || (diffMA<20)){
+			return(0);
+		}
+		MomentCurrent = iMomentum(NULL,0,MomentTime,PRICE_CLOSE,0);
+		MomentPrevious = iMomentum(NULL,0,MomentTime,PRICE_CLOSE,1);
       
-    }else if(Decision==DECISION_SELL && NotSell==false){
-      MAFastCurrent=iMA(NULL,0,MAFastTime,0,MODE_SMMA,PRICE_OPEN,0);
-      MAFastPrev=iMA(NULL,0,MAFastTime,0,MODE_SMMA,PRICE_OPEN,1);
-      MASlow=iMA(NULL,0,MASlowTime,1,MODE_SMMA,PRICE_OPEN,0);
-      diffMA   =  MathAbs(MAFastCurrent-MASlow/Point);
-      if((MAFastCurrent>MASlow || MAFastCurrent>MAFastPrev) || (diffMA<20)){
-         return(0);
-      }
-      MomentCurrent = iMomentum(NULL,0,MomentTime,PRICE_CLOSE,0);
-      MomentPrevious = iMomentum(NULL,0,MomentTime,PRICE_CLOSE,1);
+		if(STOCHCurrent>12){
+			if(CCIPrevious<CCICurrent){
+				return(0);
+			}
       
-      if(STOCHCurrent>12){
-         if(CCIPrevious<CCICurrent){
-            return(0);
-         }
-      
-         if((RSIPrevious<RSICurrent)|| (RSICurrent<30)){
-            return(0);
-         }
-      }
+			if((RSIPrevious<RSICurrent)|| (RSICurrent<30)){
+				return(0);
+			}
+		}
        
-      if(CHOPrevious<CHOCurrent){
-         return(0);
-      }
+		if(CHOPrevious<CHOCurrent){
+			return(0);
+		}
       
-      if(MomentPrevious<MomentCurrent){
-         return(0);
-      }
+		if(MomentPrevious<MomentCurrent){
+			return(0);
+		}
        //+--------------------- Check Cancle ----------------+
-       if(Bid<Highest && Bid>Lowest){
+		if(Bid<Highest && Bid>Lowest){
          
-        if(Bid>=(P236-(Point*5))&& Bid<=(P236+(Point*5))){
-            return(0);
-         }
-          if(Bid>=(P382-(Point*5))&& Bid<=(P382+(Point*5))){
-             return(0);
-          }
-          if(Bid>=(P500-(Point*5))&&Bid<=(P500+(Point*5))){
-            return(0);
-          }
-          if(Bid>=(P618-(Point*5)) && Bid<=(P618+(Point*5))){
-          return(0);
-          
-          }
-          if(Bid>=(P786-(Point*5))&& Bid<=(P786+(Point*5))){
-            return(0);
-          }
-          
-          
-  
-      
-      }
+			if(Bid>=(P236-(Point*5))&& Bid<=(P236+(Point*5))){
+				return(0);
+			}
+			if(Bid>=(P382-(Point*5))&& Bid<=(P382+(Point*5))){
+				return(0);
+			}
+			if(Bid>=(P500-(Point*5))&&Bid<=(P500+(Point*5))){
+				return(0);
+			}
+			if(Bid>=(P618-(Point*5)) && Bid<=(P618+(Point*5))){
+				return(0);
+			}
+			if(Bid>=(P786-(Point*5))&& Bid<=(P786+(Point*5))){
+				return(0);
+			}
+		}
      
       /*for(i=1;i<90;i++){
          if(iOpen(NULL,0,i)>iClose(NULL,0,i)){
@@ -417,14 +397,10 @@ int EnterMarket()
       }*/
       
       //+---------------------------------------------------+
-     
-      TradeSell();
-      return(0);
-      
-    }
-    
-      
-   return (0);
+		TradeSell();
+		return(0);
+	}
+	return (0);
 }   
 //+------------------------------------------------------------------+
 //| TradeBuy                                                         |
@@ -566,76 +542,68 @@ int AskRSI()
 //| Exiting the market                                               |
 //+------------------------------------------------------------------+
 int ExitMarket ()
-  {
-      
-   CHOCurrentExit = iCustom(NULL,PERIOD_M1,"CHO",CHOTime,3,0,1,0);
-   CHOPreviousExit = CHOPrevious;
-   //CHOPreviousExit = iCustom(NULL,PERIOD_M1,"CHO",5,3,0,1,1);
-   RSICurrentExit = iRSI(NULL,PERIOD_M1,RSITime,PRICE_CLOSE,0);
-   RSIPreviousExit = RSIPrevious;
-   //RSIPreviousExit = iRSI(NULL,PERIOD_M1,6,PRICE_CLOSE,1);
+{
+	CHOCurrentExit = iCustom(NULL,PERIOD_M1,"CHO",CHOTime,3,0,1,0);
+	CHOPreviousExit = CHOPrevious;
+	//CHOPreviousExit = iCustom(NULL,PERIOD_M1,"CHO",5,3,0,1,1);
+	RSICurrentExit = iRSI(NULL,PERIOD_M1,RSITime,PRICE_CLOSE,0);
+	RSIPreviousExit = RSIPrevious;
+	//RSIPreviousExit = iRSI(NULL,PERIOD_M1,6,PRICE_CLOSE,1);
    
-   
-    if(FoundOpenedOrder == True){
-   
-    for(cnt = 0; cnt < total;cnt++){
-      OrderSelect(cnt,SELECT_BY_POS,MODE_TRADES);
-      if(OrderType() <= OP_SELL && OrderSymbol() == Symbol()){
-      
-         if(OrderType()==OP_BUY) 
-         {
-          if(OrderOpenPrice() < Bid){
-            BestPrice2=BestPrice1;
-            BestPrice1=Bid;
-          }
-          
-          if(STOCHCurrent>=88&&(RSI_Status ==DECISION_BUY)){
-               return(0);
-          }
-          
-          //if(BestPrice1<=BestPrice2&&(OrderOpenPrice() < Bid)){
-          if(((CHOCurrentExit<CHOPreviousExit) || (RSICurrentExit<RSIPreviousExit)) && OrderOpenPrice() < Bid){
-               OrderClose(OrderTicket(),OrderLots(),Bid,3,Violet);
-               Print("Close Order BUY : ",Bid);
-               BestPrice1=0;
-               BestPrice2=0;
-               PauseTo = (PauseMin*60)+CurTime();
-              
-               return(0);
-            }
-            
-          }
-         
-         else 
-         {
-            
-          if(OrderOpenPrice() > Ask){
-               BestPrice2=BestPrice1;
-               BestPrice1=Ask;
-                        
-          }
-          
-         
-          if(STOCHCurrent<=12&&(RSI_Status ==DECISION_SELL)){
-               return(0);
-           }
-          
-            //if(BestPrice1>BestPrice2&&(OrderOpenPrice() > Ask)){
-          if(((CHOCurrentExit>CHOPreviousExit)||(RSICurrentExit>RSIPreviousExit)) && OrderOpenPrice() > Ask){
-               OrderClose(OrderTicket(),OrderLots(),Ask ,3,Yellow);
-               Print("Close Order SELL : ",Ask);
-               BestPrice1=0;
-               BestPrice2=0;
-               PauseTo = (PauseMin*60)+CurTime();
-               
-               return(0);
-            }
-         }
-       }
-      }
-    }
-   return (0);
-  }
+	if(FoundOpenedOrder == True){
+		for(cnt = 0; cnt < total;cnt++){
+			OrderSelect(cnt,SELECT_BY_POS,MODE_TRADES);
+			if(OrderType() <= OP_SELL && OrderSymbol() == Symbol()){
+		  
+				if(OrderType()==OP_BUY) 
+				{
+					if(OrderOpenPrice() < Bid){
+						BestPrice2=BestPrice1;
+						BestPrice1=Bid;
+					}
+			  
+					if(STOCHCurrent>=88&&(RSI_Status ==DECISION_BUY)){
+						return(0);
+					}
+			  
+					//if(BestPrice1<=BestPrice2&&(OrderOpenPrice() < Bid))
+					if(((CHOCurrentExit<CHOPreviousExit) || (RSICurrentExit<RSIPreviousExit)) && OrderOpenPrice() < Bid){
+						OrderClose(OrderTicket(),OrderLots(),Bid,3,Violet);
+						Print("Close Order BUY : ",Bid);
+						BestPrice1=0;
+						BestPrice2=0;
+						PauseTo = (PauseMin*60)+CurTime();
+				  
+						return(0);
+					}
+				
+				}else 
+				{
+					if(OrderOpenPrice() > Ask){
+						BestPrice2=BestPrice1;
+						BestPrice1=Ask;
+					}
+
+					if(STOCHCurrent<=12&&(RSI_Status ==DECISION_SELL)){
+						return(0);
+					}
+			  
+					//if(BestPrice1>BestPrice2&&(OrderOpenPrice() > Ask))
+					if(((CHOCurrentExit>CHOPreviousExit)||(RSICurrentExit>RSIPreviousExit)) && OrderOpenPrice() > Ask){
+						OrderClose(OrderTicket(),OrderLots(),Ask ,3,Yellow);
+						Print("Close Order SELL : ",Ask);
+						BestPrice1=0;
+						BestPrice2=0;
+						PauseTo = (PauseMin*60)+CurTime();
+				   
+						return(0);
+					}
+				}
+			}
+		}
+	}
+	return (0);
+}
 
 
 //+--------------------------------------------------------------------------+
@@ -916,224 +884,210 @@ int AskADX()
 //| Save the values and rates for the following period of the simulation iterratsii|
 //+--------------------------------------------------------------------------+
 int SaveStat()
-  {
-   BidPrev = Bid;
-   AskPrev = Ask;   
-   return (0);
-  }
+{
+	BidPrev = Bid;
+	AskPrev = Ask;   
+	return (0);
+}
+
 //+------------------------------------------------------------------+
 //| Trading                                                        |
 //+------------------------------------------------------------------+
 int Trade ()
-  {
-   // begin to trade
-   // Looking for open orders
+{
+	// begin to trade
+	// Looking for open orders
    
-   ToSell=0;
-   ToBuy =0;
-   FindSymbolOrder();
+	ToSell=0;
+	ToBuy =0;
+	FindSymbolOrder();
    
-   
-   AskCCI();
-   AskRSI();
-   AskStochastic();
-   AskCandle();
+	//查询五个指标的建议，所有指标权值相同
+	AskCCI();
+	AskRSI();
+	AskStochastic();
+	AskCandle();
   
+	if(CCI_Status==DECISION_BUY){
+		ToBuy=ToBuy+1;
+		CCI_Status=DECISION_UNKNOWN;
+	}else
+	if(CCI_Status==DECISION_SELL){
+		ToSell=ToSell+1;
+		CCI_Status=DECISION_UNKNOWN;
+	}
+   
+	if(RSI_Status==DECISION_BUY){
+		ToBuy=ToBuy+1;
+		RSI_Status=DECISION_UNKNOWN;
+	}else
+	if(RSI_Status==DECISION_SELL){
+		ToSell=ToSell+1;
+		RSI_Status=DECISION_UNKNOWN;
+	}
+   
+	if(STOCH_Status==DECISION_BUY){
+		ToBuy=ToBuy+1;
+		STOCH_Status=DECISION_UNKNOWN;
+	}else
+	if(STOCH_Status==DECISION_SELL){
+		ToSell=ToSell+1;
+		STOCH_Status=DECISION_UNKNOWN;
+	}
+   
+	if(CandleStatus==DECISION_BUY){
+		ToBuy=ToBuy+1;
+		CandleStatus=DECISION_UNKNOWN;
+	}else
+	if(CandleStatus==DECISION_SELL){
+		ToSell=ToSell+1;
+		CandleStatus=DECISION_UNKNOWN;
+	}
+	if(AskADX()==1){
+		ToBuy=ToBuy+1;
+	}else if(AskADX()==2){
+		ToSell=ToSell+1;
+	}
    
    
-   if(CCI_Status==DECISION_BUY){
-      ToBuy=ToBuy+1;
-      CCI_Status=DECISION_UNKNOWN;
-   }else
-   if(CCI_Status==DECISION_SELL){
-      ToSell=ToSell+1;
-      CCI_Status=DECISION_UNKNOWN;
-   }
-   
-   if(RSI_Status==DECISION_BUY){
-      ToBuy=ToBuy+1;
-      RSI_Status=DECISION_UNKNOWN;
-   }else
-   if(RSI_Status==DECISION_SELL){
-      ToSell=ToSell+1;
-      RSI_Status=DECISION_UNKNOWN;
-   }
-   
-   if(STOCH_Status==DECISION_BUY){
-      ToBuy=ToBuy+1;
-      STOCH_Status=DECISION_UNKNOWN;
-   }else
-   if(STOCH_Status==DECISION_SELL){
-      ToSell=ToSell+1;
-      STOCH_Status=DECISION_UNKNOWN;
-   }
-   
-   if(CandleStatus==DECISION_BUY){
-      ToBuy=ToBuy+1;
-      CandleStatus=DECISION_UNKNOWN;
-   }else
-   if(CandleStatus==DECISION_SELL){
-      ToSell=ToSell+1;
-      CandleStatus=DECISION_UNKNOWN;
-   }
-   if(AskADX()==1){
-      ToBuy=ToBuy+1;
-   }else if(AskADX()==2){
-      ToSell=ToSell+1;
-   }
-   
-   
-    //-----------------------------------------------------------------
-    if(ToSell>ToBuy){
-      Decision = DECISION_SELL ;
-   }else if(ToSell<ToBuy){
-      Decision = DECISION_BUY ;
-   }else{
-      Decision = DECISION_UNKNOWN;
-   }
+	//-----------------------------------------------------------------
+	if(ToSell>ToBuy){
+		Decision = DECISION_SELL ;
+	}else if(ToSell<ToBuy){
+		Decision = DECISION_BUY ;
+	}else{
+		Decision = DECISION_UNKNOWN;
+	}
 
 //---- If open orders on simaolu no chance of entering the market
 //---- Warning - it is important that the order of consideration of technologies to enter the market (MoneyTrain, LogicTrading, Pipsator)
-   ArraySetAsSeries(New_Time,true);
+	ArraySetAsSeries(New_Time,true);
    
-   copied = CopyTime(_Symbol,_Period,0,1,New_Time);
-   if(copied>0){
-      if(Old_Time!=New_Time[0]){
-         Old_Time=New_Time[0];
-         IsNewBar=true;
-         
-      }else{
-         IsNewBar=false;
-      }
-   }
-   if(FoundOpenedOrder == false)
-     {
-         checkForRecovery();
-         FindSymbolOrder();
-         if(FoundOpenedOrder == false )
-         {
-            if(AskADX()!=0 /*&& IsNewBar==true*/){
-               EnterMarket();
-               return(0);  
-            }
-          }
-         
-               
-     }
-   else
-     {
-       
-       ExitMarket();
-     }
+	copied = CopyTime(_Symbol,_Period,0,1,New_Time);
+	if(copied>0){
+		if(Old_Time!=New_Time[0]){
+			Old_Time=New_Time[0];
+			IsNewBar=true;
+		}else{
+		IsNewBar=false;
+		}
+	}
+	if(FoundOpenedOrder == false)
+	{
+		checkForRecovery();	//逆势加仓
+		FindSymbolOrder();
+		if(FoundOpenedOrder == false )
+		{
+			if(AskADX()!=0 /*&& IsNewBar==true*/){
+				EnterMarket();
+				return(0);  
+			}
+		}
+	}
+	else
+	{
+		ExitMarket();
+	}
 //---- End of processing I / O from the market
-   return(0);
-  }
+	return(0);
+}
  //+-----------------------------------------------------------------+
- //| Recover                                                         |
+ //| Recover          亏损后逆势加仓                                 |
  //+-----------------------------------------------------------------+
 int checkForRecovery(){
-   int MagicNumber;
-   static int StaticTicketNumber;
-   int i=OrdersHistoryTotal()-1;
-   if(StopLoss>0){
-      StopLossIndex  =  StopLoss/Lots;
-   }
-   if(TakeProfit>0){
-      TakeProfitIndex   =  TakeProfit/Lots;
-   }   
-      if(OrderSelect(i,SELECT_BY_POS,MODE_HISTORY)){
-         MagicNumber = OrderMagicNumber();
-         int check = OrderTicket();
-         string MyOrderSymbol = OrderSymbol(); 
+	int MagicNumber;
+	static int StaticTicketNumber;
+	int i=OrdersHistoryTotal()-1;
+	if(StopLoss>0){
+		StopLossIndex  =  StopLoss/Lots;
+	}
+	if(TakeProfit>0){
+		TakeProfitIndex   =  TakeProfit/Lots;
+	}   
+	if(OrderSelect(i,SELECT_BY_POS,MODE_HISTORY)){	//选择上一个平仓的单子
+		MagicNumber = OrderMagicNumber();
+		int check = OrderTicket();
+		string MyOrderSymbol = OrderSymbol(); 
                 
-         if(StaticTicketNumber != check && OrderProfit()<0 && MyOrderSymbol==Symbol()){
-            if(Martingale==true){
-               if(mMultiply<MathPow(2,MartingaleStep)){
-                  mMultiply=2*mMultiply;
-               }
-            }else{
-               mMultiply=1;
-            }
-            if(OrderType()==OP_SELL && StopLossRecover==true) 
-            {
-               
-               if(StopLoss>0){
-                 StopLossValue  =  Bid-(Point*StopLossIndex*mMultiply);
-                 //StopLossValue=0;
-               }
-               if(TakeProfit>0){
-                  TakeProfitValue   = Ask+(Point*TakeProfitIndex*mMultiply);
-                 //TakeProfitValue=0;
-               }
-               ticket = OrderSend(Symbol(),OP_BUY,Lots*mMultiply,Ask,3,0,0,"TurtleTrader(BUY)",MAGIC,3,Green);
-               if(ticket > 0){
-                if(OrderSelect(ticket,SELECT_BY_TICKET,MODE_TRADES)) {
-                    OrderModify(OrderTicket(), OrderOpenPrice(), StopLossValue, TakeProfitValue, 3, Green);
-                }
-                  PrevDecision=Decision;
-                  Print("Buy order is opened: ",OrderOpenPrice());
-               }else{
-                  Print("Error opening BUY order:",GetLastError());
-                  
-               }
-
-               return(0);
-            }
-            if(OrderType()==OP_BUY && StopLossRecover==true) 
-            {
-               
-            	if(StopLoss>0){
-            		StopLossValue  =  Bid+(Point*StopLossIndex*mMultiply);
-            	}
-            	if(TakeProfit>0){
-         			TakeProfitValue   = Ask-(Point*TakeProfitIndex*mMultiply);
-         		}
-      
-         		ticket = OrderSend(Symbol(),OP_SELL,Lots*mMultiply,Bid,3,0,0,"TurtleTrader(SELL)",MAGIC,3,Red);
-			if(ticket > 0){
-				if(OrderSelect(ticket,SELECT_BY_TICKET,MODE_TRADES)) {
-					OrderModify(OrderTicket(), OrderOpenPrice(), StopLossValue, TakeProfitValue, 3, Green);
+		if(StaticTicketNumber != check && OrderProfit()<0 && MyOrderSymbol==Symbol()){	//上一个单子亏损
+			if(Martingale==true){
+				if(mMultiply<MathPow(2,MartingaleStep)){
+					mMultiply=2*mMultiply;
 				}
-         			PrevDecision=Decision;
-         			Print("Sell order is opened: ",OrderOpenPrice());
-         		}else{
-         			Print("Error opening SELL order:",GetLastError());
-         			return(0);
-         		}
-         		return(0);
-               
-         	}
-            
+			}else{
+				mMultiply=1;
+			}
+			if(OrderType()==OP_SELL && StopLossRecover==true) 
+			{	//卖单
+				if(StopLoss>0){
+					StopLossValue  =  Bid-(Point*StopLossIndex*mMultiply);
+					//StopLossValue=0;
+				}
+				if(TakeProfit>0){
+					TakeProfitValue   = Ask+(Point*TakeProfitIndex*mMultiply);
+					//TakeProfitValue=0;
+				}
+				ticket = OrderSend(Symbol(),OP_BUY,Lots*mMultiply,Ask,3,0,0,"TurtleTrader(BUY)",MAGIC,3,Green);	//买入
+				if(ticket > 0){
+					if(OrderSelect(ticket,SELECT_BY_TICKET,MODE_TRADES)) {
+						OrderModify(OrderTicket(), OrderOpenPrice(), StopLossValue, TakeProfitValue, 3, Green);	//设置止损止赢
+					}
+					PrevDecision=Decision;
+					Print("Buy order is opened: ",OrderOpenPrice());
+				}else{
+					Print("Error opening BUY order:",GetLastError());
+				}
+				return(0);
+			}
+			if(OrderType()==OP_BUY && StopLossRecover==true) 
+			{	//买单
+				if(StopLoss>0){
+					StopLossValue  =  Bid+(Point*StopLossIndex*mMultiply);
+				}
+				if(TakeProfit>0){
+					TakeProfitValue   = Ask-(Point*TakeProfitIndex*mMultiply);
+				}
+				ticket = OrderSend(Symbol(),OP_SELL,Lots*mMultiply,Bid,3,0,0,"TurtleTrader(SELL)",MAGIC,3,Red);	//卖出
+				if(ticket > 0){
+					if(OrderSelect(ticket,SELECT_BY_TICKET,MODE_TRADES)) {
+						OrderModify(OrderTicket(), OrderOpenPrice(), StopLossValue, TakeProfitValue, 3, Green);	//设置止损止赢
+					}
+					PrevDecision=Decision;
+					Print("Sell order is opened: ",OrderOpenPrice());
+				}else{
+					Print("Error opening SELL order:",GetLastError());
+					return(0);
+				}
+				return(0);
+				   
+			}
                     
-         }
-      
-        
-      }
-  
-   return(0);
+		}
+	}
+	return(0);
 }
 //-------------------------------------------------------------------------
  
   
 //+------------------------------------------------------------------+
-//| Check Exist Order                                                |
+//| Check Exist Order     检查EA是否已经开单                         |
 //+------------------------------------------------------------------+
 int FindSymbolOrder()
-  {
-   FoundOpenedOrder = false;
-   total = OrdersTotal();
-   for(cnt = 0; cnt < total; cnt++)
-     {
-       OrderSelect(cnt, SELECT_BY_POS, MODE_TRADES);
+{
+	FoundOpenedOrder = false;
+	total = OrdersTotal();
+	for(cnt = 0; cnt < total; cnt++)
+	{
+		OrderSelect(cnt, SELECT_BY_POS, MODE_TRADES);
 
-       if(OrderSymbol() == Symbol())
-         {
-           FoundOpenedOrder = True;
-           break;
-         }      
-     }
-   return (0);
-  }
+		if(OrderSymbol() == Symbol())
+		{
+			FoundOpenedOrder = True;
+			break;
+		}      
+	}
+	return (0);
+}
 //+------------------------------------------------------------------+
 //| Calculation of lot quantity                                      |
 //+------------------------------------------------------------------+
@@ -1198,19 +1152,18 @@ int SetAutoLots()
 //| expert start function (Trading)                                 |
 //+------------------------------------------------------------------+
 int start()
-  {
-   
-   if(Year()<2007){
-      return(0);
-   }
-   GetMarketInfo();
-   SetAutoLots();
-   if(BeforeLoss<AccountBalance()){
-      BeforeLoss=AccountBalance();
-      mMultiply=1;
+{
+	if(Year()<2007){
+		return(0);
+	}
+	GetMarketInfo();	//获取市场最新数据
+	SetAutoLots();	//自动计算仓位
+	if(BeforeLoss<AccountBalance()){	//记录最高盈利
+		BeforeLoss=AccountBalance();
+		mMultiply=1;
       
-   }
-   Trade();
-   SaveStat();
-   return(0);
-  }
+	}
+	Trade();
+	SaveStat();
+	return(0);
+}
