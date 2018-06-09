@@ -457,6 +457,7 @@ int TradeSell()
   
 //+------------------------------------------------------------------+
 //| Ask Stochastic        Ëæ»úÕðµ´Ö¸±ê                               |
+//| https://www.mql5.com/zh/docs/indicators/istochastic              |
 //+------------------------------------------------------------------+
 int AskStochastic()
 {
@@ -471,20 +472,16 @@ int AskStochastic()
 	if(STOCHCurrent>50 && STOCHCurrent<88 ){
 		if(CHOCurrent>10){
 			STOCH_Status   =  DECISION_BUY;
-            
 		}else if(CHOCurrent<-10){
 			STOCH_Status   =  DECISION_SELL;
 		}
 	}else if(STOCHCurrent<=12){
 		STOCH_Status   =  DECISION_SELL;
-        
 	}else if(STOCHCurrent>=88){
 		STOCH_Status   =  DECISION_BUY;
-        
 	}else if(STOCHCurrent<50 && STOCHCurrent>12){
 		if(CHOCurrent>10){
 			STOCH_Status   =  DECISION_BUY;
-            
 		}else if(CHOCurrent<-10){
 			STOCH_Status   =  DECISION_SELL;
 		}
