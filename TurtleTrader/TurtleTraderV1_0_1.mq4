@@ -461,7 +461,7 @@ int TradeSell()
 //+------------------------------------------------------------------+
 int AskStochastic()
 {
-	CHOCurrent = iCustom(NULL,0,"CHO",CHOTime,3,0,1,0);
+	CHOCurrent = iCustom(NULL,0,"CHO",CHOTime,3,0,1,0);	//自定义指标
 	CHOPrevious = iCustom(NULL,0,"CHO",CHOTime,3,0,1,1);
   
 	// STOCHASTIC VALUE 

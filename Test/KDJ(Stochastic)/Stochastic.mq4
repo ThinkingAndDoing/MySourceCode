@@ -103,7 +103,7 @@ void placeSell()
 //| generate a buy & sell prices
 //+------------------------------------------------------------------+
 void generateSignals()
-{
+{	//K线从10回归到20之上时，买入；K线从90回归到80以下时，卖出。
    buySignal = false;
    sellSignal = false;
    

@@ -105,6 +105,7 @@ void generateSignals()
    buySignal2 = false;
    sellSignal2 = false;
    
+   //K线值大于D线值，卖出，否则买入；两种周期震荡指标判断
    if (iStochastic(NULL,0,5,3,3,MODE_SMA,0,MODE_MAIN,1) > iStochastic(NULL,0,5,3,3,MODE_SMA,0,MODE_SIGNAL,1))
       buySignal1 = true;
    else
