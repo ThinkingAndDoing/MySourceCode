@@ -1,37 +1,34 @@
 @how
-iStochastic() – 随机震荡指标(KDJ)
+iStochastic() C �����ָ��(KDJ)
 double iStochastic(string symbol, int timeframe, 
                    int %Kperiod, int %Dperiod, 
                    int slowing, int method, 
                    int price_field, int mode, int shift)
-Mode（指标线）:
-Main(%K) ，%K线，实心的曲线
-Signal(%D)，%D线，点状曲线
-%K period，%K周期，这是在计算震荡指标过程中所用到的时间周期，默认为5
-Slowing，这个数值控制着%K内在的平滑度。参数为1被看作是快速随机震荡指标，参数为3则被视为慢速随机指标，默认为3
-%D period，在计算%K移动平均线时，所用到的时间周期，默认为3
-MA method（移动平均方式）：
-Simple：即SMA，简单移动平均线
-Exponential：即EMA，指数平滑移动平均线
-Smoothed：即SMMA，平滑移动平均线
-Linear weighted：即LWMA，线性加权移动平均线
-Price field：
-Low/High，默认选项
+Mode��ָ���ߣ�:
+Main(%K) ��%K�ߣ�ʵ�ĵ�����
+Signal(%D)��%D�ߣ���״����
+%K period��%K���ڣ������ڼ�����ָ����������õ���ʱ�����ڣ�Ĭ��Ϊ5
+Slowing�������ֵ������%K���ڵ�ƽ���ȡ�����Ϊ1�������ǿ��������ָ�꣬����Ϊ3����Ϊ�������ָ�꣬Ĭ��Ϊ3
+%D period���ڼ���%K�ƶ�ƽ����ʱ�����õ���ʱ�����ڣ�Ĭ��Ϊ3
+MA method���ƶ�ƽ����ʽ����
+Simple����SMA�����ƶ�ƽ����
+Exponential����EMA��ָ��ƽ���ƶ�ƽ����
+Smoothed����SMMA��ƽ���ƶ�ƽ����
+Linear weighted����LWMA�����Լ�Ȩ�ƶ�ƽ����
+Price field��
+Low/High��Ĭ��ѡ��
 Close/Close
-
-例如：
-iStochastic(NULL,0,5,3,3,MODE_SMA,0,MODE_MAIN,1) //K线
-iStochastic(NULL,0,5,3,3,MODE_SMA,0,MODE_SIGNAL,1)	//D线
+���磺
+iStochastic(NULL,0,5,3,3,MODE_SMA,0,MODE_MAIN,1) //K��
+iStochastic(NULL,0,5,3,3,MODE_SMA,0,MODE_SIGNAL,1)	//D��
 
 @what
-KDJ是震荡指标(iStochastic)。主要功能是抄底和逃顶（KD在20以下金叉买进、80以上死叉卖出）。
-
-主线被称为%K线，K线是快速确认线——数值在90以上为超买，数值在10以下为超卖；
-第二条线被称为%D线，它的数值是主线%K的移动平均线。数值在80以上为超买，数值在20以下为超卖；
-%K通常显示为一条实心的曲线，而%D线则显示为点状曲线。
-J线为方向敏感线，当J值大于90，特别是连续5天以上，股价至少会形成短期头部，反之J值小于10时，特别是连续数天以上，股价至少会形成短期底部。
-
-原理：当价格上涨时，收市价倾向于接近当日价格区间的上端；相反，在下降趋势中收市价趋向于接近当日价格区间的下端。在股市和期市中，因为市场趋势上升而未转向前，每日多数都会偏向于高价位收市，而下跌时收市价就常会偏于低位。随机指数在设计中充分考虑价格波动的随机振幅与中短期波动的测算，使其短期测市功能比移动平均线更加准确有效，在市场短期超买超卖的预测方面又比强弱指数敏感，因此，这一指标被投资者广泛采用。
+KDJ����ָ��(iStochastic)����Ҫ�����ǳ��׺��Ӷ���KD��20���½�������80����������������
+���߱���Ϊ%K�ߣ�K���ǿ���ȷ���ߨD�D��ֵ��90����Ϊ������ֵ��10����Ϊ������
+�ڶ����߱���Ϊ%D�ߣ�������ֵ������%K���ƶ�ƽ���ߡ���ֵ��80����Ϊ������ֵ��20����Ϊ������
+%Kͨ����ʾΪһ��ʵ�ĵ����ߣ���%D������ʾΪ��״���ߡ�
+J��Ϊ���������ߣ���Jֵ����90���ر�������5�����ϣ��ɼ����ٻ��γɶ���ͷ������֮JֵС��10ʱ���ر��������������ϣ��ɼ����ٻ��γɶ��ڵײ���
+ԭ�������۸�����ʱ�����м������ڽӽ����ռ۸�������϶ˣ��෴�����½����������м������ڽӽ����ռ۸�������¶ˡ��ڹ��к������У���Ϊ�г�����������δת��ǰ��ÿ�ն�������ƫ���ڸ߼�λ���У����µ�ʱ���м۾ͳ���ƫ�ڵ�λ�����ָ��������г�ֿ��Ǽ۸񲨶������������ж��ڲ����Ĳ��㣬ʹ����ڲ��й��ܱ��ƶ�ƽ���߸���׼ȷ��Ч�����г����ڳ�������Ԥ�ⷽ���ֱ�ǿ��ָ�����У���ˣ���һָ�걻Ͷ���߹㷺���á�
 
 @question
 NA

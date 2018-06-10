@@ -1,0 +1,21 @@
+@how
+double iMA(string symbol, int timeframe, int period, int ma_shift, 
+	int ma_method, int applied_price, int shift)
+symbol        - 要计算指标数据的货币对名称。 NULL表示当前货币对。
+timeframe     - 时间周期。 可以 时间周期列举 任意值。 0表示当前图表的时间周期。 
+period        - MA计算的周期数。
+ma_shift      - MA偏移量。 
+ma_method     - MA方法。它可以是其中 任意移动平均计算方法。
+applied_price - 应用的价格。它可以是 应用价格枚举 的任意值。    
+shift         - 从指标缓冲区中获取值的索引(相对当前柱子向前移动一定数量周期的偏移量)。 
+
+@what
+Moving Average，移动平均线指标，简称MA
+
+原理：
+MA利用统计学上的“移动平均”原理，将每天的市场价格进行移动平均计算，求出一个趋势值，用来作为价格走势的研判工具。该指标明确反映了目前市场的趋势，但是该指标有一定的滞后性。
+
+@question
+NA
+
+@
