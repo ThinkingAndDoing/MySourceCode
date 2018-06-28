@@ -15,5 +15,6 @@ EURGBP是拷贝自EuroCross的一个老的版本。
 It’s not hard to conclude that this EA is extremely sensitive to broker spreads and execution.
 这个EA对点差非常敏感，点差超过3就会非常不稳定。
 最佳配置：risk 5	spread 3 M15 MaxTrades 1 和 risk 5	spread 3 M5 MaxTrades 1 同时运行
+EURCHF_EURGBP_GBPCHF
 
 @
