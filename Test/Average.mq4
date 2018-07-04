@@ -7,10 +7,10 @@
 //---- input parameters
 extern   double TakeProfit = 20; //止盈
 extern   double StopLoss = 30; //止损
-extern   double Lots = 2; //手数
+extern   double Lots = 0.01; //手数
 extern   double TrailingStop = 50;
-extern   int ShortEma = 5;
-extern   int LongEma = 60;
+extern   int ShortEma = 5;//PERIOD_M5
+extern   int LongEma = 60;//PERIOD_H1
 
 //+------------------------------------------------------------------+
 //| expert initialization function                                   |
@@ -40,7 +40,7 @@ int start()
 {
 	int cnt, ticket, total;
 	double SEma, LEma;
-//----
+	//----
 	if (Bars < 100) 
 	{
 		Print("bars less than 100");
@@ -59,6 +59,7 @@ int start()
 	static int isCrossed = 0;
 	isCrossed = Crossed(LEma, SEma);
 
+	RefreshRates();
 	total = OrdersTotal();
 	if (total < 1) 
 	{
@@ -86,7 +87,7 @@ int start()
 			}
 			return (0);
 		}
-//---- 订单修改，实现动态止盈止损跟踪
+		//---- 订单修改，实现动态止盈止损跟踪
 		for (cnt = 0; cnt < total; cnt++) 
 		{
 			OrderSelect(cnt, SELECT_BY_POS, MODE_TRADES);
@@ -94,7 +95,7 @@ int start()
 			{
 				if (OrderType() == OP_SELL) // long position is opened
 				{
-// check for trailing stop
+					// check for trailing stop
 					if (TrailingStop > 0) 
 					{
 						if (Bid - OrderOpenPrice() > Point * TrailingStop) 
@@ -110,7 +111,7 @@ int start()
 					}
 				} else // go to short position
 				{
-// check for trailing stop
+					// check for trailing stop
 					if (TrailingStop > 0) 
 					{
 						if ((OrderOpenPrice() - Ask) > (Point * TrailingStop)) 
@@ -133,11 +134,11 @@ int start()
 //+------------------------------------------------------------------+
 // 移动平均线多空条件判断，
 //+------------------------------------------------------------------+
-int Crossed(double line1, double line2) 
+int Crossed(double lineLong, double lineShort) 
 {
 	static int last_direction = 0;
 	static int current_direction = 0;
-//Don't work in the first load, wait for the first cross!
+	//Don't work in the first load, wait for the first cross!
 	static bool first_time = true;
 	if (first_time == true) 
 	{
@@ -145,12 +146,12 @@ int Crossed(double line1, double line2)
 		return (0);
 	}
 
-	if (line1 > line2)
+	if (lineLong > lineShort)
 		current_direction = 2; //up 多头市场 上穿做多
-	if (line1 < line2)
+	if (lineLong < lineShort)
 		current_direction = 1; //down 空头市场 下穿做空
 
-	if (current_direction != last_direction) //changed 多空改变 
+	if (current_direction != last_direction) //changed 多空改变
 	{
 		last_direction = current_direction;
 		return (last_direction);

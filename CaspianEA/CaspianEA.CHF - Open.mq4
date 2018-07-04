@@ -68,7 +68,7 @@ extern int EndHour = 2;	//终止交易时间，澳大利亚与中国的时差是
 string gs_unused_172 = "CaspianEA.CHF";
 bool gi_180 = TRUE;
 bool gi_184 = TRUE;
-int gi_188 = 100;
+int gi_188 = 100;//可用保证金用于交易的比例
 bool gi_192 = TRUE;
 double gd_196 = 250.0;
 double gd_204 = 1000.0;
@@ -437,16 +437,18 @@ int Tradetime() {
 double GetLots(int ai_0) {
    double ld_ret_4;
    int li_52;
-   double l_lotsize_44 = MarketInfo(Symbol(), MODE_LOTSIZE);
+   double l_lotsize_44 = MarketInfo(Symbol(), MODE_LOTSIZE);//基本货币的标准手大小
    double ld_12 = NormalizeDouble(MarketInfo(Symbol(), MODE_LOTSTEP), 2);
    double ld_20 = NormalizeDouble(MarketInfo(Symbol(), MODE_MARGINREQUIRED), 4);
    double ld_28 = 100.0 * (ld_20 + 5.0);
    if (gi_188 > 100) gi_188 = 100;
    double ld_56 = AccountFreeMargin() * (gi_188 / 100);
    if (LotsDigit == 0) {
-      if (ld_12 < 0.1) li_52 = 2;
-      else li_52 = 1;
-      LotsDigit = li_52;
+		if (ld_12 < 0.1)
+			li_52 = 2;
+		else
+			li_52 = 1;
+		LotsDigit = li_52;
    }
    if (UseMoneyManagement == TRUE) {
       ld_ret_4 = NormalizeDouble(10.0 * (ld_56 * Risk) / l_lotsize_44, LotsDigit);
