@@ -65,17 +65,20 @@ class MyTreeView:
 		#放置水平方向滚动条
 		hbar = ttk.Scrollbar(self.root,orient=tkinter.HORIZONTAL,command=self.treeView.xview)
 		hbar.place(y=460,width=200,height=20)
+		hbar.pack(side=BOTTOM, fill=X)
 		
 		#放置垂直方向滚动条
 		vbar = ttk.Scrollbar(root,orient=tkinter.VERTICAL,command=self.treeView.yview)
 		vbar.place(x=200,width=20,height=480)
+		vbar.pack(side=RIGHT, fill=Y)
 		
 		self.treeView.configure(xscrollcommand=hbar.set)
 		self.treeView.configure(yscrollcommand=vbar.set)
 		self.treeView.bind("<<TreeviewSelect>>", self.leftClick)
 		self.treeView.bind('<3>', self.rightClickMenu)
 		#放置树形目录
-		self.treeView.place(x=0, y=0, width=201, height=480)
+		#self.treeView.place(x=0, y=0)
+		self.treeView.pack(side=LEFT, fill=Y)
 
 	def rightClickMenu(self, event):
 		'''
@@ -129,18 +132,9 @@ def restoreSrcTXT(inputDir):
 		content +=removeEmptyLines(GV._Dict[key]["question"])+ "\n" 
 		content +="@"
 		txter.saveToLocal(inputDir+"\\"+GV._Dict[key]["parent"]+"-"+GV._Dict[key]["name"]+".txt", content) 
-
-def getcharencode(filename):
-	file = open(filename, "rb")          
-	buf = file.read()
-	file.close()
-	result = chardet.detect(buf)
-	return result["encoding"]
 	
 def loadKey(fn, inputdir):
-	f = open(inputdir+"\\"+fn, "r", encoding=getcharencode(inputdir+"\\"+fn), errors='ignore')
-	data = f.read()
-	f.close()
+	data = txter.loadFromLocal(inputdir+"\\"+fn)
 	
 	newkey = Node(fn.split("-")[0].strip(), fn.split("-")[1].split(".")[0].strip())
 	newkey.setWhat(getType(data, "@what"))
@@ -253,13 +247,20 @@ def drawGUI():
 	GV._StopThread = False
 	GV._Root=tkinter.Tk()
 	GV._Root.title("领域知识")
-	GV._Root.geometry("800x480")
 	GV._Root.resizable(width=False, height=False)
 	textFont=Font(family='宋体', size=12)
 	fontheight = textFont.metrics()['linespace']
+	frame_root = Frame(GV._Root)
+	frame_root.pack(side=RIGHT, fill=BOTH)
 	#带ScrollBar的文本区域
-	GV._ScrollText = ScrolledText(GV._Root, spacing3=8, padx=10, pady=10, font=textFont, borderwidth=2, width=68, background='white')
+	GV._ScrollText = ScrolledText(frame_root, spacing3=8, padx=10, pady=10, font=textFont, borderwidth=2, width=80, background='white')
 	GV._ScrollText.pack(side=RIGHT, fill=Y)
+	#Resize Window
+	frame_root.update()
+	newWidthOfWindow = frame_root.winfo_width()+225
+	newHeightOfWindow = ( frame_root.winfo_width()+225 )/5*3
+	GV._Root.geometry('%dx%d'%(newWidthOfWindow, newHeightOfWindow))
+	
 	GV._TimerThread = threading.Timer(GV._Interval, syncQuestionArea, [GV._ScrollText])
 	GV._TimerThread.setDaemon(True)
 	GV._TimerThread.start()
@@ -276,7 +277,7 @@ def closeWindow():
 
 def initGlobalVar(inputdir="."):
 	GV._InputDir = inputdir
-	GV._KnowledgeSegment = GV._InputDir + "\\知识管理"
+	GV._KnowledgeSegment = GV._InputDir
 
 if __name__ == "__main__":
 	global GV
@@ -293,7 +294,7 @@ if __name__ == "__main__":
 		#print(e)
 		pass
 	
-	initDict(GV._InputDir+"\\theDict.json")
+	#initDict(GV._InputDir+"\\theDict.json")
 	
 	#从TXTs中增加新的知识到字典中
 	addNewKeys(GV._KnowledgeSegment)
@@ -311,5 +312,4 @@ if __name__ == "__main__":
 		#print("Please create root node file. For example, the filename should be ROOT-HMI 报警开发")
 		pass
 	
-
 
