@@ -246,7 +246,7 @@ def setTextArea(item):
 def drawGUI():
 	GV._StopThread = False
 	GV._Root=tkinter.Tk()
-	GV._Root.title("领域知识")
+	GV._Root.title(GV._InputDir.split('\\')[-1])
 	GV._Root.resizable(width=False, height=False)
 	textFont=Font(family='宋体', size=12)
 	fontheight = textFont.metrics()['linespace']
@@ -293,7 +293,6 @@ if __name__ == "__main__":
 	except Exception as e:
 		#print(e)
 		pass
-	
 	#initDict(GV._InputDir+"\\theDict.json")
 	
 	#从TXTs中增加新的知识到字典中
