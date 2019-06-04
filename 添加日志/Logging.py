@@ -14,17 +14,18 @@ def setDebugLevel(debuglevel):
     logging.error('error message')
     logging.critical('critical message')
 
-setDebugLevel(logging.WARNING) #显示大于或等于logging.WARNING级别的消息
+if __name__ == "__main__":
+	setDebugLevel(logging.WARNING) #显示大于或等于logging.WARNING级别的消息
 
-console = logging.StreamHandler()
-console.setLevel(logging.INFO) #在console显示大于logging.INFO级别的消息
-formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-console.setFormatter(formatter)
-logging.getLogger('').addHandler(console)
+	console = logging.StreamHandler()
+	console.setLevel(logging.INFO) #在console显示大于logging.INFO级别的消息
+	formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+	console.setFormatter(formatter)
+	logging.getLogger('').addHandler(console)
 
-logging.debug('This is debug message')
-logging.info('This is info message')
-logging.warning('This is warning message')
+	logging.debug('This is debug message')
+	logging.info('This is info message')
+	logging.warning('This is warning message')
 
 '''
 2.相关知识点

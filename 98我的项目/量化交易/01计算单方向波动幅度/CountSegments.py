@@ -7,6 +7,10 @@ import stack
 
 dicCol={'TICKER':0,'DTYYYYMMDD':1,'TIME':2,'OPEN':3,'HIGH':4,'LOW':5,'CLOSE':6,'VOL':7}
 
+dicScale = {"XAUUSD":10, "EURUSD":10000}
+pairs = "XAUUSD"
+#pairs = "EURUSD"
+
 _funcStack = stack.Stack()
 
 class GlobalVariable:
@@ -37,8 +41,9 @@ def getSegment(lPara):
 	
 	_funcStack.push(lPara)
 	while _funcStack.isEmpty()==False:
-	
+		
 		lParamaters = _funcStack.pop()
+		print(lParamaters)
 		iStart = lParamaters[0]
 		iCurClose = lParamaters[1]
 		boIsUp = lParamaters[2]
@@ -46,7 +51,7 @@ def getSegment(lPara):
 			iEnd = iCurClose
 			GV._iRow += 1
 			while GV._iRow < len(GV._aDataBase):
-				iCurClose = float(GV._aDataBase[GV._iRow][dicCol["CLOSE"]])
+				iCurClose = getPoints(GV._iRow, "CLOSE")
 				if iCurClose < iEnd:
 					iEnd = iCurClose
 				elif iCurClose-iEnd > GV._iRetreats:# reverse
@@ -59,7 +64,7 @@ def getSegment(lPara):
 			iEnd = iCurClose
 			GV._iRow += 1
 			while GV._iRow < len(GV._aDataBase):
-				iCurClose = float(GV._aDataBase[GV._iRow][dicCol["CLOSE"]])
+				iCurClose = getPoints(GV._iRow, "CLOSE")
 				if iCurClose > iEnd:
 					iEnd = iCurClose
 				elif iEnd-iCurClose > GV._iRetreats:# reverse
@@ -69,15 +74,18 @@ def getSegment(lPara):
 				else:
 					GV._iRow += 1
 	
-		
+def getPoints(row, keyofcol):
+	points = int(float(GV._aDataBase[row][dicCol[keyofcol]])*dicScale[pairs])
+	return points
+	
 def getSegments():
 	global GV
 	
 	GV._iRow = 1
-	iStart = float(GV._aDataBase[0][dicCol["CLOSE"]])	
+	iStart = getPoints(0, "CLOSE")
 	iEnd = 0
 	while GV._iRow < len(GV._aDataBase):
-		iCurClose = float(GV._aDataBase[GV._iRow][dicCol["CLOSE"]])
+		iCurClose = getPoints(GV._iRow, "CLOSE")
 		if abs(iStart - iCurClose) > GV._iRetreats:
 			if iStart > iCurClose:
 				getSegment([iStart, iCurClose, False])
@@ -89,7 +97,8 @@ def getSegments():
 def initDataBase():
 	global GV
 
-	lTemp = loadFromLocal("XAUUSD.txt")
+	#lTemp = loadFromLocal("EURUSD.txt")
+	lTemp = loadFromLocal(pairs+".txt")
 	for strLine in lTemp[1:]:
 		#print(strLine.replace("\n", "").split(","))
 		GV._aDataBase.append(strLine.replace("\n", "").split(","))
@@ -120,17 +129,15 @@ if __name__ == '__main__':
 	initDataBase()
 	getSegments()
 	
-	print(GV._lSegment)
+	#print(GV._lSegment)
 	for line in GV._lSegment:
-		countDiff(int(abs(float(line[0])-float(line[1]))))
+		countDiff(abs(int(line[0])-int(line[1])))
 		#print(int(abs(float(line[0])-float(line[1]))))
 	#print(len(GV._lSegment))
 	#print(sorted(GV._dicDiff))
 		
-	for i in range(0,1000):
-		if str(i) in GV._dicDiff:
-			print(str(i)+":"+str(GV._dicDiff[str(i)]))
-		else:
-			print(str(i)+":0")
+	for k in sorted(GV._dicDiff.keys()):
+		print(str(k)+":"+str(GV._dicDiff[k]))
+
 	
 	
