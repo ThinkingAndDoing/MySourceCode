@@ -6,11 +6,18 @@
 
 @what
 http://bbs.520fx.com/thread-38330-1-1.html
-
-@question
 外汇EA如何利用自带的MT4软件进行回测使用教程
 http://blog.sina.com.cn/s/blog_12f0f06a80102x5zi.html
 【历史数据下载】
 http://www.forextester.com/data/datasource
+30104005	xwvh53	True ECN	ICMarkets-Demo03
+30107233	bkjx53	True ECN	ICMarkets-Demo03
+30121685	tcun71	True ECN	ICMarkets-Demo03
+30146485	vhqq22	True ECN	ICMarkets-Demo03
+30146502	egkl66	True ECN	ICMarkets-Demo03
+
+
+@question
+NA
 
 @
