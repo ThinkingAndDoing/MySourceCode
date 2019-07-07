@@ -24,7 +24,7 @@ def gitCommit(repo):
         if repo.git.cherry("-v")!="":
             repo.git.commit("--amend")
         else:
-            repo.git.commit("-m", "new")
+            repo.git.commit("-m", "no comments")
  
 def gitDifftool(repo):
     commit1 = repo.git.rev_parse("HEAD")
@@ -36,7 +36,7 @@ if __name__=="__main__":
     #init repository
     repo = git.Repo(_srcpath)
     
-    print("1，执行一键Commit；\n2，执行一键push;\n3，查看本地仓库；\n4，查看仓库最近三个Commit；\n")
+    print("1，执行一键Commit；\n2，执行一键push；\n3，执行同步到远程仓库;\n4，查看本地仓库当前状态；\n5，查看本地仓库代码；\n6，查看本地仓库版本树；\n")
     cmd = input()
     if cmd=="1":
         #add new files
@@ -55,10 +55,21 @@ if __name__=="__main__":
         else:
             print(repo.git.status())
     elif cmd=="3":
-        doscmd = "start " + _srcpath
-        os.system(doscmd)
+        #git reset --hard HEAD & git clean -fd
+        if repo.git.cherry("-v")!="":
+            repo.git.reset("--hard", "HEAD~1")
+        else:
+            repo.git.reset("--hard", "HEAD")
+        repo.git.clean("-fd")
     elif cmd=="4":
-        print(repo.git.log("-3"))
+        print(repo.git.status())
+    elif cmd=="5":
+        os.system("start " + _srcpath)
+    elif cmd=="6":
+        curdir = os.getcwd()
+        os.chdir(_srcpath)
+        os.system("gitk")
+        os.chdir(curdir)
     #
     print("\nPress any key to exit!")
     cmd = input()
