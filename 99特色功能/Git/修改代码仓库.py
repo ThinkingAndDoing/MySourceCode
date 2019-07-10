@@ -66,6 +66,7 @@ if __name__=="__main__":
             else:
                 repo.git.reset("--hard", "HEAD")
             repo.git.clean("-fd")
+            repo.git.pull()
         elif cmd=="4":
             print(repo.git.status())
         elif cmd=="5":
