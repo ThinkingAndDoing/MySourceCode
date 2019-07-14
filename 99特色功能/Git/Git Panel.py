@@ -93,15 +93,15 @@ def run(repo):
         if cmd=="1":
             viewLocal()
         elif cmd=="2":
-            viewCurStatus()
+            viewCurStatus(repo)
         elif cmd=="3":
             viewWorkTree()
         elif cmd=="4":
-            startSyncToOrigin()
+            startSyncToOrigin(repo)
         elif cmd=="5":
-            startCommit()
+            startCommit(repo)
         elif cmd=="6":
-            startPush()
+            startPush(repo)
         else:
             print("Exit!")
             break
