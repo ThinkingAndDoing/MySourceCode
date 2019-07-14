@@ -18,13 +18,6 @@ git config --global -l
 
 _srcpath = r'D:\\03SourceCode\\'
 
-def gitCommit(repo):
-    if repo.is_dirty():
-        if repo.git.cherry("-v")!="":
-            repo.git.commit("--amend")
-        else:
-            repo.git.commit("-m", "no comments")
- 
 def gitDifftool(repo):
     commit1 = repo.git.rev_parse("HEAD")
     commit2 = repo.git.rev_parse("HEAD~1")
@@ -33,7 +26,7 @@ def gitDifftool(repo):
 def getCurrentStatus(repo):
     gitstatus = repo.git.status()
     curstatus = ""
-    if gitstatus.find("Untracked files:")!=-1 or gitstatus.find("Changes to be committed:")!=-1:
+    if gitstatus.find("Untracked files:")!=-1 or gitstatus.find("Changes to be committed:")!=-1 or gitstatus.find("Changes not staged for commit:")!=-1:
         curstatus = "当前有未Commit的更改！"
     elif gitstatus.find("Your branch is ahead of")!=-1:
         curstatus = "当前有未上传的Commit！"
@@ -65,7 +58,13 @@ def startSyncToOrigin(repo):
 def startCommit(repo):
     #add new files
     repo.git.add(".")
-    gitCommit(repo)
+    #git commit
+    if repo.is_dirty():
+        if repo.git.cherry("-v")!="":
+            repo.git.commit("--amend")
+        else:
+            repo.git.commit("-m", "no comments")
+            repo.git.commit("--amend")
     #compare new commit with HEAD
     if repo.git.cherry("-v")!="":
         gitDifftool(repo)
@@ -73,12 +72,7 @@ def startCommit(repo):
         print(repo.git.status())
 
 def startPush(repo):
-    if repo.git.cherry("-v")!="":
-        repo.git.commit("--amend")
-        repo.git.push()
-        print(repo.git.status())
-    else:
-        print(repo.git.status())
+    repo.git.push()
 
 def run(repo):
     
