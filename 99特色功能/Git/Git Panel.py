@@ -12,7 +12,7 @@ import os
 '''
 '''
 配置编辑工具
-git config --global core.editor "D:/01MyProgram/Notepad++/notepad++.exe"
+git config --global core.editor "D:/01MyProgram/SublimeText3/sublime_text.exe"
 git config --global -l
 '''
 
@@ -60,17 +60,15 @@ def startCommit(repo):
     repo.git.add(".")
     #git commit
     if repo.is_dirty():
-        if repo.git.cherry("-v")!="":
-            repo.git.commit("--amend")
-        else:
+        if repo.git.cherry("-v")=="":
             repo.git.commit("-m", "no comments")
-            repo.git.commit("--amend")
+            
+    
     #compare new commit with HEAD
     if repo.git.cherry("-v")!="":
         gitDifftool(repo)
-    else:
-        print(repo.git.status())
-
+    repo.git.commit("--amend")
+    
 def startPush(repo):
     repo.git.push()
 
