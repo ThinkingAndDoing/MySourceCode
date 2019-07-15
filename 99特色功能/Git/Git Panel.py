@@ -66,8 +66,9 @@ def startCommit(repo):
     
     #compare new commit with HEAD
     if repo.git.cherry("-v")!="":
+        repo.git.commit("--amend")
         gitDifftool(repo)
-    repo.git.commit("--amend")
+        
     
 def startPush(repo):
     repo.git.push()
