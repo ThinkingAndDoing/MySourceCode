@@ -1,20 +1,32 @@
 import os
 import exifread
-
+import hashlib
+import time
 
 lImgDictList = []
-#dImgDic={"ctime":"", "latitude":"", "longitude":"", "hash":"", "filename":""}
+#dImgDic={"ctime":"", "latitude":"", "longitude":"", "hash":"", "oldfilename":"", "newfilename":""}
 # os.rename(old_full_file_name, new_full_file_name)
 
+def md5sum(filename):
+	f=open(filename, 'rb')
+	md5=hashlib.md5()
+	while True:
+		fb = f.read(8096)
+		if not fb:
+			break
+		md5.update(fb)
+	f.close()
+	return (md5.hexdigest())
 
 def getExif(imgpath, filename):
+    print(filename)
     dImgDic = {}
     old_full_file_name = os.path.join(imgpath, filename)
     fd = open(old_full_file_name, 'rb')
     tags = exifread.process_file(fd)
     fd.close()
     
-    dImgDic["filename"] = old_full_file_name
+    dImgDic["oldfilename"] = old_full_file_name
     if "EXIF DateTimeOriginal" in tags:
         dImgDic["ctime"] = tags["EXIF DateTimeOriginal"].printable
     else:
@@ -32,7 +44,7 @@ def getExif(imgpath, filename):
     else:
         dImgDic["latitude"] = ""
     
-    if "EXIF DateTimeOriginal" in tags:
+    if "EXIF GPSLongitudeRef" in tags:
         LonRef=tags["GPS GPSLongitudeRef"].printable
         Lon=tags["GPS GPSLongitude"].printable[1:-1].replace(" ","").replace("/",",").split(",")
         if len(Lon)==3:
@@ -44,6 +56,15 @@ def getExif(imgpath, filename):
     else:
         dImgDic["longitude"] = ""
     
+    dImgDic["hash"] = md5sum(old_full_file_name)
+    
+    if dImgDic["ctime"]!="":
+        tmCtime = time.strptime(dImgDic["ctime"], '%Y:%m:%d %H:%M:%S')
+        strNewFileName = "["+str(tmCtime.tm_year) + "年" +str(tmCtime.tm_mon)+"月"+str(tmCtime.tm_mday)+"日]"+ dImgDic["hash"][:6]+os.path.splitext(filename)[1]
+    else:
+        strNewFileName = dImgDic["hash"]+os.path.splitext(filename)[1]
+    dImgDic["newfilename"] = os.path.join(imgpath, strNewFileName)
+    os.rename(dImgDic["oldfilename"], dImgDic["newfilename"])
     print(dImgDic)
         
 def reOrderImgs(strSrcImg):
@@ -56,5 +77,5 @@ def reOrderImgs(strSrcImg):
 
 if __name__=="__main__":
 
-    reOrderImgs("C:\\Users\\Administrator\\Desktop\\test\\2016")
+    reOrderImgs("E:\\娱乐\\图片\\我的照片\\2018")
 
