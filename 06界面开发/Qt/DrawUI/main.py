@@ -8,21 +8,20 @@
 
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.uic import loadUi
+from mainwindow import *
 
 
-def testbutton():
-    print("Button clicked")
-
-class MainWindow(QMainWindow):
+class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
-        loadUi('untitled.ui', self)
-        #self.pushButton.clicked.connect(testbutton)
+        super(MyWindow, self).__init__(parent)
+        self.setupUi(self)
+        window_pale = QtGui.QPalette() 
+        window_pale.setBrush(self.backgroundRole(),  QtGui.QBrush(QtGui.QPixmap("bg.jpg"))) 
+        self.setPalette(window_pale)
+        #self.showFullScreen()
 
-if __name__=="__main__":
-
+if __name__ == '__main__':
     app = QApplication(sys.argv)
-    w = MainWindow()
-    w.show()
-    sys.exit(app.exec())
+    myWin = MyWindow()
+    myWin.show()
+    sys.exit(app.exec_())
