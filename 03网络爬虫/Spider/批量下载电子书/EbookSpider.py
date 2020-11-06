@@ -76,8 +76,10 @@ class GetText:
          data = self.getDataOfOnePage(url)
          f = open(filename+".txt","w",encoding='utf-8')
          f.write(data)
-      except:
+      except Exception as e:
+         print(e)
          print("Exception! File can't be save at "+url)
+
 
 
    def startDownload(self):
@@ -113,19 +115,20 @@ class Traverse:
       else:
          logging.debug("Next page is not found!")
 
-url = "http://www.gulongbbs.com/jinyong/sdyxz/2867.htm"
-contentPattern = re.compile('<span style="font-size:14px;line-height:25px;" zzz=".*?">(.*?)</table><div style="LINE-HEIGHT: 5px">',re.S)
-t = Traverse()
-gt = GetText()
-while url!="":
-    print(url)
-    t.readPage(url)
-    if t.fileName!="" and t.thisPage!=[]:
-        gt.setPattern(contentPattern)
-        gt.setUrlAndFilename(t.thisPage, t.fileName)
-        gt.startDownload()
-    url = t.nextPage
-print("抓取完成！")
+if __name__=="__main__":
+    url = "http://www.gulongbbs.com/jinyong/sdyxz/2867.htm"
+    contentPattern = re.compile('<span style="font-size:14px;line-height:25px;" zzz=".*?">(.*?)</table><div style="LINE-HEIGHT: 5px">',re.S)
+    t = Traverse()
+    gt = GetText()
+    while url!="":
+        print(url)
+        t.readPage(url)
+        if t.fileName!="" and t.thisPage!=[]:
+            gt.setPattern(contentPattern)
+            gt.setUrlAndFilename(t.thisPage, t.fileName)
+            gt.startDownload()
+        url = t.nextPage
+    print("抓取完成！")
 
 
 '''

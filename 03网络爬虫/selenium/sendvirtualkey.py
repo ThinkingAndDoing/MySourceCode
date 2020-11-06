@@ -3,7 +3,7 @@
 
 import sys
 import webbrowser
-import win32api
+import win32api #pip install pywin32
 import win32con
 import win32gui
 from ctypes import *
