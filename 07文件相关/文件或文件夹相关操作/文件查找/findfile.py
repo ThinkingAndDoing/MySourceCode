@@ -5,22 +5,24 @@ import sys
 import shutil
 import os
 
-_Key = sys.argv[1]
-_DistDir = sys.argv[2]
+#_Filename = sys.argv[1]
 
-def findStrInFiles(key, distpath):
+def findStrInFiles(fileToBeSearch, distpath):
+	print("查询结果如下：")
 	for root, dirs, files in os.walk(distpath, topdown=False):
+		if root.find(os.getcwd()+"\\"+".git")!=-1:
+			continue
+			
 		for name in files:
 			try:
 				filename = os.path.join(root, name)
-				f = open(filename, "r")
-				if f.read().find(key)!=-1:
+				if filename.find(fileToBeSearch)!=-1:
 					print(os.path.join(root, name))
-				f.close()
 			except Exception as e:
 				continue
-				#print(e)
 
 if __name__=="__main__":
-	findStrInFiles(_Key, _DistDir)
+	print("请输入要查找的文件名！")
+	inputStr = input()
+	findStrInFiles(inputStr, ".")
 

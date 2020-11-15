@@ -4,13 +4,12 @@
 # reference: https://jira.readthedocs.io/en/latest/
 from jira import JIRA
 import sys, os
-import redis
 
  
 class JiraTool:
 	def __init__(self):
-		self.server = 'https://jira'
-		self.basic_auth = ('username', 'password')
+		#self.server = 'urlOfJira'
+		self.basic_auth = ('username', 'pwd')
 		self.jiraClinet = None
  
 	def login(self):
@@ -33,13 +32,12 @@ class JiraTool:
 		issue_dict = {
  
             'project': {'key': project},
-            'issuetype': {'name': 'Sub-Task'},
+            'issuetype': {'name': 'Review Subtask'},
             'parent': {'key': parent},
             'summary': '[xxx]Auto sync file %s from storage-cnn to storage'%(filepath),
             'description': description,
             'assignee': {'name': assignee},
-            'customfield_12603': {'value': 'xxx'},
-            'components': [{'name': 'SCM'}],
+            'components': [{'name': 'wrn_hmi'}],
             'priority': {'name': 'Major'},
  
 		}
@@ -74,16 +72,15 @@ class JiraTool:
 	
 if __name__ == '__main__':
  
-	redisTool = redis.Redis(host='127.0.0.1', port=6379)
 	jiraTool = JiraTool()
 	jiraTool.login()	
 	
-	jiraTool.searchIssuesByJiraCmd('project = CYE AND issuetype in standardIssueTypes() AND resolution = Unresolved AND fixVersion in (V13.20.pre01, V23.20.pre01) AND assignee in (currentUser()) ORDER BY fixVersion ASC, status DESC, priority DESC, updated DESC')
+	#jiraTool.searchIssuesByJiraCmd('project = CYE AND issuetype in standardIssueTypes() AND resolution = Unresolved AND fixVersion in (V13.20.pre01, V23.20.pre01) AND assignee in (currentUser()) ORDER BY fixVersion ASC, status DESC, priority DESC, updated DESC')
 	
-	jiraTool.printAvailableNextStatus("CYE-20544")
+	#jiraTool.printAvailableNextStatus("CYE-25865")
 
 	#jiraTool.classify("CYE-20544")
 
-	#jiraTool.printAvailableNextStatus("CYE-20544")
+	jiraTool.createIssue("Code Review", "uidp8103", "CYE", "CYE-25865", "") #1684459
 
 

@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
-import os,hashlib
-
+import os
+import hashlib
+import send2trash
 
 _MD5HashCode = {}
-_DistDir = 'resource'
+_DistDir = os.getcwd()
 _NumOfDelFiles = 0
 
 def md5sum(filename):
@@ -24,7 +25,8 @@ def removeFile(file):
 	
 	_NumOfDelFiles = _NumOfDelFiles + 1
 	try:
-		os.remove(file)
+		#os.remove(file)
+		send2trash.send2trash(file)
 	except:
 		print(file + " can't be deleted!")
 
@@ -49,7 +51,7 @@ def addNewMd5(file):
 		_MD5HashCode[md5key] = file
 
 if __name__=='__main__':
-	removeDupFiles()
-	print(str(_NumOfDelFiles) + ' files are deleted!')
+    removeDupFiles()
+    print(str(_NumOfDelFiles) + ' files are deleted!')
 	
 	
