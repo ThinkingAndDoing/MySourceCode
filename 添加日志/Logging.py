@@ -1,12 +1,12 @@
-'''
+"""
 1.例子源代码 Python 3.x
-'''
+"""
 # -*- coding: UTF-8 -*-
 import logging
 
 
-def setDebugLevel(debuglevel):
-    logging.basicConfig(level=debuglevel,format='%(message)s',filename='test.log',filemode='w')
+def setdebuglevel(debuglevel):
+    logging.basicConfig(level=debuglevel, format='%(message)s', filename='test.log', filemode='w')
     logging.critical('-------------------------------')
     logging.debug('debug message')
     logging.info('info message')
@@ -14,18 +14,19 @@ def setDebugLevel(debuglevel):
     logging.error('error message')
     logging.critical('critical message')
 
+
 if __name__ == "__main__":
-	setDebugLevel(logging.WARNING) #显示大于或等于logging.WARNING级别的消息
+    setdebuglevel(logging.WARNING)  # 显示大于或等于logging.WARNING级别的消息
 
-	console = logging.StreamHandler()
-	console.setLevel(logging.INFO) #在console显示大于logging.INFO级别的消息
-	formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-	console.setFormatter(formatter)
-	logging.getLogger('').addHandler(console)
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)  # 在console显示大于logging.INFO级别的消息
+    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+    console.setFormatter(formatter)
+    logging.getLogger('').addHandler(console)
 
-	logging.debug('This is debug message')
-	logging.info('This is info message')
-	logging.warning('This is warning message')
+    logging.debug('This is debug message')
+    logging.info('This is info message')
+    logging.warning('This is warning message')
 
 '''
 2.相关知识点
@@ -64,18 +65,6 @@ logging.info('This is info message')
 logging.warning('This is warning message')
 '''
 
-
-
-
-
-
-
-
-
-
-
-
 '''
 3.扩展
 '''
-
