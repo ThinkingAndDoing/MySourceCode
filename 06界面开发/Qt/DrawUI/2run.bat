@@ -1,7 +1,8 @@
 @echo off
 
-pyuic5 -o mainwindow.py untitled.ui
+pyuic5 -o ui.py untitled.ui
 
-python main.py
+python maindialog.py
+rem python mainwindow.py
 
 pause
