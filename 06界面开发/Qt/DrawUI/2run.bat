@@ -2,7 +2,7 @@
 
 pyuic5 -o ui.py untitled.ui
 
-python maindialog.py
-rem python mainwindow.py
+rem python maindialog.py
+python mainwindow.py
 
 pause

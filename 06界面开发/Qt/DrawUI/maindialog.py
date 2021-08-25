@@ -15,10 +15,11 @@ from ui import *
 
 
 class My_Dialog(QDialog, Ui_Dialog):
-    def __init__(self, parent=None):
-        super(My_Dialog, self).__init__(parent)
-        self.setupUi(self)
-
+	def __init__(self, parent=None):
+		super(My_Dialog, self).__init__(parent)
+		self.setupUi(self)
+		self.setWindowTitle("开发中")
+		self.setFixedSize(self.width(), self.height())
 
 if __name__ == "__main__":  
 	app = QApplication(sys.argv) 

@@ -8,20 +8,20 @@
 
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from mainwindow import *
+from ui import *
 
+#ctrl + R  Preview
 
 class MyWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, parent=None):
-        super(MyWindow, self).__init__(parent)
-        self.setupUi(self)
-        window_pale = QtGui.QPalette() 
-        window_pale.setBrush(self.backgroundRole(),  QtGui.QBrush(QtGui.QPixmap("bg.jpg"))) 
-        self.setPalette(window_pale)
-        #self.showFullScreen()
+	def __init__(self, parent=None):
+		super(MyWindow, self).__init__(parent)
+		self.setupUi(self)
+		self.setWindowTitle("开发中")
+		self.setFixedSize(self.width(), self.height())
+		#self.showFullScreen()
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    myWin = MyWindow()
-    myWin.show()
-    sys.exit(app.exec_())
+	app = QApplication(sys.argv)
+	myWin = MyWindow()
+	myWin.show()
+	sys.exit(app.exec_())
