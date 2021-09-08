@@ -1,26 +1,35 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
  
+import os
 import poplib
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
+import configparser
 
+def get_conf_from_local():
+	conf= configparser.ConfigParser()
+	root_path = os.getcwd()
+	conf.read(root_path + '\\configuration\\mail.conf')
+	return conf
+	
 class sendemail:
 	def __init__(self):
-		self.mail_host="smtp.163.com"
-		self.mail_user="15192535292@163.com"
-		self.mail_pass="***"
-		self.sender = '15192535292@163.com'
-		self.receiver = 'xiewei23703@163.com'  # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
+		conf = get_conf_from_local()
+		self.mail_host= conf.get("sender", "mail_host")
+		self.mail_user= conf.get("sender", "mail_user")
+		self.mail_pass= conf.get("sender", "mail_pass")
+		self.sender = self.mail_user
+		self.receiver = ''  # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
 		self.smtpObj = smtplib.SMTP()
 		self.content = ""
 		self.subject = ""
 
-	def setHeader(self, str):
+	def set_header(self, str):
 		self.subject = str
 	
-	def setContent(self, str):
+	def set_content(self, str):
 		self.content = str
 
 	def login(self):
@@ -31,16 +40,17 @@ class sendemail:
 			print("Error: 无法登陆邮箱")
 			print("Exception：",e)
 	
-	def getMessage(self):
+	def get_message(self):
 		message = MIMEText(self.content, 'plain')
 		message['From'] = "Robet" + "<"+ self.sender +">" #Fix error: 554 DT:SPM
-		message['To'] =  "XieWei" + "<"+ self.receiver +">" #Fix error: 554 DT:SPM
+		message['To'] =  "XW" + "<"+ self.receiver +">" #Fix error: 554 DT:SPM
 		message['Subject'] = self.subject
 		return message
 
-	def send(self):
+	def send_to(self, r):
+		self.receiver = r
 		try:
-			message = self.getMessage()
+			message = self.get_message()
 			self.smtpObj.sendmail(self.sender, self.receiver, message.as_string())
 			print("邮件发送成功")
 		except smtplib.SMTPException as e:
@@ -54,9 +64,9 @@ class sendemail:
 def testSendEmail():
 	smpt = sendemail()
 	smpt.login()
-	smpt.setHeader("au Price")
-	smpt.setContent("180")
-	smpt.send()
+	smpt.set_header("au")
+	smpt.set_content("180")
+	smpt.send_to("xxx@163.com")
 	smpt.close()
 
-#testSendEmail()
+testSendEmail()
