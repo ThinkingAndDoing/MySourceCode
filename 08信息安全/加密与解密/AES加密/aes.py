@@ -4,7 +4,7 @@ import sys
 from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex
 
-_cryptKey = 'keyskeyskeyskeys'
+_cryptKey = 'keyskeyskeyskeyskeyskeyskeyskeys'
 
 class AEScrypt():
 	def __init__(self, key=_cryptKey):#初始化密钥
@@ -12,8 +12,15 @@ class AEScrypt():
 		self.mode = AES.MODE_CBC
     
 	def encrypt(self, text):
-		cryptor = AES.new(self.key, self.mode, self.key)
-		#这里密钥key 长度必须为16（AES-128）、24（AES-192）、或32（AES-256）Bytes 长度.目前AES-128足够用
+		cryptor = AES.new(self.key, self.mode, IV=self.key[:16]) 
+		"""
+		AES算法需要两个不同的参数进行加密，分别是密钥和初始化向量（IV）。
+		创建密钥文件的三个选择：
+		1.将硬编码的IV嵌入应用程序中，并将密钥保存在密钥文件中。
+		2.将硬编码的密钥嵌入应用程序中，并将IV保存在密钥文件中。
+		3.将密钥和IV保存在密钥文件中。
+		这里密钥key 长度必须为16（AES-128）、24（AES-192）、或32（AES-256）Bytes 长度.目前AES-128足够用
+		"""
 		length = 16
 		count = len(text)
 		add = length - (count % length)
@@ -25,7 +32,7 @@ class AEScrypt():
 		return b2a_hex(self.ciphertext).decode('utf8')
 	
 	def decrypt(self, text):
-		cryptor = AES.new(self.key, self.mode, self.key)
+		cryptor = AES.new(self.key, self.mode, IV=self.key[:16])
 		plain_text = cryptor.decrypt(a2b_hex(text))
 		#解密后，去掉补足的空格用strip() 去掉
 		return plain_text.decode('utf8').rstrip('\0')

@@ -47,7 +47,7 @@ if __name__ == "__main__":
 	print(listA)
 	print(quickSortByIndex( listA, 0, len(listA)-1, 1))
 
-	listB = ["hello","wei","xie","abc","def"]
+	listB = ["hello","wei","xi","abc","def"]
 	print(listB)
 	print(quickSort(listB, 0, len(listB)-1))
 	
