@@ -1,0 +1,10 @@
+###########################################################################
+# git ignore file
+###########################################################################
+
+########################## binaries #################################
+# Binary files must not be added to repo because git is not good in handling them.
+# They are not diffable, not mergeable and not well compressible (slow down repo cloning).
+# Forced check in is only allowed if those files are needed for the build.
+*.exe
+*.o
