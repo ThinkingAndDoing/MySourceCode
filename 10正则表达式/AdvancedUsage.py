@@ -4,12 +4,19 @@
 import re
 from functools import wraps
 
+
+
+#https://baijiahao.baidu.com/s?id=1712491497500869183&wfr=spider&for=pc
+#https://zhuanlan.zhihu.com/p/127807805
+#https://www.runoob.com/python/python-reg-expressions.html
+
+
 def print_header(func):
 
 	@wraps(func)
 	def decorate(*args, **kwargs):
 	
-		print("\n" + "*"*50)
+		print("\n● ", end="")
 		if func.__name__ == "re_multi_exp":
 			print("多关键字匹配")
 		elif func.__name__ == "re_forward_definition":
@@ -20,10 +27,14 @@ def print_header(func):
 			print("贪婪与非贪婪")
 		elif func.__name__ == "re_chinese_match":
 			print("中文匹配")
+		elif func.__name__ == "re_exclude_match":
+			print("一行中不包含某个字符串")
+		else:
+			print("XXX匹配")
 			
-		print("")
+		#print("\n"*2)
 		ret = func(*args, **kwargs)
-		#print("*"*3)
+		print("\n"*2)
 		return ret
 		
 	return decorate
@@ -36,8 +47,9 @@ def re_multi_exp():
 	text = "xx,,xx=,-xy2,,@enD,"
 	pattern = re.compile(r'[a-z]+|\d')
 	rst = re.findall(pattern, text)
+	print("原文："+text+"\n")
 	print("匹配结果：")
-	print(rst)
+	print(rst)  #['xx', 'xx', 'xy', '2', 'en']
 
 @print_header
 def re_forward_definition():
@@ -47,14 +59,16 @@ def re_forward_definition():
 	text = "red,,white,and blue"
 	pattern = re.compile(r'[a-z]+(?=,,)')
 	rst = re.findall(pattern, text)
+	print("原文："+text+"\n")
 	print("示例1匹配结果：")
-	print(rst)
+	print(rst)  #['red']
 
 	# 前向界定
 	text = 'aa<div>test1</div>bb<div>test2</div>cc'
+	print("原文："+text+"\n")
 	print("示例2匹配结果：")
-	print(re.search(r'.*(?=bb)', text).group())
-	print(re.search(r'(?<=bb).*(?=cc)', text).group())
+	print(re.search(r'.*(?=bb)', text).group())  #aa<div>test1</div>
+	print(re.search(r'(?<=bb).*(?=cc)', text).group())  #<div>test2</div>
 	
 @print_header
 def re_backward_reference():
@@ -65,13 +79,15 @@ def re_backward_reference():
 	text = "taobao taobao, taobao jingdong, jingdong, jingdong jingdong"
 	pattern = re.compile(r'\b(\w+)\b\s+(\1)')
 	rst = re.findall(pattern, text)
+	print("原文："+text+"\n")
 	print("示例1匹配结果：")
-	print(rst)
+	print(rst)  #[('taobao', 'taobao'), ('jingdong', 'jingdong')]
 
 	# 将从被替换文字中匹配到的内容，作为替换后内容的一部分
 	text = 'Today is 11/27/2018. PyCon starts 3/13/2018.'
+	print("原文："+text+"\n")
 	print("示例2匹配结果：")
-	print(re.sub(r'(\d+)/(\d+)/(\d+)', r'\3-\1-\2', text))
+	print(re.sub(r'(\d+)/(\d+)/(\d+)', r'\3-\1-\2', text))  #Today is 2018-11-27. PyCon starts 2018-3-13.
 	
 @print_header
 def re_greedy_nongreedy():
@@ -79,11 +95,12 @@ def re_greedy_nongreedy():
 	贪婪与非贪婪匹配
 	'''
 	text = 'aa<div>test1</div>bb<div>test2</div>cc'
+	print("原文："+text+"\n")
 	print("匹配结果：")
-	print(re.search(r'<div>.*</div>', text).group())  # 贪婪式
-	print(re.search(r'<div>.*?</div>', text).group())  # 非贪婪式
-	print(re.search(r'<div>.*</div>cc', text).group())  # 贪婪式
-	print(re.search(r'<div>.*?</div>cc', text).group())  # 非贪婪式
+	print(re.search(r'<div>.*</div>', text).group())  # 贪婪式，<div>test1</div>bb<div>test2</div>
+	print(re.search(r'<div>.*?</div>', text).group())  # 非贪婪式，<div>test1</div>
+	print(re.search(r'<div>.*</div>cc', text).group())  # 贪婪式，<div>test1</div>bb<div>test2</div>cc
+	print(re.search(r'<div>.*?</div>cc', text).group())  # 非贪婪式，<div>test1</div>bb<div>test2</div>cc
 
 @print_header
 def re_chinese_match():
@@ -93,9 +110,23 @@ def re_chinese_match():
 	text = '你好吗 world. I will come! 这个世界'
 	pattern = re.compile('([\u4e00-\u9fa5]+)')
 	results = pattern.findall(text)
+	print("原文："+text+"\n")
 	print("匹配结果：")
-	print(results)
+	print(results)  #['你好吗', '这个世界']
 	
+@print_header
+def re_exclude_match():
+	'''
+	匹配不包含 "MsgID_" 的一行
+	'''
+	text = '11.22 MsgID_Pre!\r\n we are the world!\r\n 2.11 MsgID_Has!\r\n 11.33'
+	pattern = re.compile('^(?!.*MsgID_).*$', re.M)
+	results = pattern.findall(text)
+	print("原文："+text+"\n")
+	print("匹配结果：")
+	print(results)  #[' we are the world!\r', ' 11.33']
+
+
 def run_re_example():
 
 	re_multi_exp()
@@ -108,6 +139,9 @@ def run_re_example():
 	
 	re_chinese_match()
 
+	re_exclude_match()
+	
+	
 if __name__ == "__main__":
 
 	run_re_example()
