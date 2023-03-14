@@ -2,8 +2,7 @@
 #define NOTIFICATION_HPP
 
 #include <vector>
-#include "warningresourceids.hpp"
-#include "warningstrategy.hpp"
+#include "typedefine.hpp"
 
 // The template component.
 class Notification
@@ -39,7 +38,7 @@ public:
 		int m_ACID;
 	};
 
-    unsigned int u16ActiveNotificationID;
+	uint16 u16ActiveNotificationID;
 
 
 

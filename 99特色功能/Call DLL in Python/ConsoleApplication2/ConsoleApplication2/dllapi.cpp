@@ -1,37 +1,83 @@
-
+/***********************************************************
+Include Header
+***********************************************************/
+#include "MyTimer.hpp"
 #include "warningstrategy.hpp"
 
-WarningStrategy ws;
-extern "C" __declspec(dllexport) int add(int a, int b);
-extern "C" __declspec(dllexport) void RequestWarning(int id);
-extern "C" __declspec(dllexport) void ReleaseWarning(int id);
-extern "C" __declspec(dllexport) void TimeTick(void);
-extern "C" __declspec(dllexport) unsigned int GetActiveWarningID(void);
 
-int add(int a, int b)
+/***********************************************************
+Macro define & Type define
+***********************************************************/
+#define API_DLL __declspec(dllexport)
+#define CALL_TYPE __cdecl
+
+typedef void(*_callback_python_func)(int iParam);
+
+/***********************************************************
+Export API in DLL
+***********************************************************/
+extern "C"
 {
-    return a + b;
+	API_DLL void CALL_TYPE init(void);
+	API_DLL void CALL_TYPE RequestWarning(int id);
+	API_DLL void CALL_TYPE ReleaseWarning(int id);
+	API_DLL unsigned int CALL_TYPE GetActiveWarningID(void);
+
+	API_DLL void CALL_TYPE dllRegisterPythonFunc(void *pyFuncPtr);
 }
 
-void RequestWarning(int id)
+
+/***********************************************************
+Function declaration
+***********************************************************/
+void OnWarningChanged(uint16 u16ActiveWrnID);
+
+
+
+/***********************************************************
+Global variant
+***********************************************************/
+WarningStrategy ws;
+cMyTimer myTimer(&ws);
+_callback_python_func python_functioin;
+
+
+
+/***********************************************************
+Function define
+***********************************************************/
+
+void CALL_TYPE init(void)
+{
+    myTimer.CreateTimer(100);
+	myTimer.SetOnTimerCallback(OnWarningChanged);
+}
+
+void CALL_TYPE RequestWarning(int id)
 {
     ws.RequestWarning((enum WarningIDs)id);
 }
 
 
-
-void ReleaseWarning(int id)
+void CALL_TYPE ReleaseWarning(int id)
 {
     ws.ReleaseWarning((enum WarningIDs)id);
 }
 
 
-void TimeTick(void)
-{
-    ws.TimeTick();
-}
-
-unsigned int GetActiveWarningID(void)
+unsigned int CALL_TYPE GetActiveWarningID(void)
 {
     return ws.GetActiveWarningID();
 }
+
+void CALL_TYPE dllRegisterPythonFunc(void *pyFuncPtr)
+{
+	python_functioin = (_callback_python_func)pyFuncPtr;
+}
+
+void OnWarningChanged(uint16 u16ActiveWrnID)
+{
+	python_functioin(u16ActiveWrnID);
+
+}
+

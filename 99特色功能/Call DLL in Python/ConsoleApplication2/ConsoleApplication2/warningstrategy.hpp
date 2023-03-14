@@ -1,5 +1,6 @@
 #ifndef LIST_H
 #define LIST_H
+#include "warningtimer.hpp"
 #include "warningresourceids.hpp"
 
 
@@ -21,7 +22,7 @@ class TimeSpan;
 
 class WarningView;
 
-class WarningStrategy
+class WarningStrategy: public WarningTimer
 {
 public:
     WarningStrategy();  //构造函数，初始化链表
@@ -38,11 +39,8 @@ public:
     void ReleaseWarning(enum WarningIDs wrnid);
     void ForceReleaseWarning(enum WarningIDs wrnid);
     uint16 GetActiveWarningID(void);
-    void TimeTick(void);
 
 private:
-    uint16 CreateTimer(uint16 u16TimeGap);
-    void DeleteTimer(uint16 id);
     void OnTimer(uint16 id);
     void UpdateCurrentWarning(WarningView * pUpdate); 
     WarningView* GetWarningViewByID(enum WarningIDs wrnid);
@@ -50,6 +48,7 @@ private:
     bool RemoveWarningView(enum WarningIDs wrnid);  
     bool AddNewWarningView(WarningView * pNewView); 
     bool InsertPriority(WarningView *pNode);      //按照优先级插入
+    void ReleaseCurrentShowNew(WarningView *pNewView);
 
     //头节点 pre 为 NULL，尾节点 next 为 NULL
     WarningView* pHead;     //链表头指针
@@ -58,8 +57,6 @@ private:
     enum AddWarningPolicy enAddWarningPolicy;
     enum SelectWarningPolicy enSelectWarningPolicy;
     bool boSuspension;
-    uint16 u16TimeCounter;
-    uint16 u16TimerID;
 };
 
 #endif

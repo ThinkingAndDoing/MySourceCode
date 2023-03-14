@@ -8,7 +8,6 @@
 
 WarningStrategy::WarningStrategy()   /*构造函数，用于创建一个链表*/
 {
-    u16TimeCounter = 0;
     boSuspension = false;
     pHead = NULL;
     pCurrent = NULL;
@@ -101,6 +100,19 @@ bool WarningStrategy::InsertPriority(WarningView *pNode)
 }
 
 
+void WarningStrategy::ReleaseCurrentShowNew(WarningView *pNewView)
+{
+    enum WarningIDs toBeRemovedID = InvalidWarningId;
+
+    if(NULL != pCurrent)
+    {
+        pCurrent->WarningID;
+    }
+
+    UpdateCurrentWarning(pNewView);
+    RemoveWarningView(toBeRemovedID);
+}
+
 /*
  * 通过WarningID从双向链表中删除节点
  */
@@ -190,14 +202,17 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
                 enTimeSpanATemp = pCurrent->paTimespan[pCurrent->curTimespanIndex]->OnNewHighPriority;
             }
 
+            if (pNewView->m_u16Priority > pCurrent->m_u16Priority && pNewView->boImmediate == true)
+            {
+                enTimeSpanATemp = WBDisplace;
+            }
+
             switch (enTimeSpanATemp)
             {
             case WBDisplace:
                 if (pCurrent->boPendingRelease == true)
                 {
-                    enum WarningIDs toBeRemovedID = pCurrent->WarningID;
-                    UpdateCurrentWarning(pNewView);
-                    RemoveWarningView(toBeRemovedID);
+					ReleaseCurrentShowNew(pNewView);
                 }
                 else{
                     UpdateCurrentWarning(pNewView);
@@ -216,9 +231,7 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
 
             case WBRelease:
             	{
-	                enum WarningIDs toBeRemovedID = pCurrent->WarningID;
-                    UpdateCurrentWarning(pNewView);
-                    RemoveWarningView(toBeRemovedID);
+					ReleaseCurrentShowNew(pNewView);
 				}
                 break;
 
@@ -517,9 +530,7 @@ void WarningStrategy::OnTimer(uint16 id)
                     if (pNewArrival!=NULL && pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->OnNewHighPriority == WBDisplace && pCurrent->m_u16Priority < pNewArrival->m_u16Priority)  //下一个timespan允许打断 && 有新来高优先级报警？
                     {
                         //release current and show new
-                        enum WarningIDs toBeRemovedID = pCurrent->WarningID;
-                        UpdateCurrentWarning(pNewArrival);
-                        RemoveWarningView(toBeRemovedID);
+						ReleaseCurrentShowNew(pNewArrival);
                     }
                     else
                     {
@@ -586,32 +597,6 @@ void WarningStrategy::OnTimer(uint16 id)
 }
 
 
-void WarningStrategy::TimeTick(void)
-{
-    if (u16TimeCounter > 0)
-    {
-        u16TimeCounter--;
-        if (u16TimeCounter == 0)
-        {
-            OnTimer(u16TimerID);
-        }
-    }
-}
 
-uint16 WarningStrategy::CreateTimer(uint16 u16TimeGap)
-{
-    u16TimeCounter = u16TimeGap;
-    u16TimerID = 1;
-    return u16TimerID;
-}
-
-void WarningStrategy::DeleteTimer(uint16 id)
-{
-    if (u16TimerID == id)
-    {
-        u16TimeCounter = 0;
-        u16TimerID = 0;
-    }
-}
 
 

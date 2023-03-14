@@ -48,6 +48,7 @@ public:
 
     void BuildWarningView(enum WarningIDs wrnid);
 
+    bool boImmediate;
     bool isPendingInterrupt;
     bool boPendingRelease;
     int m_u16Priority;

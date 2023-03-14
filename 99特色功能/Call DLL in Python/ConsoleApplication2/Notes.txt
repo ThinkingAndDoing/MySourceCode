@@ -1,0 +1,35 @@
+
+Immediate属性：Immediate属性在高优先级打断低优先级时生效。无视最小显示时间和UserLockTime
+CheckViewList：列表按照进入顺序排序，最多显示10个。创建10个变量通过Datasource提供给View
+OpenIssue：
+1，若列表中间的Notification被取消后，列表后面的Notification是否要往上移？要上移
+2，对于Timeout的Notification是否要进入列表？要进列表
+3，Notification被按键Press之后进入列表，还是在报警进入Queue时，同时进入Stack？被Press之后进入列表
+UserLockTime：
+UsageMode：切换UsageMode时，要遵循最小显示时间，DisplayTimeout不需要重新计时
+Available：行为与UsageMode相同。只有0~7八种状态，不需要按照bit位设计。
+
+
+
+WarningList如何实现？
+
+
+WarningManger framework
+
+模块功能实现
+
+
+
+
+未完成项：
+
+WarningManger framework 模块功能开发计划
+1，Immediate属性。3 days
+2，UserLockTime。5 days
+3，WarningList。5 days
+4，UsageMode。4 days
+
+
+
+
+

@@ -117,7 +117,7 @@ NotiDescriptionVector notiDescriptions = {
 	Notification::NotiDescription(249, 8, 5000, false, 0, true, 1000, 500, "Time for regular maintenance", 242),
 	Notification::NotiDescription(250, 8, 5000, false, 3, true, 1000, 500, "Maintenance overdue", 243),
 	Notification::NotiDescription(260, 3, 0, true, 1, true, 1000, 500, "Do not connect two cables", 0),
-	Notification::NotiDescription(265, 2, 0, false, 1, true, 2000, 500, "High voltage battery failure\nStop Safely\nImmediately leave the vehicle", 110),
+	Notification::NotiDescription(265, 2, 0, false, 1, true, 2000, 500, "High voltage battery failure\nStop Safely\ndiately leave the vehicle", 110),
 	Notification::NotiDescription(266, 4, 0, false, 0, true, 2000, 500, "High voltage system self-check\nPlease wait", 111),
 	Notification::NotiDescription(267, 2, 0, false, 3, true, 2000, 500, "Power system fault\nDo not drive\nService required", 112),
 	Notification::NotiDescription(268, 2, 0, false, 1, true, 2000, 500, "Power system fault\nStop safely\nService required", 113),

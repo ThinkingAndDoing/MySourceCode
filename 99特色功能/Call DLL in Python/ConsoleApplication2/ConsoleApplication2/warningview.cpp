@@ -6,8 +6,10 @@
 
 extern NotiDescriptionVector notiDescriptions;
 
-WarningView::WarningView(enum WarningIDs wrnid) {
+WarningView::WarningView(enum WarningIDs wrnid) 
+{
 
+    boImmediate = false;
     boPendingRelease = false;
     next = pre = NULL;
     curTimespanIndex = INVALID_TIMESPAN_ID;
