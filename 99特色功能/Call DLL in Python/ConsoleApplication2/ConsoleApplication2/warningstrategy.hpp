@@ -1,5 +1,5 @@
-#ifndef LIST_H
-#define LIST_H
+#ifndef WARNINGSTRATEGY_H
+#define WARNINGSTRATEGY_H
 #include "warningtimer.hpp"
 #include "warningresourceids.hpp"
 

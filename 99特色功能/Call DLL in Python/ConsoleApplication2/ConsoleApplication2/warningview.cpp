@@ -61,6 +61,7 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
     {
         this->WarningID = (enum WarningIDs)notiDescriptions.at(uNotiDesc).m_ACID;
         this->m_u16Priority = notiDescriptions.at(uNotiDesc).m_Prio;
+		this->boImmediate = notiDescriptions.at(uNotiDesc).m_Immediate;
         this->paTimespan[0] = new TimeSpan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100, WBIgnore, WBIgnore, WBIgnore, WBIgnore);
         this->paTimespan[1] = new TimeSpan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100, WBRelease, WBRelease, WBDisplace, WBIgnore);
     }

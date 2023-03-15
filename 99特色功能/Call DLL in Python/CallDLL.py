@@ -1,5 +1,7 @@
 import ctypes
 import os
+import time
+
 
 gCallbackFuncList = []
 
@@ -15,11 +17,11 @@ def get_warning_manager_dll(winDll=False):
 	else:
 		print("Can't find dll.")
 	
-def on_warning_changed(intParam):
+def on_warning_changed(curWrnID):
 	'''
 	This functiion will be called in DLL
 	'''
-	print(intParam)
+	print("curWrnID is "+str(curWrnID))
 
 def register_callback_func(myDll):
 
@@ -27,13 +29,26 @@ def register_callback_func(myDll):
 	gCallbackFuncList.append(callbackFunc) #There is an error if this line is missing. OSError: exception: access violation writing 0x00000000
 	myDll.dllRegisterPythonFunc(callbackFunc)
 	
-if __name__ == "__main__":  
-	
+def verify_immediate():
+	'''
+	NotiID = 98, priority = 4, Immediate = false
+	NotiID = 99, priority = 6, Immediate = true
+	NotiID = 241, priority = 8, Immediate = false
+	'''
 	wm = get_warning_manager_dll(False)
 	register_callback_func(wm)
 	wm.init()
 	wm.RequestWarning(98)
-	wm.ReleaseWarning(98)
+	time.sleep(0.5)
+	wm.RequestWarning(99)
+	time.sleep(0.5)
+	wm.RequestWarning(241)
+
+if __name__ == "__main__":  
 	
+	verify_immediate()
 	while(True):
 		pass
+		
+		
+		

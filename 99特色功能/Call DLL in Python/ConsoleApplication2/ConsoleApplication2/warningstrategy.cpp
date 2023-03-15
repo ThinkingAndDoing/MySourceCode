@@ -184,7 +184,7 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
     //新报警加入链表
     InsertPriority(pNewView);
 
-    //新报警与当前报警竞争活跃状态，由策略进行冲裁
+    //新报警与当前报警竞争活跃状态，由策略进行仲裁
     if (NULL == pCurrent)
     {
         UpdateCurrentWarning(pNewView);
@@ -546,7 +546,7 @@ void WarningStrategy::OnTimer(uint16 id)
                             {
                                 pCurrent->currentTimerID = CreateTimer(pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->endTime - pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->startTime);
                             }
-                            pCurrent->curTimespanIndex = pCurrent->curTimespanIndex + 1;
+                            pCurrent->curTimespanIndex ++;
                         }
                     }
                 }
@@ -564,7 +564,7 @@ void WarningStrategy::OnTimer(uint16 id)
                         {
                             pCurrent->currentTimerID = CreateTimer(pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->endTime - pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->startTime);
                         }
-                        pCurrent->curTimespanIndex = pCurrent->curTimespanIndex + 1;
+                        pCurrent->curTimespanIndex ++;
                     }
                 }
             }
