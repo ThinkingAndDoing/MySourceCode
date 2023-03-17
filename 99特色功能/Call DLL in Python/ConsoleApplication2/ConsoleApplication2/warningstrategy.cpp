@@ -106,7 +106,7 @@ void WarningStrategy::ReleaseCurrentShowNew(WarningView *pNewView)
 
     if(NULL != pCurrent)
     {
-        pCurrent->WarningID;
+		pCurrent->m_enWarningID;
     }
 
     UpdateCurrentWarning(pNewView);
@@ -120,7 +120,7 @@ bool WarningStrategy::RemoveWarningView(enum WarningIDs wrnid)
 {
     WarningView *p = pHead;
 
-    while (NULL != p && p->WarningID != wrnid)
+	while (NULL != p && p->m_enWarningID != wrnid)
         p = p->next;
 
     if (NULL == p)
@@ -168,14 +168,14 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
 
     //如果pNewView的WarningID在链表中已经存在，就不再加入链表，保证链表中的WarningID的唯一性
     WarningView *p = pHead;
-    while (NULL != p && p->WarningID != pNewView->WarningID)
+	while (NULL != p && p->m_enWarningID != pNewView->m_enWarningID)
         p = p->next;
 
     // The WarningID of warningview should be unique in warningstrategy, or else new warningview won't be added to warningstrategy
     if (NULL != p)
     { 
-        //重新触发后，报警的boPendingRelease状态需要设置为false
-        p->boPendingRelease = false;  
+        //重新触发后，报警的m_boPendingRelease状态需要设置为false
+		p->m_boPendingRelease = false;
         //新报警不需要加入到队列，队列中已经存在，释放新创建的报警
         delete pNewView;  
         return false;
@@ -192,17 +192,17 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
     else{
         if (pNewView->m_u16Priority >= pCurrent->m_u16Priority)
         {
-            enum TimeSpanAction enTimeSpanATemp = WBIgnore;
+			enum WarningAction enTimeSpanATemp = WBIgnore;
 
             if (pNewView->m_u16Priority == pCurrent->m_u16Priority)
             {
-                enTimeSpanATemp = pCurrent->paTimespan[pCurrent->curTimespanIndex]->OnNewSamePriority;
+				enTimeSpanATemp = pCurrent->paTimespan[pCurrent->curTimespanIndex]->GetOnNewHighPriority();
             }
             else{
-                enTimeSpanATemp = pCurrent->paTimespan[pCurrent->curTimespanIndex]->OnNewHighPriority;
+				enTimeSpanATemp = pCurrent->paTimespan[pCurrent->curTimespanIndex]->GetOnNewHighPriority();
             }
 
-            if (pNewView->m_u16Priority > pCurrent->m_u16Priority && pNewView->boImmediate == true)
+			if (pNewView->m_u16Priority > pCurrent->m_u16Priority && pNewView->m_boImmediate == true)
             {
                 enTimeSpanATemp = WBDisplace;
             }
@@ -210,7 +210,7 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
             switch (enTimeSpanATemp)
             {
             case WBDisplace:
-                if (pCurrent->boPendingRelease == true)
+				if (pCurrent->m_boPendingRelease == true)
                 {
 					ReleaseCurrentShowNew(pNewView);
                 }
@@ -223,8 +223,8 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
             case WBIgnore:
             	{
 	            	NewArrival stNewArrivalTemp;
-                    stNewArrivalTemp.Priority = pNewView->m_u16Priority;
-                    stNewArrivalTemp.WarningID = pNewView->WarningID;
+					stNewArrivalTemp.u16Priority = pNewView->m_u16Priority;
+					stNewArrivalTemp.enWarningID = pNewView->m_enWarningID;
                     pCurrent->AddNewArrival(stNewArrivalTemp);          //此处是否有问题？局部变量在函数结束时会销毁，但此处应该只是值传递 
 				}
                 break;
@@ -274,10 +274,10 @@ void WarningStrategy::UpdateCurrentWarning(WarningView * pUpdate)
     {
         if (NULL != pCurrent->paTimespan[0])
         {
-            //若第一个timespan的endtime不为0，即当前WarningView存在多段timespan，则启动定时器
-            if (0 != pCurrent->paTimespan[0]->endTime)     
+            //若第一个timespan的endtime不为TS_ENDLESS，即当前WarningView存在多段timespan，则启动定时器
+			if (TS_ENDLESS != pCurrent->paTimespan[0]->GetEndTime())
             {
-				pCurrent->currentTimerID = CreateTimer(pCurrent->paTimespan[0]->endTime);
+				pCurrent->currentTimerID = CreateTimer(pCurrent->paTimespan[0]->GetEndTime());
             }
             pCurrent->curTimespanIndex = 0;
         }
@@ -362,7 +362,7 @@ void WarningStrategy::RequestWarning(enum WarningIDs wrnid)
 
     WarningView *p = new WarningView(wrnid);
 
-	if (p->WarningID != InvalidWarningId)
+	if (p->m_enWarningID != InvalidWarningId)
 	{
 		AddNewWarningView(p);
 	}
@@ -378,22 +378,52 @@ void WarningStrategy::Resume(void)
     this->boSuspension = false;
 }
 
+bool WarningStrategy::ProcessVirtualKey(enum VirtualKey enKey)
+{
+	printf("ProcessVirtualKey enKey = %d\n", enKey);
+
+	if (NULL == pCurrent)
+	{
+		return false;
+	}
+
+	enum WarningAction enAction = pCurrent->paTimespan[pCurrent->curTimespanIndex]->m_oAcknowledge.GetActionByKey(enKey);
+
+	switch (enAction)
+	{
+
+	case WBIgnore:
+		return false;
+
+	case WBRelease:
+		ForceReleaseWarning(pCurrent->m_enWarningID);
+		return true;
+
+	case WBInvalid:
+		return false;
+
+	default:
+		return false;
+	}
+}
+
+
 void WarningStrategy::ReleaseWarning(enum WarningIDs wrnid)
 {
     printf("ReleaseWarning wrnid = %d\n", wrnid);
 
 	if (NULL != pCurrent && NULL != GetWarningViewByID(wrnid))
     {
-        if (pCurrent->WarningID == wrnid)
+		if (pCurrent->m_enWarningID == wrnid)
         {
-            switch (pCurrent->paTimespan[pCurrent->curTimespanIndex]->onRelese)
+			switch (pCurrent->paTimespan[pCurrent->curTimespanIndex]->GetOnRelease())
             {
             case WBRelease:
                 ForceReleaseWarning(wrnid);
                 break;
 
             case WBIgnore:
-                pCurrent->boPendingRelease = true;
+				pCurrent->m_boPendingRelease = true;
                 break;
 
             case WBDisplace:
@@ -428,14 +458,14 @@ void WarningStrategy::ForceReleaseWarning(enum WarningIDs wrnid)
     if (NULL != pCurrent)
     {
         //如果释放当前活跃的报警，就需要先切换到下一个
-        if (pCurrent->WarningID == wrnid)
+		if (pCurrent->m_enWarningID == wrnid)
         {
             SelectNextView(enSelectWarningPolicy);
 
             /* 若切换到下一个报警后，报警ID未变，表明链表中只有一个报警
              * Only one warningview is in warningstrategy and the one will be released. 
              */
-            if (pCurrent->WarningID == wrnid) 
+			if (pCurrent->m_enWarningID == wrnid)
             {
                 UpdateCurrentWarning(NULL);
             }
@@ -459,7 +489,7 @@ uint16 WarningStrategy::GetActiveWarningID(void)
         return (uint16)InvalidWarningId;
     }
     else{
-        return (uint16)pCurrent->WarningID;
+		return (uint16)pCurrent->m_enWarningID;
     }
 }
 
@@ -473,7 +503,7 @@ WarningView* WarningStrategy::GetWarningViewByID(enum WarningIDs wrnid)
 
     while (NULL != p)
     {
-        if (p->WarningID == wrnid)
+		if (p->m_enWarningID == wrnid)
         {
             pWV = p;
             break;
@@ -497,7 +527,7 @@ WarningView* WarningStrategy::GetNewArrivalWithHighestPriority(void)
     {
         if(pCurrent->m_newarrivallist.empty() == false)
         {
-            pNewArrival = GetWarningViewByID(pCurrent->m_newarrivallist.front().WarningID);
+			pNewArrival = GetWarningViewByID(pCurrent->m_newarrivallist.front().enWarningID);
         }
     }
 
@@ -515,36 +545,36 @@ void WarningStrategy::OnTimer(uint16 id)
     {
         DeleteTimer(id);
         pCurrent->currentTimerID = 0;
-        switch (pCurrent->paTimespan[pCurrent->curTimespanIndex]->onEnd)
+		switch (pCurrent->paTimespan[pCurrent->curTimespanIndex]->GetOnEnd())
         {
         case WBRelease:
-            ForceReleaseWarning(pCurrent->WarningID);
+			ForceReleaseWarning(pCurrent->m_enWarningID);
             break;
 
         case WBIgnore://当前timespan可能有被打断或者取消的标志
             pNewArrival = GetNewArrivalWithHighestPriority();
             if (pCurrent->curTimespanIndex + 1 < MAX_TIMESPAN_NUMS && NULL != pCurrent->paTimespan[pCurrent->curTimespanIndex + 1])  //下一个timespan存在
 			{
-                if (pCurrent->boPendingRelease)
+				if (pCurrent->m_boPendingRelease)
                 {
-                    if (pNewArrival!=NULL && pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->OnNewHighPriority == WBDisplace && pCurrent->m_u16Priority < pNewArrival->m_u16Priority)  //下一个timespan允许打断 && 有新来高优先级报警？
+					if (pNewArrival != NULL && pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->GetOnNewHighPriority() == WBDisplace && pCurrent->m_u16Priority < pNewArrival->m_u16Priority)  //下一个timespan允许打断 && 有新来高优先级报警？
                     {
                         //release current and show new
 						ReleaseCurrentShowNew(pNewArrival);
                     }
                     else
                     {
-                        if (pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->onRelese == WBRelease)
+						if (pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->GetOnRelease() == WBRelease)
                         {
                             //release current and show next
-                            ForceReleaseWarning(pCurrent->WarningID);
+							ForceReleaseWarning(pCurrent->m_enWarningID);
                         }
                         else
                         {
                             //show current and timespan++
-                            if (0 != pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->endTime)
+							if (0 != pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->GetEndTime())
                             {
-                                pCurrent->currentTimerID = CreateTimer(pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->endTime - pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->startTime);
+								pCurrent->currentTimerID = CreateTimer(pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->GetEndTime() - pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->GetStartTime());
                             }
                             pCurrent->curTimespanIndex ++;
                         }
@@ -552,7 +582,7 @@ void WarningStrategy::OnTimer(uint16 id)
                 }
                 else
                 {
-                    if (pNewArrival!=NULL && pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->OnNewHighPriority == WBDisplace && pCurrent->m_u16Priority < pNewArrival->m_u16Priority)  //下一个timespan允许打断 && 有新来高优先级报警？
+					if (pNewArrival != NULL && pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->GetOnNewHighPriority() == WBDisplace && pCurrent->m_u16Priority < pNewArrival->m_u16Priority)  //下一个timespan允许打断 && 有新来高优先级报警？
                     {
                         //show new
                         UpdateCurrentWarning(pNewArrival);
@@ -560,9 +590,9 @@ void WarningStrategy::OnTimer(uint16 id)
                     else
                     {
                         //show current and timespan++
-                        if (0 != pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->endTime)
+						if (0 != pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->GetEndTime())
                         {
-                            pCurrent->currentTimerID = CreateTimer(pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->endTime - pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->startTime);
+							pCurrent->currentTimerID = CreateTimer(pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->GetEndTime() - pCurrent->paTimespan[pCurrent->curTimespanIndex + 1]->GetStartTime());
                         }
                         pCurrent->curTimespanIndex ++;
                     }
@@ -570,7 +600,7 @@ void WarningStrategy::OnTimer(uint16 id)
             }
             else{
                 //release current and show next
-                ForceReleaseWarning(pCurrent->WarningID);
+				ForceReleaseWarning(pCurrent->m_enWarningID);
             }
 
             break;
@@ -590,7 +620,7 @@ void WarningStrategy::OnTimer(uint16 id)
             break;
 
         default:
-            ForceReleaseWarning(pCurrent->WarningID);
+			ForceReleaseWarning(pCurrent->m_enWarningID);
             break;
         }
     }

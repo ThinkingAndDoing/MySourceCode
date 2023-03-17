@@ -29,24 +29,39 @@ def register_callback_func(myDll):
 	gCallbackFuncList.append(callbackFunc) #There is an error if this line is missing. OSError: exception: access violation writing 0x00000000
 	myDll.dllRegisterPythonFunc(callbackFunc)
 	
-def verify_immediate():
+def verify_immediate(vm):
 	'''
 	NotiID = 98, priority = 4, Immediate = false
 	NotiID = 99, priority = 6, Immediate = true
 	NotiID = 241, priority = 8, Immediate = false
 	'''
-	wm = get_warning_manager_dll(False)
-	register_callback_func(wm)
-	wm.init()
 	wm.RequestWarning(98)
 	time.sleep(0.5)
 	wm.RequestWarning(99)
 	time.sleep(0.5)
 	wm.RequestWarning(241)
-
+	
+def verify_userlocktime(vm):
+	'''
+	NotiID = 98, userlocktime = 2000, minidisplaytime = 4000, 
+	'''
+	wm.RequestWarning(98)
+	time.sleep(0.5)
+	wm.ProcessVirtualKey(4)
+	time.sleep(1)
+	wm.ProcessVirtualKey(4)
+	time.sleep(2)
+	wm.ProcessVirtualKey(4)
+	
+	
+	
 if __name__ == "__main__":  
 	
-	verify_immediate()
+	wm = get_warning_manager_dll(False)
+	register_callback_func(wm)
+	wm.init()
+	#verify_immediate(wm)
+	verify_userlocktime(wm)
 	while(True):
 		pass
 		

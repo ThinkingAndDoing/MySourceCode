@@ -103,7 +103,7 @@ NotiDescriptionVector notiDescriptions = {
 	Notification::NotiDescription(190, 2, 0, false, 1, false, 1000, 500, "Parking brake cannot hold vehicle", 95),
 	Notification::NotiDescription(191, 4, 0, false, 1, false, 1000, 500, "Parking brake not fully released", 96),
 	Notification::NotiDescription(192, 4, 0, false, 1, false, 1000, 500, "Parking brake not applied", 97),
-	Notification::NotiDescription(193, 4, 0, false, 4, false, 1000, 500, "Press brake pedal\nto release parking brake", 98),
+	Notification::NotiDescription(193, 4, 0, false, 4, false, 4000, 2000, "Press brake pedal\nto release parking brake", 98),
 	Notification::NotiDescription(194, 6, 0, true, 1, true, 1000, 500, "Parking brake\nService required", 99),
 	Notification::NotiDescription(195, 4, 0, false, 4, false, 1000, 500, "Parking brake \ntemporarily unavailable", 100),
 	Notification::NotiDescription(196, 4, 0, false, 4, false, 1000, 500, "Use parking brake control\nto release parking brake", 101),

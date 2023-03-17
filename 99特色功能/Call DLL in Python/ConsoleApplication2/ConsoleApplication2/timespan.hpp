@@ -1,36 +1,38 @@
 #ifndef TIMESPAN_H
 #define TIMESPAN_H
 
+#include "acknowledge.hpp"
 
-enum TimeSpanAction
-{
-    WBRelease,
-    WBIgnore,
-    WBDisplace,
-    WBDepend
-};
-
+#define TS_ENDLESS		0
 
 class TimeSpan
 {
 public:
-    TimeSpan(){ startTime = endTime = 0; onRelese = onEnd = OnNewHighPriority = OnNewSamePriority = WBRelease; }
-    TimeSpan(int st, int et, enum TimeSpanAction onRel, enum TimeSpanAction oe, enum TimeSpanAction onHighPro, enum TimeSpanAction onSamePro)
-    { 
-        startTime = st;
-        endTime = et; 
-        onRelese = onRel;
-        onEnd = oe;
-        OnNewHighPriority = onHighPro;
-        OnNewSamePriority = onSamePro;
-    }
+
+	class Acknowledge m_oAcknowledge;
+
+	TimeSpan(int st, int et);
     ~TimeSpan(){};
-    int startTime; //单位为100ms
-    int endTime;  //单位为100ms
-    enum TimeSpanAction onRelese;
-    enum TimeSpanAction onEnd;
-    enum TimeSpanAction OnNewHighPriority;
-    enum TimeSpanAction OnNewSamePriority;
+	void SetOnRelease(enum WarningAction enAction);
+	void SetOnEnd(enum WarningAction enAction);
+	void SetOnNewHighPriority(enum WarningAction enAction);
+	void SetOnNewSamePriority(enum WarningAction enAction);
+	uint16 GetStartTime(void);
+	uint16 GetEndTime(void);
+	enum WarningAction GetOnRelease(void);
+	enum WarningAction GetOnEnd(void);
+	enum WarningAction GetOnNewHighPriority(void);
+	enum WarningAction GetOnNewSamePriority(void);
+
+
+private:
+
+	uint16 m_u16StartTime; //单位为100ms
+	uint16 m_u16EndTime;  //单位为100ms
+	enum WarningAction m_enOnRelese;
+	enum WarningAction m_enOnEnd;
+	enum WarningAction m_enOnNewHighPriority;
+	enum WarningAction m_enOnNewSamePriority;
 };
 
 

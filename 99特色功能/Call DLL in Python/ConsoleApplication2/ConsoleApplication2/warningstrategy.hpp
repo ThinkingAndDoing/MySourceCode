@@ -1,7 +1,6 @@
 #ifndef WARNINGSTRATEGY_H
 #define WARNINGSTRATEGY_H
 #include "warningtimer.hpp"
-#include "warningresourceids.hpp"
 
 
 enum AddWarningPolicy
@@ -37,6 +36,7 @@ public:
     void Resume(void);
     void RequestWarning(enum WarningIDs wrnid);
     void ReleaseWarning(enum WarningIDs wrnid);
+	bool ProcessVirtualKey(enum VirtualKey enKey);
     void ForceReleaseWarning(enum WarningIDs wrnid);
     uint16 GetActiveWarningID(void);
 

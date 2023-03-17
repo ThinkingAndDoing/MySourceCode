@@ -9,6 +9,7 @@ UserLockTime：UserLockTime是否一定小于mini_display_time？
 UsageMode：切换UsageMode时，要遵循最小显示时间，DisplayTimeout不需要重新计时。如果一个报警在Mode1下按键隐藏，进入CheckViewList，切换到Model2（Model2下此报警不显示），再切换到Model1，这时报警应该放到Queue还是Stack？
 Available：行为与UsageMode相同。只有0~7八种状态，不需要按照bit位设计。
 
+高优先级报警切换到菜单后，如果再触发低优先级报警，这时候要显示报警还是菜单。
 
 
 WarningList如何实现？
@@ -21,6 +22,7 @@ WarningManger framework
 
 
 
+
 未完成项：
 
 WarningManger framework 模块功能开发计划
@@ -28,18 +30,17 @@ WarningManger framework 模块功能开发计划
 2，UserLockTime。5 days
 3，WarningList。5 days
 4，UsageMode。4 days
-
+New5，报警弹出后切换到菜单，再切换回来，需要重新计时，需要WarningManager提供挂起功能。
+New6，给报警灯提供策略
 
 UserLockTime：
 
 
 1，GC系统按键分发流程？按键被报警处理过后，是否还要被其他模块处理？如果报警不处理按键，是否要被其他模块处理？
 
-
-
-
-
-
+参考流程图。
+按键被报警处理后，不需要再给其他模块处理。
+如果显示无Button报警，那么按键既不需要给报警，也不需要给其他模块。
 
 
 

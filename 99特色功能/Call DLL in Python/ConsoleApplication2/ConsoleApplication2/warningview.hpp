@@ -10,13 +10,13 @@
 
 struct NewArrival
 {
-    int Priority;
-    enum WarningIDs WarningID;
+    uint16 u16Priority;
+    enum WarningIDs enWarningID;
 
     NewArrival()
     {
-        Priority = 0;
-        WarningID = InvalidWarningId;
+		u16Priority = 0;
+		enWarningID = InvalidWarningId;
     }
 };
 
@@ -48,11 +48,11 @@ public:
 
     void BuildWarningView(enum WarningIDs wrnid);
 
-    bool boImmediate;
-    bool isPendingInterrupt;
-    bool boPendingRelease;
-    int m_u16Priority;
-    enum WarningIDs WarningID;
+    bool m_boImmediate;
+    bool m_boPendingInterrupt;
+    bool m_boPendingRelease;
+    uint16 m_u16Priority;
+    enum WarningIDs m_enWarningID;
     TimeSpan *paTimespan[MAX_TIMESPAN_NUMS];
     int curTimespanIndex;		//当前timespan 
     unsigned currentTimerID;		//当前定时器的ID 

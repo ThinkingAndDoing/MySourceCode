@@ -22,6 +22,7 @@ extern "C"
 	API_DLL void CALL_TYPE RequestWarning(int id);
 	API_DLL void CALL_TYPE ReleaseWarning(int id);
 	API_DLL unsigned int CALL_TYPE GetActiveWarningID(void);
+	API_DLL void CALL_TYPE ProcessVirtualKey(int key);
 
 	API_DLL void CALL_TYPE dllRegisterPythonFunc(void *pyFuncPtr);
 }
@@ -68,6 +69,11 @@ void CALL_TYPE ReleaseWarning(int id)
 unsigned int CALL_TYPE GetActiveWarningID(void)
 {
     return ws.GetActiveWarningID();
+}
+
+void CALL_TYPE ProcessVirtualKey(int key)
+{
+	ws.ProcessVirtualKey((enum VirtualKey)key);
 }
 
 void CALL_TYPE dllRegisterPythonFunc(void *pyFuncPtr)

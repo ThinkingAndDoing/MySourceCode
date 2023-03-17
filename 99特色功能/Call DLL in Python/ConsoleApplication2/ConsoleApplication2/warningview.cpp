@@ -9,12 +9,12 @@ extern NotiDescriptionVector notiDescriptions;
 WarningView::WarningView(enum WarningIDs wrnid) 
 {
 
-    boImmediate = false;
-    boPendingRelease = false;
+	m_boImmediate = false;
+	m_boPendingRelease = false;
     next = pre = NULL;
     curTimespanIndex = INVALID_TIMESPAN_ID;
     currentTimerID = 0;
-	WarningID = InvalidWarningId;
+	m_enWarningID = InvalidWarningId;
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
     {
         paTimespan[i] = NULL;
@@ -59,11 +59,50 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 
     if (0xFFFF != uNotiDesc)
     {
-        this->WarningID = (enum WarningIDs)notiDescriptions.at(uNotiDesc).m_ACID;
+		this->m_enWarningID = (enum WarningIDs)notiDescriptions.at(uNotiDesc).m_ACID;
         this->m_u16Priority = notiDescriptions.at(uNotiDesc).m_Prio;
-		this->boImmediate = notiDescriptions.at(uNotiDesc).m_Immediate;
-        this->paTimespan[0] = new TimeSpan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100, WBIgnore, WBIgnore, WBIgnore, WBIgnore);
-        this->paTimespan[1] = new TimeSpan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100, WBRelease, WBRelease, WBDisplace, WBIgnore);
+		this->m_boImmediate = notiDescriptions.at(uNotiDesc).m_Immediate;
+
+		//(int st, int et, enum WarningAction onRel, enum WarningAction oe, enum WarningAction onHighPro, enum WarningAction onSamePro);
+		TimeSpan *pTmSp = NULL;
+		if (notiDescriptions.at(uNotiDesc).m_MinTime > notiDescriptions.at(uNotiDesc).m_UserLockTime)
+		{
+			pTmSp = new TimeSpan(0, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
+			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
+			this->paTimespan[0] = pTmSp;
+			pTmSp = new TimeSpan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
+			this->paTimespan[1] = pTmSp;
+			pTmSp = new TimeSpan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
+			pTmSp->SetOnRelease(WBRelease);
+			pTmSp->SetOnEnd(WBRelease);
+			pTmSp->SetOnNewHighPriority(WBDisplace);
+			this->paTimespan[2] = pTmSp;
+		}
+		else if (notiDescriptions.at(uNotiDesc).m_MinTime < notiDescriptions.at(uNotiDesc).m_UserLockTime)
+		{
+			pTmSp = new TimeSpan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
+			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
+			this->paTimespan[0] = pTmSp;
+			pTmSp = new TimeSpan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
+			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
+			this->paTimespan[1] = pTmSp;
+			pTmSp = new TimeSpan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
+			pTmSp->SetOnRelease(WBRelease);
+			pTmSp->SetOnEnd(WBRelease);
+			pTmSp->SetOnNewHighPriority(WBDisplace);
+			this->paTimespan[2] = pTmSp;
+		}
+		else
+		{
+			pTmSp = new TimeSpan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
+			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
+			this->paTimespan[0] = pTmSp;
+			pTmSp = new TimeSpan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
+			pTmSp->SetOnRelease(WBRelease);
+			pTmSp->SetOnEnd(WBRelease);
+			pTmSp->SetOnNewHighPriority(WBDisplace);
+			this->paTimespan[1] = pTmSp;
+		}
     }
 }
 
@@ -101,7 +140,7 @@ void WarningView::AddNewArrival(NewArrival stNewArrivalTemp)
 
     for (itNewArrival it = m_newarrivallist.begin(); it != m_newarrivallist.end(); it++)
     {
-        if (stNewArrivalTemp.Priority >= it->Priority)
+		if (stNewArrivalTemp.u16Priority >= it->u16Priority)
         {
             m_newarrivallist.insert(it, stNewArrivalTemp);
             boIsAdded = true;
@@ -119,7 +158,7 @@ void WarningView::RemoveNewArrival(enum WarningIDs wrnid)
 {
     for (itNewArrival it = m_newarrivallist.begin(); it != m_newarrivallist.end(); it++)
     {
-        if (wrnid == it->WarningID)
+		if (wrnid == it->enWarningID)
         {
             m_newarrivallist.erase(it);
             break;
