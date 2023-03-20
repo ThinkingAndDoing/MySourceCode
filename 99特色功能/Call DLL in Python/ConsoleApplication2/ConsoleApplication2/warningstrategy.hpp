@@ -24,11 +24,9 @@ class WarningView;
 class WarningStrategy: public WarningTimer
 {
 public:
-    WarningStrategy();  //构造函数，初始化链表
-    ~WarningStrategy();     //析构函数，释放堆中内存空间
-    void clean();    //清空
-	bool empty();    //判空
-	uint16 length();    //获取链表长度
+    WarningStrategy();
+    ~WarningStrategy();
+    void Clean();
     void SelectNextView(enum SelectWarningPolicy selectpolicy);
     WarningView* GetWarningStrategyTail(void);
     uint16 GetNumberOfWarningView(void);
@@ -47,13 +45,13 @@ private:
     WarningView* GetNewArrivalWithHighestPriority(void);
     bool RemoveWarningView(enum WarningIDs wrnid);  
     bool AddNewWarningView(WarningView * pNewView); 
+	bool HasSameViewInQueue(WarningView * pNewView);
     bool InsertPriority(WarningView *pNode);      //按照优先级插入
     void ReleaseCurrentShowNew(WarningView *pNewView);
 
     //头节点 pre 为 NULL，尾节点 next 为 NULL
     WarningView* pHead;     //链表头指针
     WarningView* pCurrent;
-	uint16 u16Length;    //链表长度
     enum AddWarningPolicy enAddWarningPolicy;
     enum SelectWarningPolicy enSelectWarningPolicy;
     bool boSuspension;

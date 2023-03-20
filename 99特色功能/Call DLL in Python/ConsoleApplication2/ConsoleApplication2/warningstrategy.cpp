@@ -6,47 +6,36 @@
 #include "warningstrategy.hpp"
 
 
-WarningStrategy::WarningStrategy()   /*构造函数，用于创建一个链表*/
+WarningStrategy::WarningStrategy()
 {
-    boSuspension = false;
     pHead = NULL;
     pCurrent = NULL;
-    u16Length = 0;   /*链表长度初始化为0*/
+	boSuspension = false;
     enAddWarningPolicy = AddWarningByPriority;
     enSelectWarningPolicy = SelectNext;
 }
 
-WarningStrategy::~WarningStrategy()   /*析构函数，用于释放内存空间*/
+WarningStrategy::~WarningStrategy()
 {
-    clean();
-    delete pHead;
-    pHead = NULL;
-    pCurrent = NULL;
+    Clean();
+	boSuspension = false;
+	enAddWarningPolicy = AddWarningByPriority;
+	enSelectWarningPolicy = SelectNext;
 }
 
-void WarningStrategy::clean()   /*清空所有链表*/
+void WarningStrategy::Clean()
 {
-    WarningView *current = pHead->next;
-    WarningView* temp = NULL;
-    for (uint16 i = 0; i<u16Length; i++)  /*按照链式结构依次找到下个结点并删除当前结点*/
-    {
-        temp = current->next;
-        delete current;
-        current = temp;
-    }
-    current = NULL;
-    pHead->next = NULL;
-    u16Length = 0;  /*删除所有结点后，链表长度清零*/
-}
+	WarningView *pCur = pHead;
+	WarningView *pToBeRemoved = NULL;
 
-bool WarningStrategy::empty()  /*判空*/
-{
-	return u16Length == 0 ? true : false;
-}
-
-uint16 WarningStrategy::length()  /*获取链表长度*/
-{
-	return u16Length;
+	while (NULL != pCur)
+	{
+		pToBeRemoved = pCur;
+		pCur = pCur->next;
+		delete pToBeRemoved;
+	}
+	pHead = NULL;
+	pCurrent = NULL;
 }
 
 /*
@@ -106,7 +95,7 @@ void WarningStrategy::ReleaseCurrentShowNew(WarningView *pNewView)
 
     if(NULL != pCurrent)
     {
-		pCurrent->m_enWarningID;
+		toBeRemovedID = pCurrent->m_enWarningID;
     }
 
     UpdateCurrentWarning(pNewView);
@@ -154,6 +143,29 @@ bool WarningStrategy::RemoveWarningView(enum WarningIDs wrnid)
     }
 }
 
+/*
+ * The WarningID of warningview should be unique in warningstrategy, or else new warningview won't be added to warningstrategy
+ */
+bool WarningStrategy::HasSameViewInQueue(WarningView * pNewView)
+{
+	WarningView *p = pHead;
+	while (NULL != p && p->m_enWarningID != pNewView->m_enWarningID)
+		p = p->next;
+
+	
+	if (NULL != p)
+	{
+		//重新触发后，报警的m_boPendingRelease状态需要设置为false
+		p->m_boPendingRelease = false;
+		//新报警不需要加入到队列，队列中已经存在，释放新创建的报警
+		delete pNewView;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 /*
  * 新增报警处理
@@ -166,20 +178,11 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
         return false;
     }
 
-    //如果pNewView的WarningID在链表中已经存在，就不再加入链表，保证链表中的WarningID的唯一性
-    WarningView *p = pHead;
-	while (NULL != p && p->m_enWarningID != pNewView->m_enWarningID)
-        p = p->next;
-
-    // The WarningID of warningview should be unique in warningstrategy, or else new warningview won't be added to warningstrategy
-    if (NULL != p)
-    { 
-        //重新触发后，报警的m_boPendingRelease状态需要设置为false
-		p->m_boPendingRelease = false;
-        //新报警不需要加入到队列，队列中已经存在，释放新创建的报警
-        delete pNewView;  
-        return false;
-    }
+	//如果pNewView的WarningID在链表中已经存在，就不再加入链表，保证链表中的WarningID的唯一性
+	if (HasSameViewInQueue(pNewView) == true)
+	{
+		return false;
+	}
 
     //新报警加入链表
     InsertPriority(pNewView);
