@@ -28,7 +28,6 @@ public:
     ~WarningStrategy();
     void Clean();
     void SelectNextView(enum SelectWarningPolicy selectpolicy);
-    WarningView* GetWarningStrategyTail(void);
     uint16 GetNumberOfWarningView(void);
     void Suspension(void);
     void Resume(void);
@@ -48,6 +47,7 @@ private:
 	bool HasSameViewInQueue(WarningView * pNewView);
     bool InsertPriority(WarningView *pNode);      //按照优先级插入
     void ReleaseCurrentShowNew(WarningView *pNewView);
+	WarningView* GetLastWarningOfQueue(void);
 
     //头节点 pre 为 NULL，尾节点 next 为 NULL
     WarningView* pHead;     //链表头指针

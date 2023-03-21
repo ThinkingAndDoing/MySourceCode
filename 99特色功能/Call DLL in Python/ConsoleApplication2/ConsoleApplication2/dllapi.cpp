@@ -3,7 +3,7 @@ Include Header
 ***********************************************************/
 #include "MyTimer.hpp"
 #include "warningstrategy.hpp"
-
+#include "telltale.hpp"
 
 /***********************************************************
 Macro define & Type define
@@ -21,10 +21,11 @@ extern "C"
 	API_DLL void CALL_TYPE init(void);
 	API_DLL void CALL_TYPE RequestWarning(int id);
 	API_DLL void CALL_TYPE ReleaseWarning(int id);
-	API_DLL unsigned int CALL_TYPE GetActiveWarningID(void);
+	API_DLL void CALL_TYPE RequestTelltale(int id);
+	API_DLL void CALL_TYPE ReleaseTelltale(int id);
 	API_DLL void CALL_TYPE ProcessVirtualKey(int key);
 
-	API_DLL void CALL_TYPE dllRegisterPythonFunc(void *pyFuncPtr);
+	API_DLL void CALL_TYPE dllRegisterPythonFunc(void *pyWarningPtr, void *pyTelltalePtr);
 }
 
 
@@ -32,15 +33,17 @@ extern "C"
 Function declaration
 ***********************************************************/
 void OnWarningChanged(uint16 u16ActiveWrnID);
-
+void OnTelltaleChanged(uint16 u16ActiveTelltaleID);
 
 
 /***********************************************************
 Global variant
 ***********************************************************/
-WarningStrategy ws;
-cMyTimer myTimer(&ws);
-_callback_python_func python_functioin;
+WarningStrategy oWrnStrategy;
+TelltaleStrategy oTTStrategy;
+cMyTimer myTimer(&oWrnStrategy, &oTTStrategy);
+_callback_python_func cbWarningChange;
+_callback_python_func cbTelltaleChange;
 
 
 
@@ -51,39 +54,53 @@ Function define
 void CALL_TYPE init(void)
 {
     myTimer.CreateTimer(100);
-	myTimer.SetOnTimerCallback(OnWarningChanged);
+	myTimer.SetWarningCallback(OnWarningChanged);
+	myTimer.SetTelltaleCallback(OnTelltaleChanged);
 }
 
 void CALL_TYPE RequestWarning(int id)
 {
-    ws.RequestWarning((enum WarningIDs)id);
+	oWrnStrategy.RequestWarning((enum WarningIDs)id);
 }
 
 
 void CALL_TYPE ReleaseWarning(int id)
 {
-    ws.ReleaseWarning((enum WarningIDs)id);
+	oWrnStrategy.ReleaseWarning((enum WarningIDs)id);
 }
 
 
-unsigned int CALL_TYPE GetActiveWarningID(void)
+void CALL_TYPE RequestTelltale(int id)
 {
-    return ws.GetActiveWarningID();
+	oTTStrategy.RequestWarning((enum TelltaleIDs)id);
 }
+
+
+void CALL_TYPE ReleaseTelltale(int id)
+{
+	oTTStrategy.ReleaseWarning((enum TelltaleIDs)id);
+}
+
 
 void CALL_TYPE ProcessVirtualKey(int key)
 {
-	ws.ProcessVirtualKey((enum VirtualKey)key);
+	oWrnStrategy.ProcessVirtualKey((enum VirtualKey)key);
 }
 
-void CALL_TYPE dllRegisterPythonFunc(void *pyFuncPtr)
+void CALL_TYPE dllRegisterPythonFunc(void *pyWarningPtr, void *pyTelltalePtr)
 {
-	python_functioin = (_callback_python_func)pyFuncPtr;
+	cbWarningChange = (_callback_python_func)pyWarningPtr;
+	cbTelltaleChange = (_callback_python_func)pyTelltalePtr;
 }
 
 void OnWarningChanged(uint16 u16ActiveWrnID)
 {
-	python_functioin(u16ActiveWrnID);
+	cbWarningChange(u16ActiveWrnID);
 
 }
 
+void OnTelltaleChanged(uint16 u16ActiveTelltaleID)
+{
+	cbTelltaleChange(u16ActiveTelltaleID);
+
+}

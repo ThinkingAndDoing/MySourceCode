@@ -23,11 +23,21 @@ def on_warning_changed(curWrnID):
 	'''
 	print("curWrnID is "+str(curWrnID))
 
+def on_telltale_changed(curTelltaleID):
+	'''
+	This functiion will be called in DLL
+	'''
+	print("curTelltaleID is "+str(curTelltaleID))
+	
 def register_callback_func(myDll):
 
-	callbackFunc = ctypes.CFUNCTYPE(ctypes.c_bool, ctypes.c_int)(on_warning_changed)
-	gCallbackFuncList.append(callbackFunc) #There is an error if this line is missing. OSError: exception: access violation writing 0x00000000
-	myDll.dllRegisterPythonFunc(callbackFunc)
+	callbackWrn = ctypes.CFUNCTYPE(ctypes.c_bool, ctypes.c_int)(on_warning_changed)
+	gCallbackFuncList.append(callbackWrn) #There is an error if this line is missing. OSError: exception: access violation writing 0x00000000
+	
+	callbackTT = ctypes.CFUNCTYPE(ctypes.c_bool, ctypes.c_int)(on_telltale_changed)
+	gCallbackFuncList.append(callbackTT) #There is an error if this line is missing. OSError: exception: access violation writing 0x00000000
+	
+	myDll.dllRegisterPythonFunc(callbackWrn, callbackTT)
 	
 def verify_immediate(vm):
 	'''
@@ -53,13 +63,30 @@ def verify_userlocktime(vm):
 	time.sleep(2)
 	wm.ProcessVirtualKey(4)
 	
-	
+def verify_telltale(vm):
+	'''
+	{ AutoHoldTT, 4 },
+	{ TurnLeftTT, 8 },
+	{ TurnRightTT, 5 },
+	'''
+	wm.RequestTelltale(0)
+	time.sleep(0.5)
+	wm.RequestTelltale(1)
+	time.sleep(0.5)
+	wm.RequestTelltale(2)
+	time.sleep(0.5)
+	wm.ReleaseTelltale(1)
+	time.sleep(0.5)
+	wm.ReleaseTelltale(2)	
+	time.sleep(0.5)
+	wm.ReleaseTelltale(0)
 	
 if __name__ == "__main__":  
 	
 	wm = get_warning_manager_dll(False)
 	register_callback_func(wm)
 	wm.init()
+	#verify_telltale(wm)
 	#verify_immediate(wm)
 	verify_userlocktime(wm)
 	while(True):

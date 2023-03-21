@@ -4,8 +4,11 @@
 #include "string"
 #include "list"
 #include "warningstrategy.hpp"
+#include "telltale.hpp"
 
 typedef void(*_callback_warning_changed)(uint16 u16ActiveWrnID);
+typedef void(*_callback_telltale_changed)(uint16 u16ActiveTelltaleID);
+
 
 struct stTimer
 {
@@ -31,7 +34,7 @@ typedef std::list<stTimer>::iterator itTimerList;
 class cMyTimer
 {
 public:
-	cMyTimer(WarningStrategy *pWS);
+	cMyTimer(WarningStrategy *pWS, TelltaleStrategy *pTS);
     virtual ~cMyTimer();
 
     unsigned CreateTimer(unsigned timeMs, int param = 0,
@@ -47,7 +50,10 @@ public:
 
     void RemoveDeletedTimer();
 
-	void SetOnTimerCallback(_callback_warning_changed cb);
+	void SetWarningCallback(_callback_warning_changed cb);
+
+	void SetTelltaleCallback(_callback_warning_changed cb);
+
 
 private:
 
@@ -55,7 +61,12 @@ private:
 
 	WarningStrategy *pWrnStrategy;
 
+	TelltaleStrategy *pTTStrategy;
+
 	_callback_warning_changed cbWarningChanged;
+
+	_callback_telltale_changed cbTelltaleChanged;
+
 };
 
 #endif // MYTIMER_H

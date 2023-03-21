@@ -7,10 +7,12 @@
 void TimerMonitor(void* p);
 
 
-cMyTimer::cMyTimer(WarningStrategy *pWS)
+cMyTimer::cMyTimer(WarningStrategy *pWS, TelltaleStrategy *pTS)
 {
 	pWrnStrategy = pWS;
+	pTTStrategy = pTS;
 	cbWarningChanged = NULL;
+	cbTelltaleChanged = NULL;
 }
 
 cMyTimer::~cMyTimer()
@@ -102,7 +104,8 @@ bool cMyTimer::DeleteTimer(int id)
 //定时器处理
 void cMyTimer::OnTimer(unsigned id, int iParam, std::string str)
 {
-	static uint16 u16ActiveWarningID = 0;
+	static uint16 u16ActiveWarningID = 0xFFFF;
+	static uint16 u16ActiveTelltaleID = 0xFFFF;
 
 	//unsigned timeNow = GetTickCount();
 
@@ -115,6 +118,15 @@ void cMyTimer::OnTimer(unsigned id, int iParam, std::string str)
 		if (NULL != cbWarningChanged)
 		{
 			cbWarningChanged(u16ActiveWarningID);
+		}
+	}
+
+	if (pTTStrategy->GetFirstTelltaleID() != u16ActiveTelltaleID)
+	{
+		u16ActiveTelltaleID = pTTStrategy->GetFirstTelltaleID();
+		if (NULL != cbTelltaleChanged)
+		{
+			cbTelltaleChanged(u16ActiveTelltaleID);
 		}
 	}
 }
@@ -136,12 +148,15 @@ void cMyTimer::RemoveDeletedTimer()
     }
 }
 
-void cMyTimer::SetOnTimerCallback(_callback_warning_changed cb)
+void cMyTimer::SetWarningCallback(_callback_warning_changed cb)
 {
 	cbWarningChanged = cb;
 }
 
-
+void cMyTimer::SetTelltaleCallback(_callback_telltale_changed cb)
+{
+	cbTelltaleChanged = cb;
+}
 
 /*
 检查当前时间是否满足定时器计时时间，若满足，调用函数处理事件

@@ -7,7 +7,10 @@
 
 void WarningTimer::TimeTick(void)
 {
-	printf("u16TimeCounter = %d\n", u16TimeCounter);
+	if (u16TimeCounter > 0)
+	{
+		printf("u16TimeCounter = %d\n", u16TimeCounter);
+	}
     if (u16TimeCounter > 0)
     {
         u16TimeCounter--;

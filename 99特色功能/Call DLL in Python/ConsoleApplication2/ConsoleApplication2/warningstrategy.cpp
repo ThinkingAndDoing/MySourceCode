@@ -302,7 +302,7 @@ void WarningStrategy::SelectNextView(enum SelectWarningPolicy selectpolicy)
                 UpdateCurrentWarning(pCurrent->pre);
             }
             else{
-                UpdateCurrentWarning(GetWarningStrategyTail());
+				UpdateCurrentWarning(GetLastWarningOfQueue());
             }
         }
         break;
@@ -328,7 +328,7 @@ void WarningStrategy::SelectNextView(enum SelectWarningPolicy selectpolicy)
     }
 }
 
-WarningView* WarningStrategy::GetWarningStrategyTail(void)
+WarningView* WarningStrategy::GetLastWarningOfQueue(void)
 {
     WarningView *p = pHead;
 
