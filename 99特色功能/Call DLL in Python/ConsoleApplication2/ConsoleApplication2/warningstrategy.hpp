@@ -3,6 +3,15 @@
 #include "warningtimer.hpp"
 
 
+
+class TimeSpan;
+class WarningView;
+
+
+typedef std::list<WarningView> stWarningViewList;
+typedef std::list<WarningView>::iterator itWarningView;
+
+
 enum AddWarningPolicy
 {
     AddWarningFromHead,
@@ -17,9 +26,6 @@ enum SelectWarningPolicy
     SelectCustom
 };
 
-class TimeSpan;
-
-class WarningView;
 
 class WarningStrategy: public WarningTimer
 {
@@ -36,12 +42,13 @@ public:
 	bool ProcessVirtualKey(enum VirtualKey enKey);
     void ForceReleaseWarning(enum WarningIDs wrnid);
     uint16 GetActiveWarningID(void);
+	void SetWarningMode(enum WarningMode enWM);
 
 private:
     void OnTimer(uint16 id);
     void UpdateCurrentWarning(WarningView * pUpdate); 
     WarningView* GetWarningViewByID(enum WarningIDs wrnid);
-    WarningView* GetNewArrivalWithHighestPriority(void);
+	WarningView* GetFirstViewOfArrivalQueue(void);
     bool RemoveWarningView(enum WarningIDs wrnid);  
     bool AddNewWarningView(WarningView * pNewView); 
 	bool HasSameViewInQueue(WarningView * pNewView);
@@ -55,6 +62,7 @@ private:
     enum AddWarningPolicy enAddWarningPolicy;
     enum SelectWarningPolicy enSelectWarningPolicy;
     bool boSuspension;
+	enum WarningMode enWarningMode;
 };
 
 #endif

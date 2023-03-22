@@ -12,12 +12,12 @@ WarningView::WarningView(enum WarningIDs wrnid)
 	m_boImmediate = false;
 	m_boPendingRelease = false;
     next = pre = NULL;
-    curTimespanIndex = INVALID_TIMESPAN_ID;
-    currentTimerID = 0;
+	m_u16CurTimespanIndex = 0; //WarningView创建时指向第一个Timespan
+	m_u16CurrentTimerID = 0;
 	m_enWarningID = InvalidWarningId;
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
     {
-        paTimespan[i] = NULL;
+		m_paTimespan[i] = NULL;
     }
 
     BuildWarningView(wrnid);
@@ -27,10 +27,10 @@ WarningView::~WarningView() {
 
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
     {
-        if (NULL != paTimespan[i])
+		if (NULL != m_paTimespan[i])
         {
-            delete paTimespan[i];
-            paTimespan[i] = NULL;
+			delete m_paTimespan[i];
+			m_paTimespan[i] = NULL;
         }
     }
 }
@@ -64,44 +64,44 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 		this->m_boImmediate = notiDescriptions.at(uNotiDesc).m_Immediate;
 
 		//(int st, int et, enum WarningAction onRel, enum WarningAction oe, enum WarningAction onHighPro, enum WarningAction onSamePro);
-		TimeSpan *pTmSp = NULL;
+		Timespan *pTmSp = NULL;
 		if (notiDescriptions.at(uNotiDesc).m_MinTime > notiDescriptions.at(uNotiDesc).m_UserLockTime)
 		{
-			pTmSp = new TimeSpan(0, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
+			pTmSp = new Timespan(0, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
 			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
-			this->paTimespan[0] = pTmSp;
-			pTmSp = new TimeSpan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
-			this->paTimespan[1] = pTmSp;
-			pTmSp = new TimeSpan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
+			this->m_paTimespan[0] = pTmSp;
+			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
+			this->m_paTimespan[1] = pTmSp;
+			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
 			pTmSp->SetOnRelease(WBRelease);
 			pTmSp->SetOnEnd(WBRelease);
 			pTmSp->SetOnNewHighPriority(WBDisplace);
-			this->paTimespan[2] = pTmSp;
+			this->m_paTimespan[2] = pTmSp;
 		}
 		else if (notiDescriptions.at(uNotiDesc).m_MinTime < notiDescriptions.at(uNotiDesc).m_UserLockTime)
 		{
-			pTmSp = new TimeSpan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
+			pTmSp = new Timespan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
 			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
-			this->paTimespan[0] = pTmSp;
-			pTmSp = new TimeSpan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
+			this->m_paTimespan[0] = pTmSp;
+			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
 			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
-			this->paTimespan[1] = pTmSp;
-			pTmSp = new TimeSpan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
+			this->m_paTimespan[1] = pTmSp;
+			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
 			pTmSp->SetOnRelease(WBRelease);
 			pTmSp->SetOnEnd(WBRelease);
 			pTmSp->SetOnNewHighPriority(WBDisplace);
-			this->paTimespan[2] = pTmSp;
+			this->m_paTimespan[2] = pTmSp;
 		}
 		else
 		{
-			pTmSp = new TimeSpan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
+			pTmSp = new Timespan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
 			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
-			this->paTimespan[0] = pTmSp;
-			pTmSp = new TimeSpan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
+			this->m_paTimespan[0] = pTmSp;
+			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
 			pTmSp->SetOnRelease(WBRelease);
 			pTmSp->SetOnEnd(WBRelease);
 			pTmSp->SetOnNewHighPriority(WBDisplace);
-			this->paTimespan[1] = pTmSp;
+			this->m_paTimespan[1] = pTmSp;
 		}
     }
 }
@@ -129,38 +129,143 @@ void checktimespanofwarningview(void)
 
 }
 
+Timespan *WarningView::GetCurrentTimespan(void)
+{
+	if (m_u16CurTimespanIndex < MAX_TIMESPAN_NUMS)
+	{
+		return m_paTimespan[m_u16CurTimespanIndex];
+	}
+	else{
+		return NULL;
+	}
+}
+
+Timespan *WarningView::GetNextTimespan(void)
+{
+	if (m_u16CurTimespanIndex + 1 < MAX_TIMESPAN_NUMS)
+	{
+		return m_paTimespan[m_u16CurTimespanIndex + 1];
+	}
+	else{
+		return NULL;
+	}
+}
+
+void WarningView::SetCurrentTimespanIndex(uint16 u16Idx)
+{
+	if (u16Idx < MAX_TIMESPAN_NUMS)
+	{
+		m_u16CurTimespanIndex = u16Idx;
+	}
+	else{
+		m_u16CurTimespanIndex = MAX_TIMESPAN_NUMS - 1;
+	}
+}
+
+uint16 WarningView::GetCurrentTimespanIndex(void)
+{
+	return m_u16CurTimespanIndex;
+}
+
+uint16 WarningView::GetPriority(void)
+{
+	return m_u16Priority;
+}
+
+void WarningView::SetPendingRelease(bool boPendingRel)
+{
+	m_boPendingRelease = boPendingRel;
+}
+
+bool WarningView::GetPendingRelease(void)
+{
+	return m_boPendingRelease;
+}
+
+bool WarningView::GetImmediate(void)
+{
+	return m_boImmediate;
+}
+
+
+enum WarningIDs WarningView::GetWarningID(void)
+{
+	return m_enWarningID;
+}
+
+enum WarningIDs WarningView::GetFirstIDOfArrivalQueue(void)
+{
+	NewArrival *pNew = GetFirstOfArrivalQueue();
+
+	if (NULL != pNew)
+	{
+		return pNew->enWarningID;
+	}
+	else{
+		return InvalidWarningId;
+	}
+}
+
+/*
+* 下一个timespan允许打断 && 有新来高优先级报警？
+*/
+bool WarningView::HasNewInNextTimespan(void)
+{
+	NewArrival *pNewArrival = GetFirstOfArrivalQueue();
+
+	if (NULL == pNewArrival || NULL == GetNextTimespan())
+	{
+		return false;
+	}
+
+	if (GetNextTimespan()->GetOnNewHighPriority() == WBDisplace && m_u16Priority < pNewArrival->u16Priority
+		|| GetNextTimespan()->GetOnNewSamePriority() == WBDisplace && m_u16Priority == pNewArrival->u16Priority)
+	{
+		return true;
+	}
+	else{
+		return false;
+	}
+
+}
 
 /*
  * 按照优先级从高到低加入新报警到 m_newarrivallist
  */
 void WarningView::AddNewArrival(NewArrival stNewArrivalTemp)
 {
-
-    bool boIsAdded = false;
-
-    for (itNewArrival it = m_newarrivallist.begin(); it != m_newarrivallist.end(); it++)
+	for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); it++)
     {
 		if (stNewArrivalTemp.u16Priority >= it->u16Priority)
         {
-            m_newarrivallist.insert(it, stNewArrivalTemp);
-            boIsAdded = true;
-            break;
+			m_lstNewArrival.insert(it, stNewArrivalTemp);
+            return ;
         }
     }
 
-    if (false == boIsAdded)
-    {
-        m_newarrivallist.push_back(stNewArrivalTemp);
-    }
+	m_lstNewArrival.push_back(stNewArrivalTemp);
+}
+
+
+NewArrival *WarningView::GetFirstOfArrivalQueue(void)
+{
+	if (m_lstNewArrival.empty())
+	{
+		return NULL;
+
+	}
+	else{
+		return &(m_lstNewArrival.front());
+	}
 }
 
 void WarningView::RemoveNewArrival(enum WarningIDs wrnid)
 {
-    for (itNewArrival it = m_newarrivallist.begin(); it != m_newarrivallist.end(); it++)
+	for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); it++)
     {
 		if (wrnid == it->enWarningID)
         {
-            m_newarrivallist.erase(it);
+			m_lstNewArrival.erase(it);
             break;
         }
     }
@@ -168,5 +273,5 @@ void WarningView::RemoveNewArrival(enum WarningIDs wrnid)
 
 void WarningView::ClearNewArrival(void)
 {
-    m_newarrivallist.clear();
+	m_lstNewArrival.clear();
 }

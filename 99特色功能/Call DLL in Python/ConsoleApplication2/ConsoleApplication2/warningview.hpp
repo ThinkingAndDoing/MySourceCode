@@ -12,12 +12,6 @@ struct NewArrival
 {
     uint16 u16Priority;
     enum WarningIDs enWarningID;
-
-    NewArrival()
-    {
-		u16Priority = 0;
-		enWarningID = InvalidWarningId;
-    }
 };
 
 
@@ -42,23 +36,54 @@ public:
 
     void AddNewArrival(NewArrival stNewArrivalTemp);
 
+	NewArrival *GetFirstOfArrivalQueue(void);
+
     void RemoveNewArrival(enum WarningIDs wrnid);
 
     void ClearNewArrival(void);
 
     void BuildWarningView(enum WarningIDs wrnid);
 
-    bool m_boImmediate;
-    bool m_boPendingInterrupt;
-    bool m_boPendingRelease;
-    uint16 m_u16Priority;
-    enum WarningIDs m_enWarningID;
-    TimeSpan *paTimespan[MAX_TIMESPAN_NUMS];
-    int curTimespanIndex;		//当前timespan 
-    unsigned currentTimerID;		//当前定时器的ID 
-    stNewArrivalList m_newarrivallist;      //新来报警除了放入WarningView队列外，也存储到m_newarrivallist中
+	enum WarningIDs GetFirstIDOfArrivalQueue(void);
+
+	bool HasNewInNextTimespan(void);
+
+	Timespan *GetCurrentTimespan(void);
+
+	Timespan *GetNextTimespan(void);
+
+	void SetCurrentTimespanIndex(uint16 u16Idx);
+
+	uint16 GetCurrentTimespanIndex(void);
+
+	uint16 GetPriority(void);
+
+	void SetPendingRelease(bool boPendingRel);
+
+	bool GetPendingRelease(void);
+
+	bool GetImmediate(void);
+
+	enum WarningIDs GetWarningID(void);
+
+	uint16 m_u16CurrentTimerID;		//当前定时器的ID 
     WarningView* next;
     WarningView* pre;
+
+private:
+
+	bool m_boPendingInterrupt;
+	bool m_boPendingRelease;
+	bool m_boImmediate;
+
+	enum WarningIDs m_enWarningID;
+
+	uint16 m_u16Priority;
+	uint16 m_u16CurTimespanIndex;		//当前timespan 
+
+	Timespan *m_paTimespan[MAX_TIMESPAN_NUMS];
+	stNewArrivalList m_lstNewArrival;      //新来报警除了放入WarningView队列外，也存储到m_newarrivallist中
+
 };
 
 

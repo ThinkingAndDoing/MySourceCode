@@ -5,14 +5,14 @@
 
 #define TS_ENDLESS		0
 
-class TimeSpan
+class Timespan
 {
 public:
 
 	class Acknowledge m_oAcknowledge;
 
-	TimeSpan(int st, int et);
-    ~TimeSpan(){};
+	Timespan(int st, int et);
+	~Timespan(){};
 	void SetOnRelease(enum WarningAction enAction);
 	void SetOnEnd(enum WarningAction enAction);
 	void SetOnNewHighPriority(enum WarningAction enAction);

@@ -1,7 +1,15 @@
 #ifndef WARNINGRESOURCEIDS_H
 #define WARNINGRESOURCEIDS_H
 
-
+enum WarningMode
+{
+	WrnMode1,
+	WrnMode2,
+	WrnMode3,
+	WrnMode4,
+	WrnMode5,
+	NoneMode
+};
 
 enum WarningIDs
 {
