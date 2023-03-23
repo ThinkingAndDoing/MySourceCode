@@ -26,10 +26,12 @@ WarningManger framework
 未完成项：
 
 WarningManger framework 模块功能开发计划
-//1，Immediate属性。3 days
-2，UserLockTime。5 days
-3，WarningList。5 days
-4，UsageMode。4 days
+1.	Immediate属性。  3.13~3.15
+2.	UserLockTime。     3.16~3.22
+3.	WarningList。        3.23~3.29
+4.	UsageMode。        3.30~4.4
+5.	Suspension/Resume		4.6~4.7
+
 New5，报警弹出后切换到菜单，再切换回来，需要重新计时，需要WarningManager提供挂起功能。
 New6，给报警灯提供策略
 

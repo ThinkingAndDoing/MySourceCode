@@ -81,6 +81,32 @@ def verify_telltale(vm):
 	time.sleep(0.5)
 	wm.ReleaseTelltale(0)
 	
+def print_warninglist(vm):
+	
+	print("+"*10)
+	i = 0
+	while wm.GetWarningIDFromStack(i) != 245:
+		print("WarningItem = "+str(wm.GetWarningIDFromStack(i)))
+		i = i+1
+	print("-"*10)
+	
+def verify_warninglist(vm):
+	'''
+	NotiID = 98, userlocktime = 2000, minidisplaytime = 4000, 
+	'''
+	wm.RequestWarning(98)
+	time.sleep(0.5)
+	wm.ProcessVirtualKey(4)
+	time.sleep(1)
+	wm.ProcessVirtualKey(4)
+	time.sleep(2)
+	wm.ProcessVirtualKey(4)
+	print_warninglist(vm)
+	time.sleep(1)
+	wm.RequestWarning(192)
+	time.sleep(7)
+	print_warninglist(vm)
+	
 if __name__ == "__main__":  
 	
 	wm = get_warning_manager_dll(False)
@@ -88,7 +114,8 @@ if __name__ == "__main__":
 	wm.init()
 	#verify_telltale(wm)
 	#verify_immediate(wm)
-	verify_userlocktime(wm)
+	#verify_userlocktime(wm)
+	verify_warninglist(wm)
 	while(True):
 		pass
 		

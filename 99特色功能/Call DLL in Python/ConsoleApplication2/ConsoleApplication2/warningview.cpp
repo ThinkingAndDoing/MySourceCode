@@ -8,13 +8,13 @@ extern NotiDescriptionVector notiDescriptions;
 
 WarningView::WarningView(enum WarningIDs wrnid) 
 {
-
 	m_boImmediate = false;
 	m_boPendingRelease = false;
-    next = pre = NULL;
+	m_boSaveToStack = false;
 	m_u16CurTimespanIndex = 0; //WarningView创建时指向第一个Timespan
 	m_u16CurrentTimerID = 0;
 	m_enWarningID = InvalidWarningId;
+    next = pre = NULL;
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
     {
 		m_paTimespan[i] = NULL;
@@ -62,6 +62,7 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 		this->m_enWarningID = (enum WarningIDs)notiDescriptions.at(uNotiDesc).m_ACID;
         this->m_u16Priority = notiDescriptions.at(uNotiDesc).m_Prio;
 		this->m_boImmediate = notiDescriptions.at(uNotiDesc).m_Immediate;
+		this->m_boSaveToStack = notiDescriptions.at(uNotiDesc).m_Stack;
 
 		//(int st, int et, enum WarningAction onRel, enum WarningAction oe, enum WarningAction onHighPro, enum WarningAction onSamePro);
 		Timespan *pTmSp = NULL;
@@ -177,12 +178,12 @@ void WarningView::SetPendingRelease(bool boPendingRel)
 	m_boPendingRelease = boPendingRel;
 }
 
-bool WarningView::GetPendingRelease(void)
+bool WarningView::HasPendingRelease(void)
 {
 	return m_boPendingRelease;
 }
 
-bool WarningView::GetImmediate(void)
+bool WarningView::HasImmediate(void)
 {
 	return m_boImmediate;
 }
@@ -191,6 +192,11 @@ bool WarningView::GetImmediate(void)
 enum WarningIDs WarningView::GetWarningID(void)
 {
 	return m_enWarningID;
+}
+
+bool WarningView::HasSaveToStack(void)
+{
+	return m_boSaveToStack;
 }
 
 enum WarningIDs WarningView::GetFirstIDOfArrivalQueue(void)

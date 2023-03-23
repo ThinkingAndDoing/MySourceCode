@@ -60,11 +60,14 @@ public:
 
 	void SetPendingRelease(bool boPendingRel);
 
-	bool GetPendingRelease(void);
+	bool HasPendingRelease(void);
 
-	bool GetImmediate(void);
+	bool HasImmediate(void);
 
 	enum WarningIDs GetWarningID(void);
+
+	bool HasSaveToStack(void);
+
 
 	uint16 m_u16CurrentTimerID;		//当前定时器的ID 
     WarningView* next;
@@ -75,6 +78,7 @@ private:
 	bool m_boPendingInterrupt;
 	bool m_boPendingRelease;
 	bool m_boImmediate;
+	bool m_boSaveToStack;
 
 	enum WarningIDs m_enWarningID;
 

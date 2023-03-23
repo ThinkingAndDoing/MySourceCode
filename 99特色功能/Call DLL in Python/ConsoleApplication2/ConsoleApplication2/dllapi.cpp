@@ -21,9 +21,11 @@ extern "C"
 	API_DLL void CALL_TYPE init(void);
 	API_DLL void CALL_TYPE RequestWarning(int id);
 	API_DLL void CALL_TYPE ReleaseWarning(int id);
+	API_DLL uint16 CALL_TYPE GetWarningIDFromStack(int id);
+	API_DLL void CALL_TYPE ProcessVirtualKey(int key);
+
 	API_DLL void CALL_TYPE RequestTelltale(int id);
 	API_DLL void CALL_TYPE ReleaseTelltale(int id);
-	API_DLL void CALL_TYPE ProcessVirtualKey(int key);
 
 	API_DLL void CALL_TYPE dllRegisterPythonFunc(void *pyWarningPtr, void *pyTelltalePtr);
 }
@@ -63,34 +65,19 @@ void CALL_TYPE RequestWarning(int id)
 	oWrnStrategy.RequestWarning((enum WarningIDs)id);
 }
 
-
 void CALL_TYPE ReleaseWarning(int id)
 {
 	oWrnStrategy.ReleaseWarning((enum WarningIDs)id);
 }
 
-
-void CALL_TYPE RequestTelltale(int id)
+uint16 CALL_TYPE GetWarningIDFromStack(int id)
 {
-	oTTStrategy.RequestWarning((enum TelltaleIDs)id);
+	return (uint16)oWrnStrategy.GetWarningFromStack((uint16)id);
 }
-
-
-void CALL_TYPE ReleaseTelltale(int id)
-{
-	oTTStrategy.ReleaseWarning((enum TelltaleIDs)id);
-}
-
 
 void CALL_TYPE ProcessVirtualKey(int key)
 {
 	oWrnStrategy.ProcessVirtualKey((enum VirtualKey)key);
-}
-
-void CALL_TYPE dllRegisterPythonFunc(void *pyWarningPtr, void *pyTelltalePtr)
-{
-	cbWarningChange = (_callback_python_func)pyWarningPtr;
-	cbTelltaleChange = (_callback_python_func)pyTelltalePtr;
 }
 
 void OnWarningChanged(uint16 u16ActiveWrnID)
@@ -99,8 +86,27 @@ void OnWarningChanged(uint16 u16ActiveWrnID)
 
 }
 
+
+void CALL_TYPE RequestTelltale(int id)
+{
+	oTTStrategy.RequestWarning((enum TelltaleIDs)id);
+}
+
+void CALL_TYPE ReleaseTelltale(int id)
+{
+	oTTStrategy.ReleaseWarning((enum TelltaleIDs)id);
+}
+
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID)
 {
 	cbTelltaleChange(u16ActiveTelltaleID);
 
 }
+
+
+void CALL_TYPE dllRegisterPythonFunc(void *pyWarningPtr, void *pyTelltalePtr)
+{
+	cbWarningChange = (_callback_python_func)pyWarningPtr;
+	cbTelltaleChange = (_callback_python_func)pyTelltalePtr;
+}
+
