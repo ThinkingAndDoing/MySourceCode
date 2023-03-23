@@ -72,7 +72,7 @@ void CALL_TYPE ReleaseWarning(int id)
 
 uint16 CALL_TYPE GetWarningIDFromStack(int id)
 {
-	return (uint16)oWrnStrategy.GetWarningFromStack((uint16)id);
+	return (uint16)oWrnStrategy.oWarningList.GetWarningFromStack((uint16)id); 
 }
 
 void CALL_TYPE ProcessVirtualKey(int key)

@@ -3,20 +3,12 @@
 #include "list"
 #include "warningresourceids.hpp"
 #include "notification.hpp"
+#include "newarrival.hpp"
 
 #define MAX_TIMESPAN_NUMS           20          //允许的最大Timespan数量
 #define INVALID_TIMESPAN_ID         255         //无效的Timespan ID
 
 
-struct NewArrival
-{
-    uint16 u16Priority;
-    enum WarningIDs enWarningID;
-};
-
-
-typedef std::list<NewArrival> stNewArrivalList;
-typedef std::list<NewArrival>::iterator itNewArrival;
 
 class Timespan;
 class WarningStrategy;
@@ -34,17 +26,7 @@ public:
 
     void Displace(void);
 
-    void AddNewArrival(NewArrival stNewArrivalTemp);
-
-	NewArrival *GetFirstOfArrivalQueue(void);
-
-    void RemoveNewArrival(enum WarningIDs wrnid);
-
-    void ClearNewArrival(void);
-
     void BuildWarningView(enum WarningIDs wrnid);
-
-	enum WarningIDs GetFirstIDOfArrivalQueue(void);
 
 	bool HasNewInNextTimespan(void);
 
@@ -68,10 +50,10 @@ public:
 
 	bool HasSaveToStack(void);
 
-
 	uint16 m_u16CurrentTimerID;		//当前定时器的ID 
     WarningView* next;
     WarningView* pre;
+	NewArrivalList m_oArrivalList;
 
 private:
 
@@ -86,8 +68,6 @@ private:
 	uint16 m_u16CurTimespanIndex;		//当前timespan 
 
 	Timespan *m_paTimespan[MAX_TIMESPAN_NUMS];
-	stNewArrivalList m_lstNewArrival;      //新来报警除了放入WarningView队列外，也存储到m_newarrivallist中
-
 };
 
 

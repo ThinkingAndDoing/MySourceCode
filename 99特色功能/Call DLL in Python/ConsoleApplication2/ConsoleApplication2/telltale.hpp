@@ -5,14 +5,14 @@
 
 enum TelltaleIDs
 {
-	AutoHoldTT,
-	TurnLeftTT,
-	TurnRightTT,
-	LowFuelTT,
-	SftyBeltTT,
-	FrontFogTT,
-	RearFogTT,
-	AFSFailureTT,
+	AutoHold,
+	TurnLeft,
+	TurnRight,
+	LowFuel,
+	SftyBelt,
+	FrontFog,
+	RearFog,
+	AFSFailure,
 	InvalidTelltaleID
 };
 

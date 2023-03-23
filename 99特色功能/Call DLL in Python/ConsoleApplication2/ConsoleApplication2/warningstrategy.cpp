@@ -14,7 +14,6 @@ WarningStrategy::WarningStrategy()
     enAddWarningPolicy = AddWarningByPriority;
     enSelectWarningPolicy = SelectNext;
 	enWarningMode = NoneMode;
-	vecWarningStack.clear();
 }
 
 WarningStrategy::~WarningStrategy()
@@ -23,7 +22,6 @@ WarningStrategy::~WarningStrategy()
 	boSuspension = false;
 	enAddWarningPolicy = AddWarningByPriority;
 	enSelectWarningPolicy = SelectNext;
-	vecWarningStack.clear();
 }
 
 void WarningStrategy::Clean()
@@ -226,7 +224,7 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
 	            	NewArrival stNewArrivalTemp;
 					stNewArrivalTemp.u16Priority = pNewView->GetPriority();
 					stNewArrivalTemp.enWarningID = pNewView->GetWarningID();
-                    pCurrent->AddNewArrival(stNewArrivalTemp);          //此处是否有问题？局部变量在函数结束时会销毁，但此处应该只是值传递 
+					pCurrent->m_oArrivalList.AddNewArrival(stNewArrivalTemp);          //此处是否有问题？局部变量在函数结束时会销毁，但此处应该只是值传递 
 				}
                 break;
 
@@ -265,7 +263,7 @@ void WarningStrategy::UpdateCurrentWarning(WarningView * pUpdate)
 
     if (NULL != pCurrent && pCurrent != pUpdate)
     {
-        pCurrent->ClearNewArrival();
+		pCurrent->m_oArrivalList.ClearNewArrival();
     }
 
     pCurrent = pUpdate;
@@ -340,32 +338,6 @@ WarningView* WarningStrategy::GetLastWarningOfQueue(void)
     return p;
 }
 
-void WarningStrategy::RemoveWarningFromStack(enum WarningIDs wrnid)
-{
-	for (itWarningView it = vecWarningStack.begin(); it != vecWarningStack.end(); it++)
-	{
-		if (wrnid == it->GetWarningID())
-		{
-			vecWarningStack.erase(it);
-			break;
-		}
-	}
-}
-
-void WarningStrategy::AddWarningToStack(WarningView* pView)
-{
-	printf("AddWarningToStack pViewID = %d\n", pView->GetWarningID());
-	if (NULL != pView)
-	{
-		if (pView->HasSaveToStack())
-		{
-			itWarningView it = vecWarningStack.begin();
-			vecWarningStack.insert(it, *pView);
-		}
-	}
-
-}
-
 /*
  * 获取链表中所有报警的个数
  */
@@ -423,7 +395,7 @@ bool WarningStrategy::ProcessVirtualKey(enum VirtualKey enKey)
 		return false;
 
 	case WBRelease:
-		AddWarningToStack(pCurrent);
+		oWarningList.AddWarningToStack(pCurrent);
 		ForceReleaseWarning(pCurrent->GetWarningID());
 		return true;
 
@@ -480,7 +452,7 @@ void WarningStrategy::ReleaseWarning(enum WarningIDs wrnid)
 
     }
 
-	RemoveWarningFromStack(wrnid);
+	oWarningList.RemoveWarningFromStack(wrnid);
 }
 
 void WarningStrategy::ForceReleaseWarning(enum WarningIDs wrnid)
@@ -501,7 +473,7 @@ void WarningStrategy::ForceReleaseWarning(enum WarningIDs wrnid)
             }
         }
         else{
-            pCurrent->RemoveNewArrival(wrnid);
+			pCurrent->m_oArrivalList.RemoveNewArrival(wrnid);
         }
 
         //
@@ -527,17 +499,6 @@ uint16 WarningStrategy::GetActiveWarningID(void)
 void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 {
 	this->enWarningMode = enWM;
-}
-
-enum WarningIDs WarningStrategy::GetWarningFromStack(uint16 u16Index)
-{
-	if (vecWarningStack.size() > u16Index)
-	{
-		return vecWarningStack[u16Index].GetWarningID();
-	}
-	else{
-		return InvalidWarningId;
-	}
 }
 
 
@@ -572,7 +533,7 @@ WarningView* WarningStrategy::GetFirstViewOfArrivalQueue(void)
 
     if(pCurrent != NULL)
     {
-		enum WarningIDs enWrnID = pCurrent->GetFirstIDOfArrivalQueue();
+		enum WarningIDs enWrnID = pCurrent->m_oArrivalList.GetFirstIDOfArrivalQueue();
 		if (InvalidWarningId != enWrnID)
         {
 			pNewView = GetWarningViewByID(enWrnID);
@@ -595,7 +556,7 @@ void WarningStrategy::OnTimer(uint16 id)
 		switch (pCurrent->GetCurrentTimespan()->GetOnEnd())
         {
         case WBRelease:
-			AddWarningToStack(pCurrent);
+			oWarningList.AddWarningToStack(pCurrent);
 			ForceReleaseWarning(pCurrent->GetWarningID());
             break;
 

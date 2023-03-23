@@ -5,14 +5,14 @@
 
 
 struct TelltaleView stTelltalePriorityArray[] = {
-	{ AutoHoldTT, 4 },
-	{ TurnLeftTT, 8 },
-	{ TurnRightTT, 5 },
-	{ LowFuelTT, 2 },
-	{ SftyBeltTT, 1 },
-	{ FrontFogTT, 3 },
-	{ RearFogTT, 6 },
-	{ AFSFailureTT, 7 }
+	{ AutoHold, 4 },
+	{ TurnLeft, 8 },
+	{ TurnRight, 5 },
+	{ LowFuel, 2 },
+	{ SftyBelt, 1 },
+	{ FrontFog, 3 },
+	{ RearFog, 6 },
+	{ AFSFailure, 7 }
 };
 
 
