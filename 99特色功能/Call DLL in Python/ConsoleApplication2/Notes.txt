@@ -6,7 +6,7 @@ OpenIssue：
 2，对于Timeout的Notification是否要进入列表？要进列表
 3，Notification被按键Press之后进入列表，还是在报警进入Queue时，同时进入Stack？被Press之后进入列表
 UserLockTime：UserLockTime是否一定小于mini_display_time？
-UsageMode：切换UsageMode时，要遵循最小显示时间，DisplayTimeout不需要重新计时。如果一个报警在Mode1下按键隐藏，进入CheckViewList，切换到Model2（Model2下此报警不显示），再切换到Model1，这时报警应该放到Queue还是Stack？
+UsageMode：切换UsageMode时，要遵循最小显示时间，DisplayTimeout不需要重新计时。如果一个报警只在Driving下显示，当按键隐藏进入CheckViewList后，UsageMode切换到Inactive，再切换到Driving，这时这个报警应该放到CheckViewList还是WarningQueue？
 Available：行为与UsageMode相同。只有0~7八种状态，不需要按照bit位设计。
 
 高优先级报警切换到菜单后，如果再触发低优先级报警，这时候要显示报警还是菜单。
@@ -18,6 +18,8 @@ WarningList如何实现？
 WarningManger framework
 
 模块功能实现
+
+
 
 
 

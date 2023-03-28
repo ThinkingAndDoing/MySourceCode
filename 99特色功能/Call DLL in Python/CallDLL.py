@@ -107,6 +107,21 @@ def verify_warninglist(vm):
 	time.sleep(7)
 	print_warninglist(vm)
 	
+	
+def verify_warningmode(vm):
+	'''
+	NotiID = 98, priority = 4, Immediate = false
+	NotiID = 99, priority = 6, Immediate = true
+	NotiID = 241, priority = 8, Immediate = false
+	'''
+	wm.SetWarningMode(3)
+	wm.RequestWarning(98)
+	time.sleep(0.5)
+	wm.RequestWarning(99)
+	time.sleep(0.5)
+	wm.RequestWarning(241)
+	wm.SetWarningMode(4)
+	
 if __name__ == "__main__":  
 	
 	wm = get_warning_manager_dll(False)
@@ -115,7 +130,8 @@ if __name__ == "__main__":
 	#verify_telltale(wm)
 	#verify_immediate(wm)
 	#verify_userlocktime(wm)
-	verify_warninglist(wm)
+	#verify_warninglist(wm)
+	verify_warningmode(wm)
 	while(True):
 		pass
 		

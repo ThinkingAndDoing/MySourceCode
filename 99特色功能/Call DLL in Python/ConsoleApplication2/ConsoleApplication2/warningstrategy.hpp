@@ -1,7 +1,9 @@
 #ifndef WARNINGSTRATEGY_H
 #define WARNINGSTRATEGY_H
+#include "list"
 #include "warningtimer.hpp"
 #include "warninglist.hpp"
+#include "warningrepository.hpp"
 
 class TimeSpan;
 class WarningView;
@@ -21,9 +23,11 @@ enum SelectWarningPolicy
 };
 
 
+
 class WarningStrategy: public WarningTimer
 {
 public:
+	WarningRepository oWarningRepo;
 	WarningList oWarningList;
 
     WarningStrategy();
@@ -51,6 +55,7 @@ private:
     bool InsertPriority(WarningView *pNode);      //按照优先级插入
     void ReleaseCurrentShowNew(WarningView *pNewView);
 	WarningView* GetLastWarningOfQueue(void);
+	void RefreshWarningQueue(void);
 
     //头节点 pre 为 NULL，尾节点 next 为 NULL
     WarningView* pHead;     //链表头指针

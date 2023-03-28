@@ -10,6 +10,11 @@
 
 
 
+typedef std::list<enum WarningMode> enWarningModeList;
+typedef std::list<enum WarningMode>::iterator itWarningModeLst;
+
+
+
 class Timespan;
 class WarningStrategy;
 
@@ -26,13 +31,13 @@ public:
 
     void Displace(void);
 
-    void BuildWarningView(enum WarningIDs wrnid);
-
 	bool HasNewInNextTimespan(void);
 
 	Timespan *GetCurrentTimespan(void);
 
 	Timespan *GetNextTimespan(void);
+
+	bool IsActiveMode(enum WarningMode enMode);
 
 	void SetCurrentTimespanIndex(uint16 u16Idx);
 
@@ -61,6 +66,7 @@ private:
 	bool m_boPendingRelease;
 	bool m_boImmediate;
 	bool m_boSaveToStack;
+	enWarningModeList m_lstWarningMode;
 
 	enum WarningIDs m_enWarningID;
 
@@ -68,6 +74,9 @@ private:
 	uint16 m_u16CurTimespanIndex;		//µ±Ç°timespan 
 
 	Timespan *m_paTimespan[MAX_TIMESPAN_NUMS];
+
+	void BuildWarningView(enum WarningIDs wrnid);
+
 };
 
 

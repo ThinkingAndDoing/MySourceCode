@@ -8,6 +8,7 @@ extern NotiDescriptionVector notiDescriptions;
 
 WarningView::WarningView(enum WarningIDs wrnid) 
 {
+	m_lstWarningMode.clear();
 	m_boImmediate = false;
 	m_boPendingRelease = false;
 	m_boSaveToStack = false;
@@ -24,6 +25,8 @@ WarningView::WarningView(enum WarningIDs wrnid)
 }
 
 WarningView::~WarningView() {
+
+	m_lstWarningMode.clear();
 
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
     {
@@ -63,6 +66,8 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
         this->m_u16Priority = notiDescriptions.at(uNotiDesc).m_Prio;
 		this->m_boImmediate = notiDescriptions.at(uNotiDesc).m_Immediate;
 		this->m_boSaveToStack = notiDescriptions.at(uNotiDesc).m_Stack;
+		this->m_lstWarningMode.push_back((enum WarningMode)(notiDescriptions.at(uNotiDesc).m_Prio % 5));
+
 
 		//(int st, int et, enum WarningAction onRel, enum WarningAction oe, enum WarningAction onHighPro, enum WarningAction onSamePro);
 		Timespan *pTmSp = NULL;
@@ -151,6 +156,23 @@ Timespan *WarningView::GetNextTimespan(void)
 		return NULL;
 	}
 }
+
+
+bool WarningView::IsActiveMode(enum WarningMode enMode)
+{
+	bool boRet = false;
+
+	for (itWarningModeLst it = m_lstWarningMode.begin(); it != m_lstWarningMode.end(); it++)
+	{
+		if (enMode == *it)
+		{
+			boRet = true;
+			break;
+		}
+	}
+	return boRet;
+}
+
 
 void WarningView::SetCurrentTimespanIndex(uint16 u16Idx)
 {

@@ -21,6 +21,7 @@ extern "C"
 	API_DLL void CALL_TYPE init(void);
 	API_DLL void CALL_TYPE RequestWarning(int id);
 	API_DLL void CALL_TYPE ReleaseWarning(int id);
+	API_DLL void CALL_TYPE SetWarningMode(int id);
 	API_DLL uint16 CALL_TYPE GetWarningIDFromStack(int id);
 	API_DLL void CALL_TYPE ProcessVirtualKey(int key);
 
@@ -68,6 +69,11 @@ void CALL_TYPE RequestWarning(int id)
 void CALL_TYPE ReleaseWarning(int id)
 {
 	oWrnStrategy.ReleaseWarning((enum WarningIDs)id);
+}
+
+void CALL_TYPE SetWarningMode(int id)
+{
+	oWrnStrategy.SetWarningMode((enum WarningMode)id);
 }
 
 uint16 CALL_TYPE GetWarningIDFromStack(int id)

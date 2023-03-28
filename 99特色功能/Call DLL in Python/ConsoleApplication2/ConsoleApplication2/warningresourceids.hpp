@@ -8,7 +8,7 @@ enum WarningMode
 	WrnMode3,
 	WrnMode4,
 	WrnMode5,
-	NoneMode
+	WrnModeNone
 };
 
 enum WarningIDs

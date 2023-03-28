@@ -13,7 +13,7 @@ WarningStrategy::WarningStrategy()
 	boSuspension = false;
     enAddWarningPolicy = AddWarningByPriority;
     enSelectWarningPolicy = SelectNext;
-	enWarningMode = NoneMode;
+	enWarningMode = WrnModeNone;
 }
 
 WarningStrategy::~WarningStrategy()
@@ -324,6 +324,36 @@ void WarningStrategy::SelectNextView(enum SelectWarningPolicy selectpolicy)
     }
 }
 
+
+void WarningStrategy::RefreshWarningQueue(void)
+{
+	WarningView *pView = pHead;
+	while (NULL != pView)
+	{
+		if (pCurrent != pView)
+		{
+			enum WarningIDs toBeRemovedID = pView->GetWarningID();
+			pView = pView->next;
+			ForceReleaseWarning(toBeRemovedID);
+		}
+		else{
+			pView = pView->next;
+		}
+	}
+	if (NULL != pCurrent)
+	{
+		ReleaseWarning(pCurrent->GetWarningID());
+	}
+
+	stWarningIDList lstWarningID = oWarningRepo.GetWarningIDListByMode(enWarningMode);
+	for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); it++)
+	{
+		RequestWarning(*it);
+	}
+}
+
+
+
 WarningView* WarningStrategy::GetLastWarningOfQueue(void)
 {
     WarningView *p = pHead;
@@ -363,7 +393,13 @@ void WarningStrategy::RequestWarning(enum WarningIDs wrnid)
 
 	if (pView->GetWarningID() != InvalidWarningId)
 	{
-		AddNewWarningView(pView);
+		if (pView->IsActiveMode(enWarningMode))
+		{
+			AddNewWarningView(pView);
+		}
+
+		oWarningRepo.AddViewToRepository(*pView);
+
 	}
 }
 
@@ -453,6 +489,8 @@ void WarningStrategy::ReleaseWarning(enum WarningIDs wrnid)
     }
 
 	oWarningList.RemoveWarningFromStack(wrnid);
+
+	oWarningRepo.RemoveViewFromRepository(wrnid);
 }
 
 void WarningStrategy::ForceReleaseWarning(enum WarningIDs wrnid)
@@ -464,8 +502,9 @@ void WarningStrategy::ForceReleaseWarning(enum WarningIDs wrnid)
         {
             SelectNextView(enSelectWarningPolicy);
 
-            /* 若切换到下一个报警后，报警ID未变，表明链表中只有一个报警
-             * Only one warningview is in warningstrategy and the one will be released. 
+            /* 
+			 * 若切换到下一个报警后，报警ID未变，表明链表中只有一个报警
+			 * Only one warningview is in warningstrategy and the one will be released.
              */
 			if (pCurrent->GetWarningID() == wrnid)
             {
@@ -498,7 +537,12 @@ uint16 WarningStrategy::GetActiveWarningID(void)
 
 void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 {
-	this->enWarningMode = enWM;
+	if (this->enWarningMode != enWM)
+	{
+		this->enWarningMode = enWM;
+		this->oWarningList.SetWarningMode(enWM);
+		RefreshWarningQueue();
+	}
 }
 
 
