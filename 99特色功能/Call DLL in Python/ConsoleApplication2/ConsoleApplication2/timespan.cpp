@@ -4,10 +4,10 @@
 
 
 
-Timespan::Timespan(int st, int et)
+Timespan::Timespan(uint16 u16StartTime, uint16 u16EndTime)
 {
-	m_u16StartTime = st;
-	m_u16EndTime = et;
+	m_u16StartTime = u16StartTime;
+	m_u16EndTime = u16EndTime;
 	m_enOnRelese = WBIgnore;
 	m_enOnEnd = WBIgnore;
 	m_enOnNewHighPriority = WBIgnore;

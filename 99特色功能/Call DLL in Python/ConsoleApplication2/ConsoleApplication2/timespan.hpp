@@ -11,7 +11,7 @@ public:
 
 	class Acknowledge m_oAcknowledge;
 
-	Timespan(int st, int et);
+	Timespan(uint16 u16StartTime, uint16 u16EndTime);
 	~Timespan(){};
 	void SetOnRelease(enum WarningAction enAction);
 	void SetOnEnd(enum WarningAction enAction);

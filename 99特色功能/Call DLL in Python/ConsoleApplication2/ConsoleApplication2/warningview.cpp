@@ -13,7 +13,6 @@ WarningView::WarningView(enum WarningIDs wrnid)
 	m_boPendingRelease = false;
 	m_boSaveToStack = false;
 	m_u16CurTimespanIndex = 0; //WarningView创建时指向第一个Timespan
-	m_u16CurrentTimerID = 0;
 	m_enWarningID = InvalidWarningId;
     next = pre = NULL;
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)

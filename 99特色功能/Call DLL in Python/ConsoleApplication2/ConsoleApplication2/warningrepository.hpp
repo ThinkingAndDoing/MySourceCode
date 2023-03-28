@@ -21,6 +21,7 @@ class WarningRepository
 public:
 
 	WarningRepository();
+
 	~WarningRepository();
 
 	void AddViewToRepository(WarningView oWV);

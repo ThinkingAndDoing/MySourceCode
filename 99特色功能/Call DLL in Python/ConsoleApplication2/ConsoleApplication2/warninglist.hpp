@@ -18,12 +18,17 @@ class WarningList
 public:
 
 	WarningList();
+
 	~WarningList();
 
 	void RemoveWarningFromStack(enum WarningIDs wrnid);
+
 	void AddWarningToStack(WarningView* pView);
+
 	enum WarningIDs GetWarningFromStack(uint16 u16Index);
+
 	enum WarningIDs GetActiveModeWarningFromStack(uint16 u16Index);
+
 	void SetWarningMode(enum WarningMode enMode);
 
 private:

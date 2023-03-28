@@ -167,6 +167,72 @@ bool WarningStrategy::HasSameViewInQueue(WarningView * pNewView)
 }
 
 /*
+ * 新报警与当前报警竞争活跃状态，由策略进行仲裁
+ */
+void WarningStrategy::WarningPrioArbitrate(WarningView * pNewView)
+{
+	if (NULL == pCurrent)
+	{
+		UpdateCurrentWarning(pNewView);
+	}
+	else{
+
+		enum WarningAction enTimeSpanATemp = WBIgnore;
+
+		if (pNewView->GetPriority() > pCurrent->GetPriority())
+		{
+			enTimeSpanATemp = pCurrent->GetCurrentTimespan()->GetOnNewHighPriority();
+		}
+		else if(pNewView->GetPriority() == pCurrent->GetPriority())
+		{
+			enTimeSpanATemp = pCurrent->GetCurrentTimespan()->GetOnNewSamePriority();
+		}
+
+		if (pNewView->GetPriority() >= pCurrent->GetPriority() && pNewView->HasImmediate() == true)
+		{
+			enTimeSpanATemp = WBDisplace;
+		}
+
+		switch (enTimeSpanATemp)
+		{
+		case WBDisplace:
+			if (pCurrent->HasPendingRelease() == true)
+			{
+				ReleaseCurrentShowNew(pNewView);
+			}
+			else{
+				UpdateCurrentWarning(pNewView);
+			}
+			break;
+
+			//当前报警在当前timespan不允许新来报警打断，新来报警加入NewArrival队列
+		case WBIgnore:
+		{
+			NewArrival stNewArrivalTemp;
+			stNewArrivalTemp.u16Priority = pNewView->GetPriority();
+			stNewArrivalTemp.enWarningID = pNewView->GetWarningID();
+			pCurrent->m_oArrivalList.AddNewArrival(stNewArrivalTemp);          //值传递，STL list自带内存管理
+		}
+		break;
+
+		case WBRelease:
+		{
+			ReleaseCurrentShowNew(pNewView);
+		}
+		break;
+
+		case WBDepend:
+			break;
+
+		default:
+			break;
+		}
+	}
+
+}
+
+
+/*
  * 新增报警处理
  */
 bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
@@ -183,65 +249,8 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
 
     InsertPriority(pNewView);
 
-    //新报警与当前报警竞争活跃状态，由策略进行仲裁
-    if (NULL == pCurrent)
-    {
-        UpdateCurrentWarning(pNewView);
-    }
-    else{
-        if (pNewView->GetPriority() >= pCurrent->GetPriority())
-        {
-			enum WarningAction enTimeSpanATemp = WBIgnore;
+	WarningPrioArbitrate(pNewView);
 
-            if (pNewView->GetPriority() == pCurrent->GetPriority())
-            {
-				enTimeSpanATemp = pCurrent->GetCurrentTimespan()->GetOnNewHighPriority();
-            }
-            else{
-				enTimeSpanATemp = pCurrent->GetCurrentTimespan()->GetOnNewHighPriority();
-            }
-
-			if (pNewView->GetPriority() > pCurrent->GetPriority() && pNewView->HasImmediate() == true)
-            {
-                enTimeSpanATemp = WBDisplace;
-            }
-
-            switch (enTimeSpanATemp)
-            {
-            case WBDisplace:
-				if (pCurrent->HasPendingRelease() == true)
-                {
-					ReleaseCurrentShowNew(pNewView);
-                }
-                else{
-                    UpdateCurrentWarning(pNewView);
-                }
-                break;
-
-                //当前报警在当前timespan不允许新来报警打断，新来报警加入NewArrival队列
-            case WBIgnore:
-            	{
-	            	NewArrival stNewArrivalTemp;
-					stNewArrivalTemp.u16Priority = pNewView->GetPriority();
-					stNewArrivalTemp.enWarningID = pNewView->GetWarningID();
-					pCurrent->m_oArrivalList.AddNewArrival(stNewArrivalTemp);          //此处是否有问题？局部变量在函数结束时会销毁，但此处应该只是值传递 
-				}
-                break;
-
-            case WBRelease:
-            	{
-					ReleaseCurrentShowNew(pNewView);
-				}
-                break;
-
-            case WBDepend:
-                break;
-
-            default:
-                break;
-            }
-        }
-    }
     return true;
 }
 
@@ -254,11 +263,7 @@ void WarningStrategy::UpdateCurrentWarning(WarningView * pUpdate)
     if (NULL != pCurrent) 
     {
 		pCurrent->SetCurrentTimespanIndex(0);
-		if (pCurrent->m_u16CurrentTimerID != 0)
-        {
-			DeleteTimer(pCurrent->m_u16CurrentTimerID);
-			pCurrent->m_u16CurrentTimerID = 0;
-        }
+		TimerStop();
     }
 
     if (NULL != pCurrent && pCurrent != pUpdate)
@@ -277,7 +282,7 @@ void WarningStrategy::UpdateCurrentWarning(WarningView * pUpdate)
             //若第一个timespan的endtime不为TS_ENDLESS，即当前WarningView存在多段timespan，则启动定时器
 			if (TS_ENDLESS != pCurrent->GetCurrentTimespan()->GetEndTime())
             {
-				pCurrent->m_u16CurrentTimerID = CreateTimer(pCurrent->GetCurrentTimespan()->GetEndTime());
+				TimerStart(pCurrent->GetCurrentTimespan()->GetEndTime());
             }
         }
     }
@@ -417,30 +422,34 @@ bool WarningStrategy::ProcessVirtualKey(enum VirtualKey enKey)
 {
 	printf("ProcessVirtualKey enKey = %d\n", enKey);
 
-	if (NULL == pCurrent)
+	if (NULL != pCurrent)
 	{
-		return false;
+		enum WarningAction enAction = WBInvalid;
+
+		if (NULL != pCurrent->GetCurrentTimespan())
+		{
+			enAction = pCurrent->GetCurrentTimespan()->m_oAcknowledge.GetActionByKey(enKey);
+		}
+
+		switch (enAction)
+		{
+
+		case WBIgnore:
+			return false;
+
+		case WBRelease:
+			oWarningList.AddWarningToStack(pCurrent);
+			ForceReleaseWarning(pCurrent->GetWarningID());
+			return true;
+
+		case WBInvalid:
+			return false;
+
+		default:
+			return false;
+		}
 	}
-
-	enum WarningAction enAction = pCurrent->GetCurrentTimespan()->m_oAcknowledge.GetActionByKey(enKey);
-
-	switch (enAction)
-	{
-
-	case WBIgnore:
-		return false;
-
-	case WBRelease:
-		oWarningList.AddWarningToStack(pCurrent);
-		ForceReleaseWarning(pCurrent->GetWarningID());
-		return true;
-
-	case WBInvalid:
-		return false;
-
-	default:
-		return false;
-	}
+	return false;
 }
 
 
@@ -590,93 +599,99 @@ WarningView* WarningStrategy::GetFirstViewOfArrivalQueue(void)
 /*
  * 每个timespan的endtime，需要判断是否允许打断，以及启动下一个timespan
  */
-void WarningStrategy::OnTimer(uint16 id)
+void WarningStrategy::OnTimer(void)
 {
+	TimerStop();
 
-	if (pCurrent->m_u16CurrentTimerID == id)
-    {
-        DeleteTimer(id);
-		pCurrent->m_u16CurrentTimerID = 0;
-		switch (pCurrent->GetCurrentTimespan()->GetOnEnd())
-        {
-        case WBRelease:
-			oWarningList.AddWarningToStack(pCurrent);
-			ForceReleaseWarning(pCurrent->GetWarningID());
-            break;
+	if (NULL == pCurrent)
+	{
+		return;
+	}
 
-        case WBIgnore:
-			//当前timespan可能有被打断或者取消的标志
-			if (NULL != pCurrent->GetNextTimespan())  //下一个timespan存在
+	if (NULL == pCurrent->GetCurrentTimespan())
+	{
+		return;
+	}
+
+	switch (pCurrent->GetCurrentTimespan()->GetOnEnd())
+	{
+	case WBRelease:
+		oWarningList.AddWarningToStack(pCurrent);
+		ForceReleaseWarning(pCurrent->GetWarningID());
+		break;
+
+	case WBIgnore:
+		//当前timespan可能有被打断或者取消的标志
+		if (NULL != pCurrent->GetNextTimespan())  //下一个timespan存在
+		{
+			if (pCurrent->HasPendingRelease())
 			{
-				if (pCurrent->HasPendingRelease())
-                {
-					if (pCurrent->HasNewInNextTimespan())  //下一个timespan允许打断 && 有新来高优先级报警？
-                    {
-                        //release current and show new
-						ReleaseCurrentShowNew(GetFirstViewOfArrivalQueue());
-                    }
-                    else
-                    {
-						if (pCurrent->GetNextTimespan()->GetOnRelease() == WBRelease)
-                        {
-                            //release current and show next
-							ForceReleaseWarning(pCurrent->GetWarningID());
-                        }
-                        else
-                        {
-                            //show current and timespan++
-							if (TS_ENDLESS != pCurrent->GetNextTimespan()->GetEndTime())
-                            {
-								pCurrent->m_u16CurrentTimerID = CreateTimer(pCurrent->GetNextTimespan()->GetEndTime() - pCurrent->GetNextTimespan()->GetStartTime());
-                            }
-							pCurrent->SetCurrentTimespanIndex(pCurrent->GetCurrentTimespanIndex() + 1);
-                        }
-                    }
-                }
-                else
-                {
-					if (pCurrent->HasNewInNextTimespan())  //下一个timespan允许打断 && 有新来高优先级报警？
-                    {
-                        //show new
-						UpdateCurrentWarning(GetFirstViewOfArrivalQueue());
-                    }
-                    else
-                    {
-                        //show current and timespan++
+				if (pCurrent->HasNewInNextTimespan())  //下一个timespan允许打断 && 有新来高优先级报警？
+				{
+					//release current and show new
+					ReleaseCurrentShowNew(GetFirstViewOfArrivalQueue());
+				}
+				else
+				{
+					if (pCurrent->GetNextTimespan()->GetOnRelease() == WBRelease)
+					{
+						//release current and show next
+						ForceReleaseWarning(pCurrent->GetWarningID());
+					}
+					else
+					{
+						//show current and timespan++
 						if (TS_ENDLESS != pCurrent->GetNextTimespan()->GetEndTime())
-                        {
-							pCurrent->m_u16CurrentTimerID = CreateTimer(pCurrent->GetNextTimespan()->GetEndTime() - pCurrent->GetNextTimespan()->GetStartTime());
-                        }
+						{
+							TimerStart(pCurrent->GetNextTimespan()->GetEndTime() - pCurrent->GetNextTimespan()->GetStartTime());
+						}
 						pCurrent->SetCurrentTimespanIndex(pCurrent->GetCurrentTimespanIndex() + 1);
 					}
-                }
-            }
-            else{
-                //release current and show next
-				ForceReleaseWarning(pCurrent->GetWarningID());
-            }
-
-            break;
-
-        case WBDisplace:
-            if (GetNumberOfWarningView() == 1)
-            {
-                boSuspension = true;
-            }
-            else
-            {
-                SelectNextView(enSelectWarningPolicy);
-            }
-            break;
-
-        case WBDepend:
-            break;
-
-        default:
+				}
+			}
+			else
+			{
+				if (pCurrent->HasNewInNextTimespan())  //下一个timespan允许打断 && 有新来高优先级报警？
+				{
+					//show new
+					UpdateCurrentWarning(GetFirstViewOfArrivalQueue());
+				}
+				else
+				{
+					//show current and timespan++
+					if (TS_ENDLESS != pCurrent->GetNextTimespan()->GetEndTime())
+					{
+						TimerStart(pCurrent->GetNextTimespan()->GetEndTime() - pCurrent->GetNextTimespan()->GetStartTime());
+					}
+					pCurrent->SetCurrentTimespanIndex(pCurrent->GetCurrentTimespanIndex() + 1);
+				}
+			}
+		}
+		else{
+			//release current and show next
 			ForceReleaseWarning(pCurrent->GetWarningID());
-            break;
-        }
-    }
+		}
+
+		break;
+
+	case WBDisplace:
+		if (GetNumberOfWarningView() == 1)
+		{
+			boSuspension = true;
+		}
+		else
+		{
+			SelectNextView(enSelectWarningPolicy);
+		}
+		break;
+
+	case WBDepend:
+		break;
+
+	default:
+		ForceReleaseWarning(pCurrent->GetWarningID());
+		break;
+	}
 }
 
 

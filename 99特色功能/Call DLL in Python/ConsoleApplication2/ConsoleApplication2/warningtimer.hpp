@@ -12,19 +12,18 @@ public:
 
     ~WarningTimer(){};
 
-    uint16 CreateTimer(uint16 u16TimeGap);
+    void TimerStart(uint16 u16TimeGap);
 
-    void DeleteTimer(uint16 id);
+    void TimerStop(void);
 
     void TimeTick(void);
 
-    virtual void OnTimer(uint16 id) = 0;
+    virtual void OnTimer(void) = 0;
 
 private:
 
     uint16 u16TimeCounter;
 
-    uint16 u16TimerID;
 };
 
 #endif // MYTIMER_H

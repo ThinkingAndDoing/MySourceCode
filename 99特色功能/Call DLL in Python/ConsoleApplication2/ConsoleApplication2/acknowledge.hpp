@@ -29,15 +29,18 @@ public:
 
 	~Acknowledge(){};
 
-    void ClearAll(void);
-
 	void AddKeyAction(enum VirtualKey vk, enum WarningAction wrnAction);
 
 	bool RemoveKeyAction(enum VirtualKey vk);
 
 	enum WarningAction GetActionByKey(enum VirtualKey vk);
 
+private:
+
 	KeyActionList lstKeyAction;
+
+	void ClearAll(void);
+
 };
 
 

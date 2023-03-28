@@ -55,7 +55,6 @@ public:
 
 	bool HasSaveToStack(void);
 
-	uint16 m_u16CurrentTimerID;		//当前定时器的ID 
     WarningView* next;
     WarningView* pre;
 	NewArrivalList m_oArrivalList;

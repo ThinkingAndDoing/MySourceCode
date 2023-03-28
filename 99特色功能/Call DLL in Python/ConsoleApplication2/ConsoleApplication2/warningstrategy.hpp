@@ -45,12 +45,13 @@ public:
 	void SetWarningMode(enum WarningMode enWM);
 
 private:
-    void OnTimer(uint16 id);
+    void OnTimer(void);
     void UpdateCurrentWarning(WarningView * pUpdate); 
     WarningView* GetWarningViewByID(enum WarningIDs wrnid);
 	WarningView* GetFirstViewOfArrivalQueue(void);
     bool RemoveWarningView(enum WarningIDs wrnid);  
     bool AddNewWarningView(WarningView * pNewView); 
+	void WarningPrioArbitrate(WarningView * pNewView);
 	bool HasSameViewInQueue(WarningView * pNewView);
     bool InsertPriority(WarningView *pNode);      //按照优先级插入
     void ReleaseCurrentShowNew(WarningView *pNewView);
