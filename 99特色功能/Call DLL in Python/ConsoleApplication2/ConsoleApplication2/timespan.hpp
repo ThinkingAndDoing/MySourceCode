@@ -9,7 +9,7 @@ class Timespan
 {
 public:
 
-	class Acknowledge m_oAcknowledge;
+	Acknowledge m_oAcknowledge;
 
 	Timespan(uint16 u16StartTime, uint16 u16EndTime);
 	~Timespan(){};

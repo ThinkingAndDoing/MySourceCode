@@ -27,15 +27,29 @@ void WarningList::RemoveWarningFromStack(enum WarningIDs wrnid)
 	}
 }
 
+bool WarningList::boIDAlreadyInList(enum WarningIDs enWrnID)
+{
+	for (itWarningViewVec it = vecWarningStack.begin(); it != vecWarningStack.end(); it++)
+	{
+		if (it->GetWarningID() == enWrnID)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 void WarningList::AddWarningToStack(WarningView* pView)
 {
-	printf("AddWarningToStack pViewID = %d\n", pView->GetWarningID());
 	if (NULL != pView)
 	{
-		if (pView->HasSaveToStack())
+		if (false == boIDAlreadyInList(pView->GetWarningID()))
 		{
-			itWarningViewVec it = vecWarningStack.begin();
-			vecWarningStack.insert(it, *pView);
+			if (pView->boNeedSaveToStack())
+			{
+				itWarningViewVec it = vecWarningStack.begin();
+				vecWarningStack.insert(it, *pView);
+			}
 		}
 	}
 

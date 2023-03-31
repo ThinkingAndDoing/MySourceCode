@@ -1,4 +1,4 @@
-
+#include <stdio.h>
 
 #include "timespan.hpp"
 #include "warningview.hpp"
@@ -21,6 +21,34 @@ WarningView::WarningView(enum WarningIDs wrnid)
     }
 
     BuildWarningView(wrnid);
+}
+
+WarningView::WarningView(const WarningView & oWV)
+{
+	next = oWV.next;
+	pre = oWV.pre;
+	m_oArrivalList = oWV.m_oArrivalList;
+	m_boPendingInterrupt = oWV.m_boPendingInterrupt;
+	m_boPendingRelease = oWV.m_boPendingRelease;
+	m_boImmediate = oWV.m_boImmediate;
+	m_boSaveToStack = oWV.m_boSaveToStack;
+
+	m_lstWarningMode = oWV.m_lstWarningMode;
+	m_enWarningID = oWV.m_enWarningID;
+	m_u16Priority = oWV.m_u16Priority;
+	m_u16CurTimespanIndex = oWV.m_u16CurTimespanIndex;
+
+	for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
+	{
+		if (NULL != oWV.m_paTimespan[i])
+		{
+			m_paTimespan[i] = new Timespan(*(oWV.m_paTimespan[i]));
+		}
+		else{
+			m_paTimespan[i] = oWV.m_paTimespan[i];
+		}
+	}
+
 }
 
 WarningView::~WarningView() {
@@ -73,39 +101,82 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 		if (notiDescriptions.at(uNotiDesc).m_MinTime > notiDescriptions.at(uNotiDesc).m_UserLockTime)
 		{
 			pTmSp = new Timespan(0, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
+			if (NULL == pTmSp)
+			{
+				printf("unable to satisfy request for memory\n");
+			}
 			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
 			this->m_paTimespan[0] = pTmSp;
+
 			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
+			if (NULL == pTmSp)
+			{
+				printf("unable to satisfy request for memory\n");
+			}
 			this->m_paTimespan[1] = pTmSp;
+
 			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
+			if (NULL == pTmSp)
+			{
+				printf("unable to satisfy request for memory\n");
+			}
 			pTmSp->SetOnRelease(WBRelease);
 			pTmSp->SetOnEnd(WBRelease);
 			pTmSp->SetOnNewHighPriority(WBDisplace);
+			pTmSp->SetOnNewSamePriority(WBDisplace);
 			this->m_paTimespan[2] = pTmSp;
 		}
 		else if (notiDescriptions.at(uNotiDesc).m_MinTime < notiDescriptions.at(uNotiDesc).m_UserLockTime)
 		{
 			pTmSp = new Timespan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
+			if (NULL == pTmSp)
+			{
+				printf("unable to satisfy request for memory\n");
+			}
 			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
 			this->m_paTimespan[0] = pTmSp;
+
 			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
+			if (NULL == pTmSp)
+			{
+				printf("unable to satisfy request for memory\n");
+			}
 			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
+			pTmSp->SetOnRelease(WBRelease);
+			pTmSp->SetOnNewHighPriority(WBDisplace);
+			pTmSp->SetOnNewSamePriority(WBDisplace);
 			this->m_paTimespan[1] = pTmSp;
+
 			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
+			if (NULL == pTmSp)
+			{
+				printf("unable to satisfy request for memory\n");
+			}
 			pTmSp->SetOnRelease(WBRelease);
 			pTmSp->SetOnEnd(WBRelease);
 			pTmSp->SetOnNewHighPriority(WBDisplace);
+			pTmSp->SetOnNewSamePriority(WBDisplace);
 			this->m_paTimespan[2] = pTmSp;
 		}
 		else
 		{
 			pTmSp = new Timespan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
+			if (NULL == pTmSp)
+			{
+				printf("unable to satisfy request for memory\n");
+			}
 			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
 			this->m_paTimespan[0] = pTmSp;
+
 			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
+			if (NULL == pTmSp)
+			{
+				printf("unable to satisfy request for memory\n");
+			}
 			pTmSp->SetOnRelease(WBRelease);
 			pTmSp->SetOnEnd(WBRelease);
 			pTmSp->SetOnNewHighPriority(WBDisplace);
+			pTmSp->SetOnNewSamePriority(WBDisplace);
 			this->m_paTimespan[1] = pTmSp;
 		}
     }
@@ -159,6 +230,10 @@ Timespan *WarningView::GetNextTimespan(void)
 
 bool WarningView::IsActiveMode(enum WarningMode enMode)
 {
+#ifdef DISABLE_WARNING_MODE
+	return true;
+#endif
+
 	bool boRet = false;
 
 	for (itWarningModeLst it = m_lstWarningMode.begin(); it != m_lstWarningMode.end(); it++)
@@ -215,7 +290,7 @@ enum WarningIDs WarningView::GetWarningID(void)
 	return m_enWarningID;
 }
 
-bool WarningView::HasSaveToStack(void)
+bool WarningView::boNeedSaveToStack(void)
 {
 	return m_boSaveToStack;
 }

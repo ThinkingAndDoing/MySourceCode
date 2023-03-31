@@ -22,10 +22,12 @@ class NewArrivalList
 public:
 
 
-	NewArrivalList(){ m_lstNewArrival.clear(); };
-	~NewArrivalList(){ m_lstNewArrival.clear(); };
+	NewArrivalList();
+	~NewArrivalList();
 
 	enum WarningIDs GetFirstIDOfArrivalQueue(void);
+
+	bool boIDAlreadyInList(enum WarningIDs enWrnID);
 
 	void AddNewArrival(NewArrival stNewArrivalTemp);
 
@@ -38,7 +40,7 @@ public:
 
 private:
 
-	stNewArrivalList m_lstNewArrival;      //新来报警除了放入WarningView队列外，也存储到m_newarrivallist中
+	stNewArrivalList m_lstNewArrival;      //夾A幢鼐瞥zIE放CeWarningView队I奒a，N泊e储到m_newarrivallist謯
 
 };
 

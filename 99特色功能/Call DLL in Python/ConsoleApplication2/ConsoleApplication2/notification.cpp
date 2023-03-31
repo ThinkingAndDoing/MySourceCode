@@ -113,7 +113,7 @@ NotiDescriptionVector notiDescriptions = {
 	Notification::NotiDescription(200, 2, 0, false, 1, true, 1000, 500, "Parking brake overheated", 107),
 	Notification::NotiDescription(206, 1, 0, false, 1, true, 1000, 500, "Check brake fluid level", 78),
 	Notification::NotiDescription(207, 4, 0, false, 4, true, 1000, 500, "Current drive mode \nRestricted vehicle stability", 77),
-	Notification::NotiDescription(248, 8, 5000, false, 0, true, 1000, 500, "Book time for maintenance", 241),
+	Notification::NotiDescription(248, 8, 2000, false, 0, true, 1000, 500, "Book time for maintenance", 241),
 	Notification::NotiDescription(249, 8, 5000, false, 0, true, 1000, 500, "Time for regular maintenance", 242),
 	Notification::NotiDescription(250, 8, 5000, false, 3, true, 1000, 500, "Maintenance overdue", 243),
 	Notification::NotiDescription(260, 3, 0, true, 1, true, 1000, 500, "Do not connect two cables", 0),

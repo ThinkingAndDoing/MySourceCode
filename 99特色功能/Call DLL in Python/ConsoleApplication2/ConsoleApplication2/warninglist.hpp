@@ -23,6 +23,8 @@ public:
 
 	void RemoveWarningFromStack(enum WarningIDs wrnid);
 
+	bool boIDAlreadyInList(enum WarningIDs enWrnID);
+
 	void AddWarningToStack(WarningView* pView);
 
 	enum WarningIDs GetWarningFromStack(uint16 u16Index);

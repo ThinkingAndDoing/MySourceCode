@@ -1,6 +1,10 @@
 #ifndef WARNINGRESOURCEIDS_H
 #define WARNINGRESOURCEIDS_H
 
+
+#define DISABLE_WARNING_MODE
+
+
 enum WarningMode
 {
 	WrnMode1,

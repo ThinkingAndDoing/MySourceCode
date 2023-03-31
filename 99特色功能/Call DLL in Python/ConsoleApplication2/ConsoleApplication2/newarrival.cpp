@@ -3,6 +3,18 @@
 #include "warningresourceids.hpp"
 
 
+NewArrivalList::NewArrivalList()
+{
+	m_lstNewArrival.clear(); 
+}
+
+
+NewArrivalList::~NewArrivalList()
+{ 
+	m_lstNewArrival.clear(); 
+}
+
+
 enum WarningIDs NewArrivalList::GetFirstIDOfArrivalQueue(void)
 {
 	NewArrival *pNew = GetFirstOfArrivalQueue();
@@ -16,21 +28,36 @@ enum WarningIDs NewArrivalList::GetFirstIDOfArrivalQueue(void)
 	}
 }
 
+bool NewArrivalList::boIDAlreadyInList(enum WarningIDs enWrnID)
+{
+	for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); it++)
+	{
+		if (it->enWarningID == enWrnID)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 /*
 * 按照优先级从高到低加入新报警到 m_newarrivallist
 */
 void NewArrivalList::AddNewArrival(NewArrival stNewArrivalTemp)
 {
-	for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); it++)
+	if (false == boIDAlreadyInList(stNewArrivalTemp.enWarningID))
 	{
-		if (stNewArrivalTemp.u16Priority >= it->u16Priority)
+		for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); it++)
 		{
-			m_lstNewArrival.insert(it, stNewArrivalTemp);
-			return;
+			if (stNewArrivalTemp.u16Priority >= it->u16Priority)
+			{
+				m_lstNewArrival.insert(it, stNewArrivalTemp);
+				return;
+			}
 		}
-	}
 
-	m_lstNewArrival.push_back(stNewArrivalTemp);
+		m_lstNewArrival.push_back(stNewArrivalTemp);
+	}
 }
 
 

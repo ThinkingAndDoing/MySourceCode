@@ -2,6 +2,16 @@
 #include "acknowledge.hpp"
 
 
+Acknowledge::Acknowledge()
+{ 
+	lstKeyAction.clear(); 
+}
+
+Acknowledge::~Acknowledge()
+{ 
+	lstKeyAction.clear();
+}
+
 
 void Acknowledge::ClearAll(void)
 {

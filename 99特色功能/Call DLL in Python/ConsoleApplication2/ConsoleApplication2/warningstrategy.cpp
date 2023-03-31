@@ -1,5 +1,5 @@
 
-#include "stdio.h"
+#include <stdio.h>
 
 #include "timespan.hpp"
 #include "warningview.hpp"
@@ -157,7 +157,6 @@ bool WarningStrategy::HasSameViewInQueue(WarningView * pNewView)
 	if (NULL != p)
 	{
 		p->SetPendingRelease(false);   //重新触发后，报警的m_boPendingRelease状态需要设置为false
-		delete pNewView;
 		return true;
 	}
 	else
@@ -396,15 +395,27 @@ void WarningStrategy::RequestWarning(enum WarningIDs wrnid)
 
     WarningView *pView = new WarningView(wrnid);
 
+	if (NULL == pView)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
+
 	if (pView->GetWarningID() != InvalidWarningId)
 	{
-		if (pView->IsActiveMode(enWarningMode))
-		{
-			AddNewWarningView(pView);
-		}
-
 		oWarningRepo.AddViewToRepository(*pView);
 
+		if (pView->IsActiveMode(enWarningMode))
+		{
+			if (AddNewWarningView(pView) == false)
+			{
+				delete pView;
+				pView = NULL;
+			}
+		}
+	}
+	else{
+		delete pView;
+		pView = NULL;
 	}
 }
 
@@ -546,6 +557,10 @@ uint16 WarningStrategy::GetActiveWarningID(void)
 
 void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 {
+#ifdef DISABLE_WARNING_MODE
+	return;
+#endif
+
 	if (this->enWarningMode != enWM)
 	{
 		this->enWarningMode = enWM;
@@ -612,7 +627,6 @@ void WarningStrategy::OnTimer(void)
 	{
 		return;
 	}
-
 	switch (pCurrent->GetCurrentTimespan()->GetOnEnd())
 	{
 	case WBRelease:

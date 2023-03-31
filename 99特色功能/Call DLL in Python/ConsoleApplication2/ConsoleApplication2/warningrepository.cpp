@@ -28,21 +28,24 @@ stWarningIDList WarningRepository::GetWarningIDListByMode(enum WarningMode enWrn
 	return lstWarningID;
 }
 
-void WarningRepository::AddViewToRepository(WarningView oWV)
+bool WarningRepository::boIDAlreadyInList(enum WarningIDs enWrnID)
 {
-	bool boInserted = false;
-
 	for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); it++)
 	{
-		if (it->GetWarningID() == oWV.GetWarningID())
+		if (it->GetWarningID() == enWrnID)
 		{
-			boInserted = true;
-			break;
+			return true;
 		}
 	}
+	return false;
+}
 
-	if (!boInserted)
+void WarningRepository::AddViewToRepository(WarningView oWV)
+{
+	if (false == boIDAlreadyInList(oWV.GetWarningID()))
 	{
+		bool boInserted = false;
+
 		for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); it++)
 		{
 			if (it->GetPriority() < oWV.GetPriority())
@@ -59,7 +62,6 @@ void WarningRepository::AddViewToRepository(WarningView oWV)
 			boInserted = true;
 		}
 	}
-
 }
 
 void WarningRepository::RemoveViewFromRepository(enum WarningIDs enWrnID)

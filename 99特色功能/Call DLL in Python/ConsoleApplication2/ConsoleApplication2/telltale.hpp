@@ -40,7 +40,7 @@ private:
 	TelltaleViewList lstTelltaleView;
 
 	void AddNewTelltale(TelltaleView stNewTelltale);
-	bool HasSameIDInQueue(enum TelltaleIDs ttid);
+	bool boIDAlreadyInList(enum TelltaleIDs ttid);
 };
 
 

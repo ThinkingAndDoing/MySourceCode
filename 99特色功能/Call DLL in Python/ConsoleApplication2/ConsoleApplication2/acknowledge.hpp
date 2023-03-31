@@ -25,9 +25,9 @@ typedef std::list<KeyAction>::iterator itKeyAction;
 class Acknowledge
 {
 public:
-	Acknowledge(){ lstKeyAction.clear(); };
+	Acknowledge();
 
-	~Acknowledge(){};
+	~Acknowledge();
 
 	void AddKeyAction(enum VirtualKey vk, enum WarningAction wrnAction);
 

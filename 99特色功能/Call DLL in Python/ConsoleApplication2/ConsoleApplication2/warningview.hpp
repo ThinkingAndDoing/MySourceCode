@@ -23,6 +23,8 @@ class WarningView
 public:
     WarningView(enum WarningIDs wrnid);
 
+	WarningView(const WarningView & oWV);
+
     ~WarningView();
 
     void Active(void);
@@ -53,7 +55,7 @@ public:
 
 	enum WarningIDs GetWarningID(void);
 
-	bool HasSaveToStack(void);
+	bool boNeedSaveToStack(void);
 
     WarningView* next;
     WarningView* pre;
