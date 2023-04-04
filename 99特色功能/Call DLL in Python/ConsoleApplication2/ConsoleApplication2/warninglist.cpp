@@ -17,7 +17,7 @@ WarningList::~WarningList()
 
 void WarningList::RemoveWarningFromStack(enum WarningIDs wrnid)
 {
-	for (itWarningViewVec it = vecWarningStack.begin(); it != vecWarningStack.end(); it++)
+	for (itWarningViewVec it = vecWarningStack.begin(); it != vecWarningStack.end(); ++it)
 	{
 		if (wrnid == it->GetWarningID())
 		{
@@ -29,7 +29,7 @@ void WarningList::RemoveWarningFromStack(enum WarningIDs wrnid)
 
 bool WarningList::boIDAlreadyInList(enum WarningIDs enWrnID)
 {
-	for (itWarningViewVec it = vecWarningStack.begin(); it != vecWarningStack.end(); it++)
+	for (itWarningViewVec it = vecWarningStack.begin(); it != vecWarningStack.end(); ++it)
 	{
 		if (it->GetWarningID() == enWrnID)
 		{
@@ -91,8 +91,5 @@ enum WarningIDs WarningList::GetWarningFromStack(uint16 u16Index)
 
 void WarningList::SetWarningMode(enum WarningMode enMode)
 {
-	if (enWarningMode != enMode)
-	{
-		enWarningMode = enMode;
-	}
+	enWarningMode = enMode;
 }

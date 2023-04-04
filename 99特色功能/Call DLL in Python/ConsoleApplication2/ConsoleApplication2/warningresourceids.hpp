@@ -17,6 +17,7 @@ enum WarningMode
 
 enum WarningIDs
 {
+//Telltales
     ABSLampTT = 0,
     ABSLampBlinkTT,
     BattChargeTT,
@@ -77,8 +78,9 @@ enum WarningIDs
     LoBeamFaultTT,
     AdjustHeadlampLevelErrTT,
     SeatBeltTT,
-    TSIFaultTT,
+	AutoHoldTT,
     TSIOffTT,//=61
+//Warnings
 	SteColLocFaiWrn,
 	SteColLocTryagainWrn,
 	SteColLocSerReqWrn,
@@ -207,7 +209,7 @@ enum WarningIDs
 	SpdInterSud,
 	SpdContiSud,
 	LVsupplyAbnormalWrn,
-	AutoHoldTT,//=190
+	OldAutoHoldTT,//=190
 	CentWhlInfoFailWrn,
 	SteerWhlParkWarnTrueWrn,
 	CentWhlAglReqReqWrn,
@@ -262,6 +264,7 @@ enum WarningIDs
 	SrvRmnWarning2Wrn,
 	SrvRmnWarning3Wrn,
 	WarningID244,
+	DoorOpnWrn,
     InvalidWarningId
 };
 

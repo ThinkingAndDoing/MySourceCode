@@ -18,7 +18,7 @@ struct TelltaleView stTelltalePriorityArray[] = {
 
 bool TelltaleStrategy::boIDAlreadyInList(enum TelltaleIDs ttid)
 {
-	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); it++)
+	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); ++it)
 	{
 		if (it->enTelltaleID == ttid)
 		{
@@ -48,7 +48,7 @@ void TelltaleStrategy::RequestWarning(enum TelltaleIDs ttid)
 void TelltaleStrategy::ReleaseWarning(enum TelltaleIDs ttid)
 {
 	printf("ReleaseTelltale ttid = %d\n", ttid);
-	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); it++)
+	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); ++it)
 	{
 		if (ttid == it->enTelltaleID)
 		{
@@ -74,7 +74,7 @@ uint16 TelltaleStrategy::GetFirstTelltaleID(void)
 void TelltaleStrategy::AddNewTelltale(TelltaleView stNewTelltale)
 {
 
-	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); it++)
+	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); ++it)
 	{
 		if (stNewTelltale.u16Priority >= it->u16Priority)
 		{

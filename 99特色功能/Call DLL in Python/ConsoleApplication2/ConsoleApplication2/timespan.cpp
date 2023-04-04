@@ -12,7 +12,7 @@ Timespan::Timespan(uint16 u16StartTime, uint16 u16EndTime)
 	m_enOnEnd = WBIgnore;
 	m_enOnNewHighPriority = WBIgnore;
 	m_enOnNewSamePriority = WBIgnore;
-	m_oAcknowledge.AddKeyAction(VK_OK, WBRelease);
+	m_oAcknowledge.AddKeyAction(VKY_OK, WBRelease);
 }
 
 void Timespan::SetOnRelease(enum WarningAction enAction)

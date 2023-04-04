@@ -2,7 +2,6 @@
 #define TYPEDEFINE_H
 
 
-
 #define  uint32     unsigned long int
 #define  uint16     unsigned int
 #define  uint8      unsigned short int
@@ -10,12 +9,12 @@
 
 enum VirtualKey
 {
-	VK_LEFT,
-	VK_RIGHT,
-	VK_DOWN,
-	VK_UP,
-	VK_OK,
-	VK_LONG_OK
+	VKY_LEFT,
+	VKY_RIGHT,
+	VKY_DOWN,
+	VKY_UP,
+	VKY_OK,
+	VKY_LONG_OK
 };
 
 

@@ -1,8 +1,6 @@
 #include <stdio.h>
 
-#include "timespan.hpp"
 #include "warningview.hpp"
-#include "warningstrategy.hpp"
 
 extern NotiDescriptionVector notiDescriptions;
 
@@ -11,6 +9,7 @@ WarningView::WarningView(enum WarningIDs wrnid)
 	m_lstWarningMode.clear();
 	m_boImmediate = false;
 	m_boPendingRelease = false;
+	m_boPendingInterrupt = false;
 	m_boSaveToStack = false;
 	m_u16CurTimespanIndex = 0; //WarningView创建时指向第一个Timespan
 	m_enWarningID = InvalidWarningId;
@@ -104,14 +103,16 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 			if (NULL == pTmSp)
 			{
 				printf("unable to satisfy request for memory\n");
+				return;
 			}
-			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
+			pTmSp->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 			this->m_paTimespan[0] = pTmSp;
 
 			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
 			if (NULL == pTmSp)
 			{
 				printf("unable to satisfy request for memory\n");
+				return ;
 			}
 			this->m_paTimespan[1] = pTmSp;
 
@@ -119,6 +120,7 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 			if (NULL == pTmSp)
 			{
 				printf("unable to satisfy request for memory\n");
+				return ;
 			}
 			pTmSp->SetOnRelease(WBRelease);
 			pTmSp->SetOnEnd(WBRelease);
@@ -132,16 +134,18 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 			if (NULL == pTmSp)
 			{
 				printf("unable to satisfy request for memory\n");
+				return ;
 			}
-			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
+			pTmSp->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 			this->m_paTimespan[0] = pTmSp;
 
 			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
 			if (NULL == pTmSp)
 			{
 				printf("unable to satisfy request for memory\n");
+				return ;
 			}
-			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
+			pTmSp->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 			pTmSp->SetOnRelease(WBRelease);
 			pTmSp->SetOnNewHighPriority(WBDisplace);
 			pTmSp->SetOnNewSamePriority(WBDisplace);
@@ -151,6 +155,7 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 			if (NULL == pTmSp)
 			{
 				printf("unable to satisfy request for memory\n");
+				return ;
 			}
 			pTmSp->SetOnRelease(WBRelease);
 			pTmSp->SetOnEnd(WBRelease);
@@ -164,14 +169,16 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 			if (NULL == pTmSp)
 			{
 				printf("unable to satisfy request for memory\n");
+				return ;
 			}
-			pTmSp->m_oAcknowledge.AddKeyAction(VK_OK, WBIgnore);
+			pTmSp->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 			this->m_paTimespan[0] = pTmSp;
 
 			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
 			if (NULL == pTmSp)
 			{
 				printf("unable to satisfy request for memory\n");
+				return ;
 			}
 			pTmSp->SetOnRelease(WBRelease);
 			pTmSp->SetOnEnd(WBRelease);
@@ -236,7 +243,7 @@ bool WarningView::IsActiveMode(enum WarningMode enMode)
 
 	bool boRet = false;
 
-	for (itWarningModeLst it = m_lstWarningMode.begin(); it != m_lstWarningMode.end(); it++)
+	for (itWarningModeLst it = m_lstWarningMode.begin(); it != m_lstWarningMode.end(); ++it)
 	{
 		if (enMode == *it)
 		{

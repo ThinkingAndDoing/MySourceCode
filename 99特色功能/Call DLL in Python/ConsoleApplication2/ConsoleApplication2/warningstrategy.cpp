@@ -3,6 +3,8 @@
 
 #include "timespan.hpp"
 #include "warningview.hpp"
+#include "warninglist.hpp"
+#include "warningrepository.hpp"
 #include "warningstrategy.hpp"
 
 
@@ -14,7 +16,43 @@ WarningStrategy::WarningStrategy()
     enAddWarningPolicy = AddWarningByPriority;
     enSelectWarningPolicy = SelectNext;
 	enWarningMode = WrnModeNone;
+
+	poWarningRepo = new WarningRepository();
+	if (NULL == poWarningRepo)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
+
+	poWarningList = new WarningList();
+	if (NULL == poWarningList)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
 }
+
+
+WarningStrategy::WarningStrategy(const WarningStrategy & oWS)
+{
+	pHead = NULL;
+	pCurrent = NULL;
+	enAddWarningPolicy = oWS.enAddWarningPolicy;
+	enSelectWarningPolicy = oWS.enSelectWarningPolicy;
+	boSuspension = oWS.boSuspension;
+	enWarningMode = oWS.enWarningMode;
+
+	poWarningRepo = new WarningRepository();
+	if (NULL == poWarningRepo)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
+
+	poWarningList = new WarningList();
+	if (NULL == poWarningList)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
+}
+
 
 WarningStrategy::~WarningStrategy()
 {
@@ -22,6 +60,10 @@ WarningStrategy::~WarningStrategy()
 	boSuspension = false;
 	enAddWarningPolicy = AddWarningByPriority;
 	enSelectWarningPolicy = SelectNext;
+	delete poWarningRepo;
+	poWarningRepo = NULL;
+	delete poWarningList;
+	poWarningList = NULL;
 }
 
 void WarningStrategy::Clean()
@@ -349,10 +391,13 @@ void WarningStrategy::RefreshWarningQueue(void)
 		ReleaseWarning(pCurrent->GetWarningID());
 	}
 
-	stWarningIDList lstWarningID = oWarningRepo.GetWarningIDListByMode(enWarningMode);
-	for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); it++)
+	if (NULL != poWarningRepo)
 	{
-		RequestWarning(*it);
+		stWarningIDList lstWarningID = poWarningRepo->GetWarningIDListByMode(enWarningMode);
+		for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); ++it)
+		{
+			RequestWarning(*it);
+		}
 	}
 }
 
@@ -398,11 +443,15 @@ void WarningStrategy::RequestWarning(enum WarningIDs wrnid)
 	if (NULL == pView)
 	{
 		printf("unable to satisfy request for memory\n");
+		return;
 	}
 
 	if (pView->GetWarningID() != InvalidWarningId)
 	{
-		oWarningRepo.AddViewToRepository(*pView);
+		if (NULL != poWarningRepo)
+		{
+			poWarningRepo->AddViewToRepository(*pView);
+		}
 
 		if (pView->IsActiveMode(enWarningMode))
 		{
@@ -449,7 +498,10 @@ bool WarningStrategy::ProcessVirtualKey(enum VirtualKey enKey)
 			return false;
 
 		case WBRelease:
-			oWarningList.AddWarningToStack(pCurrent);
+			if (NULL != poWarningList)
+			{
+				poWarningList->AddWarningToStack(pCurrent);
+			}
 			ForceReleaseWarning(pCurrent->GetWarningID());
 			return true;
 
@@ -508,9 +560,15 @@ void WarningStrategy::ReleaseWarning(enum WarningIDs wrnid)
 
     }
 
-	oWarningList.RemoveWarningFromStack(wrnid);
+	if (NULL != poWarningList)
+	{
+		poWarningList->RemoveWarningFromStack(wrnid);
+	}
 
-	oWarningRepo.RemoveViewFromRepository(wrnid);
+	if (NULL != poWarningRepo)
+	{
+		poWarningRepo->RemoveViewFromRepository(wrnid);
+	}
 }
 
 void WarningStrategy::ForceReleaseWarning(enum WarningIDs wrnid)
@@ -564,7 +622,12 @@ void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 	if (this->enWarningMode != enWM)
 	{
 		this->enWarningMode = enWM;
-		this->oWarningList.SetWarningMode(enWM);
+
+		if (NULL != poWarningList)
+		{
+			this->poWarningList->SetWarningMode(enWM);
+		}
+
 		RefreshWarningQueue();
 	}
 }
@@ -627,10 +690,15 @@ void WarningStrategy::OnTimer(void)
 	{
 		return;
 	}
+
+	//printf("The %u th timespan of WarningID=%d \n\n\n", pCurrent->GetCurrentTimespanIndex(), pCurrent->GetWarningID());
 	switch (pCurrent->GetCurrentTimespan()->GetOnEnd())
 	{
 	case WBRelease:
-		oWarningList.AddWarningToStack(pCurrent);
+		if (NULL != poWarningList)
+		{
+			poWarningList->AddWarningToStack(pCurrent);
+		}
 		ForceReleaseWarning(pCurrent->GetWarningID());
 		break;
 

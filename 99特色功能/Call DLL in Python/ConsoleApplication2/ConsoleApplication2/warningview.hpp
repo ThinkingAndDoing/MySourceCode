@@ -2,10 +2,11 @@
 #define WARNINGVIEW_H
 #include "list"
 #include "warningresourceids.hpp"
+#include "timespan.hpp"
 #include "notification.hpp"
 #include "newarrival.hpp"
 
-#define MAX_TIMESPAN_NUMS           20          //允许的最大Timespan数量
+#define MAX_TIMESPAN_NUMS           10          //允许的最大Timespan数量
 #define INVALID_TIMESPAN_ID         255         //无效的Timespan ID
 
 
@@ -21,7 +22,7 @@ class WarningStrategy;
 class WarningView
 {
 public:
-    WarningView(enum WarningIDs wrnid);
+	explicit WarningView(enum WarningIDs wrnid);
 
 	WarningView(const WarningView & oWV);
 

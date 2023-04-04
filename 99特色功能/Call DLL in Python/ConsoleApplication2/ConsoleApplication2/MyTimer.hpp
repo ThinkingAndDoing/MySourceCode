@@ -21,6 +21,7 @@ struct stTimer
 
     stTimer()
     {
+		timeElapce = 0;
         timeLastRun = 0;
         id = 0;
         iParam = 0;

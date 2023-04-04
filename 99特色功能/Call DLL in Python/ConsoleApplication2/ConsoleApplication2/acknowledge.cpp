@@ -12,18 +12,12 @@ Acknowledge::~Acknowledge()
 	lstKeyAction.clear();
 }
 
-
-void Acknowledge::ClearAll(void)
-{
-	lstKeyAction.clear();
-}
-
 /*
  * 注册新的按键处理，若按键已经注册过，更新Action，否则增加新的按键处理。
  */
 void Acknowledge::AddKeyAction(enum VirtualKey vk, enum WarningAction wrnAction)
 {
-	for (itKeyAction it = lstKeyAction.begin(); it != lstKeyAction.end(); it++)
+	for (itKeyAction it = lstKeyAction.begin(); it != lstKeyAction.end(); ++it)
 	{
 		if (it->enKey == vk)
 		{
@@ -40,7 +34,7 @@ void Acknowledge::AddKeyAction(enum VirtualKey vk, enum WarningAction wrnAction)
 
 bool Acknowledge::RemoveKeyAction(enum VirtualKey vk)
 {
-	for (itKeyAction it = lstKeyAction.begin(); it != lstKeyAction.end(); it++)
+	for (itKeyAction it = lstKeyAction.begin(); it != lstKeyAction.end(); ++it)
 	{
 		if (it->enKey == vk)
 		{
@@ -53,7 +47,7 @@ bool Acknowledge::RemoveKeyAction(enum VirtualKey vk)
 
 enum WarningAction Acknowledge::GetActionByKey(enum VirtualKey vk)
 {
-	for (itKeyAction it = lstKeyAction.begin(); it != lstKeyAction.end(); it++)
+	for (itKeyAction it = lstKeyAction.begin(); it != lstKeyAction.end(); ++it)
 	{
 		if (it->enKey == vk)
 		{

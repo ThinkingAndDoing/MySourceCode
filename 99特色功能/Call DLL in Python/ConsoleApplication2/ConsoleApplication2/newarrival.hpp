@@ -2,6 +2,7 @@
 #define NEWARRIVAL_HPP
 #include "list"
 #include "typedefine.hpp"
+#include "warningresourceids.hpp"
 
 
 struct NewArrival
@@ -40,7 +41,7 @@ public:
 
 private:
 
-	stNewArrivalList m_lstNewArrival;      //夾A幢鼐瞥zIE放CeWarningView队I奒a，N泊e储到m_newarrivallist謯
+	stNewArrivalList m_lstNewArrival;      //新来报警除了放入WarningView队列外，也存储到m_newarrivallist中
 
 };
 

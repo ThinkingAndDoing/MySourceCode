@@ -29,6 +29,7 @@ void cMyTimer::ClearTimer()
     {
         it->bDel = true;
     }
+	_endthread();
 }
 
 void TimerMonitor(void* p)

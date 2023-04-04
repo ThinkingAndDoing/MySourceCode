@@ -13,7 +13,7 @@ struct KeyAction
 	KeyAction()
     {
 		enAction = WBIgnore;
-		enKey = VK_OK;
+		enKey = VKY_OK;
     }
 };
 
@@ -38,8 +38,6 @@ public:
 private:
 
 	KeyActionList lstKeyAction;
-
-	void ClearAll(void);
 
 };
 

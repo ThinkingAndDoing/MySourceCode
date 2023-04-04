@@ -47,6 +47,7 @@ protected:
 	// Constructor.
 	explicit Notification()
 	{
+	u16ActiveNotificationID=0;
 	}
 
 };

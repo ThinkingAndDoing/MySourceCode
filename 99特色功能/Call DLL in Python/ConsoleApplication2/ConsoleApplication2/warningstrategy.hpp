@@ -2,11 +2,12 @@
 #define WARNINGSTRATEGY_H
 #include "list"
 #include "warningtimer.hpp"
-#include "warninglist.hpp"
-#include "warningrepository.hpp"
+
 
 class TimeSpan;
 class WarningView;
+class WarningList;
+class WarningRepository;
 
 enum AddWarningPolicy
 {
@@ -27,10 +28,11 @@ enum SelectWarningPolicy
 class WarningStrategy: public WarningTimer
 {
 public:
-	WarningRepository oWarningRepo;
-	WarningList oWarningList;
+	WarningRepository* poWarningRepo;
+	WarningList* poWarningList;
 
     WarningStrategy();
+	WarningStrategy(const WarningStrategy & oWS);
     ~WarningStrategy();
     void Clean();
     void SelectNextView(enum SelectWarningPolicy selectpolicy);
@@ -45,7 +47,7 @@ public:
 	void SetWarningMode(enum WarningMode enWM);
 
 private:
-    void OnTimer(void);
+	void OnTimer(void) override;
     void UpdateCurrentWarning(WarningView * pUpdate); 
     WarningView* GetWarningViewByID(enum WarningIDs wrnid);
 	WarningView* GetFirstViewOfArrivalQueue(void);

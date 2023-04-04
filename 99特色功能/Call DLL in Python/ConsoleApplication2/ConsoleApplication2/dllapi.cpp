@@ -2,6 +2,7 @@
 Include Header
 ***********************************************************/
 #include "MyTimer.hpp"
+#include "warninglist.hpp"
 #include "warningstrategy.hpp"
 #include "telltale.hpp"
 
@@ -19,6 +20,7 @@ Export API in DLL
 extern "C"
 {
 	API_DLL void CALL_TYPE init(void);
+	API_DLL void CALL_TYPE deInit(void);
 	API_DLL void CALL_TYPE RequestWarning(int id);
 	API_DLL void CALL_TYPE ReleaseWarning(int id);
 	API_DLL void CALL_TYPE SetWarningMode(int id);
@@ -42,9 +44,9 @@ void OnTelltaleChanged(uint16 u16ActiveTelltaleID);
 /***********************************************************
 Global variant
 ***********************************************************/
-WarningStrategy oWrnStrategy;
-TelltaleStrategy oTTStrategy;
-cMyTimer myTimer(&oWrnStrategy, &oTTStrategy);
+WarningStrategy *poWrnStrategy;
+TelltaleStrategy *poTTStrategy;
+cMyTimer *poMyTimer;
 _callback_python_func cbWarningChange;
 _callback_python_func cbTelltaleChange;
 
@@ -56,34 +58,63 @@ Function define
 
 void CALL_TYPE init(void)
 {
-    myTimer.CreateTimer(100);
-	myTimer.SetWarningCallback(OnWarningChanged);
-	myTimer.SetTelltaleCallback(OnTelltaleChanged);
+	poWrnStrategy = new WarningStrategy();
+	if (NULL == poWrnStrategy)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
+	poTTStrategy = new TelltaleStrategy();
+	if (NULL == poTTStrategy)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
+	poMyTimer = new cMyTimer(poWrnStrategy, poTTStrategy);
+	poMyTimer->CreateTimer(100);
+	poMyTimer->SetWarningCallback(OnWarningChanged);
+	poMyTimer->SetTelltaleCallback(OnTelltaleChanged);
 }
 
+void CALL_TYPE deInit(void)
+{
+	if (NULL != poWrnStrategy)
+	{
+		delete poWrnStrategy;
+		poWrnStrategy = NULL;
+	}
+	if (NULL != poTTStrategy)
+	{
+		delete poTTStrategy;
+		poTTStrategy = NULL;
+	}
+	if (NULL != poMyTimer)
+	{
+		delete poMyTimer;
+		poMyTimer = NULL;
+	}
+}
 void CALL_TYPE RequestWarning(int id)
 {
-	oWrnStrategy.RequestWarning((enum WarningIDs)id);
+	poWrnStrategy->RequestWarning((enum WarningIDs)id);
 }
 
 void CALL_TYPE ReleaseWarning(int id)
 {
-	oWrnStrategy.ReleaseWarning((enum WarningIDs)id);
+	poWrnStrategy->ReleaseWarning((enum WarningIDs)id);
 }
 
 void CALL_TYPE SetWarningMode(int id)
 {
-	oWrnStrategy.SetWarningMode((enum WarningMode)id);
+	poWrnStrategy->SetWarningMode((enum WarningMode)id);
 }
 
 uint16 CALL_TYPE GetWarningIDFromStack(int id)
 {
-	return (uint16)oWrnStrategy.oWarningList.GetWarningFromStack((uint16)id); 
+	return (uint16)poWrnStrategy->poWarningList->GetWarningFromStack((uint16)id);
 }
 
 void CALL_TYPE ProcessVirtualKey(int key)
 {
-	oWrnStrategy.ProcessVirtualKey((enum VirtualKey)key);
+	poWrnStrategy->ProcessVirtualKey((enum VirtualKey)key);
 }
 
 void OnWarningChanged(uint16 u16ActiveWrnID)
@@ -95,12 +126,12 @@ void OnWarningChanged(uint16 u16ActiveWrnID)
 
 void CALL_TYPE RequestTelltale(int id)
 {
-	oTTStrategy.RequestWarning((enum TelltaleIDs)id);
+	poTTStrategy->RequestWarning((enum TelltaleIDs)id);
 }
 
 void CALL_TYPE ReleaseTelltale(int id)
 {
-	oTTStrategy.ReleaseWarning((enum TelltaleIDs)id);
+	poTTStrategy->ReleaseWarning((enum TelltaleIDs)id);
 }
 
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID)

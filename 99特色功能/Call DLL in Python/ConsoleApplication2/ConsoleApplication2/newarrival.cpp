@@ -1,6 +1,5 @@
 
 #include "newarrival.hpp"
-#include "warningresourceids.hpp"
 
 
 NewArrivalList::NewArrivalList()
@@ -30,7 +29,7 @@ enum WarningIDs NewArrivalList::GetFirstIDOfArrivalQueue(void)
 
 bool NewArrivalList::boIDAlreadyInList(enum WarningIDs enWrnID)
 {
-	for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); it++)
+	for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); ++it)
 	{
 		if (it->enWarningID == enWrnID)
 		{
@@ -47,7 +46,7 @@ void NewArrivalList::AddNewArrival(NewArrival stNewArrivalTemp)
 {
 	if (false == boIDAlreadyInList(stNewArrivalTemp.enWarningID))
 	{
-		for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); it++)
+		for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); ++it)
 		{
 			if (stNewArrivalTemp.u16Priority >= it->u16Priority)
 			{
@@ -77,7 +76,7 @@ NewArrival *NewArrivalList::GetFirstOfArrivalQueue(void)
 
 void NewArrivalList::RemoveNewArrival(enum WarningIDs wrnid)
 {
-	for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); it++)
+	for (itNewArrival it = m_lstNewArrival.begin(); it != m_lstNewArrival.end(); ++it)
 	{
 		if (wrnid == it->enWarningID)
 		{

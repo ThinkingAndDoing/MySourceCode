@@ -7,9 +7,11 @@ main.cpp: Testing warning manager in win32 console
 Include Header
 ***********************************************************/
 #include "MyTimer.hpp"
+#include "warninglist.hpp"
 #include "warningstrategy.hpp"
 #include "telltale.hpp"
 #include <windows.h>
+
 
 /***********************************************************
 Function declaration
@@ -31,10 +33,9 @@ void OnTelltaleChanged(uint16 u16ActiveTelltaleID);
 /***********************************************************
 Global variant
 ***********************************************************/
-WarningStrategy oWrnStrategy;
-TelltaleStrategy oTTStrategy;
-cMyTimer myTimer(&oWrnStrategy, &oTTStrategy);
-
+WarningStrategy *poWrnStrategy;
+TelltaleStrategy *poTTStrategy;
+cMyTimer *poMyTimer;
 
 /***********************************************************
 Function define
@@ -42,55 +43,89 @@ Function define
 
 void init(void)
 {
-    myTimer.CreateTimer(100);
-	myTimer.SetWarningCallback(OnWarningChanged);
-	myTimer.SetTelltaleCallback(OnTelltaleChanged);
+	poWrnStrategy = new WarningStrategy();
+	if (NULL == poWrnStrategy)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
+	poTTStrategy = new TelltaleStrategy();
+	if (NULL == poTTStrategy)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
+	poMyTimer = new cMyTimer(poWrnStrategy, poTTStrategy);
+	poMyTimer->CreateTimer(100);
+	poMyTimer->SetWarningCallback(OnWarningChanged);
+	poMyTimer->SetTelltaleCallback(OnTelltaleChanged);
+}
+
+void deInit(void)
+{
+	if (NULL != poWrnStrategy)
+	{
+		delete poWrnStrategy;
+		poWrnStrategy = NULL;
+	}
+	if (NULL != poTTStrategy)
+	{
+		delete poTTStrategy;
+		poTTStrategy = NULL;
+	}
+	if (NULL != poMyTimer)
+	{
+		delete poMyTimer;
+		poMyTimer = NULL;
+	}
 }
 
 void RequestWarning(int id)
 {
-	oWrnStrategy.RequestWarning((enum WarningIDs)id);
+	poWrnStrategy->RequestWarning((enum WarningIDs)id);
 }
 
 void ReleaseWarning(int id)
 {
-	oWrnStrategy.ReleaseWarning((enum WarningIDs)id);
+	poWrnStrategy->ReleaseWarning((enum WarningIDs)id);
 }
 
 void SetWarningMode(int id)
 {
-	oWrnStrategy.SetWarningMode((enum WarningMode)id);
+	poWrnStrategy->SetWarningMode((enum WarningMode)id);
 }
 
 uint16 GetWarningIDFromStack(int id)
 {
-	return (uint16)oWrnStrategy.oWarningList.GetWarningFromStack((uint16)id); 
+	return (uint16)poWrnStrategy->poWarningList->GetWarningFromStack((uint16)id);
 }
 
 void ProcessVirtualKey(int key)
 {
-	oWrnStrategy.ProcessVirtualKey((enum VirtualKey)key);
+	poWrnStrategy->ProcessVirtualKey((enum VirtualKey)key);
 }
 
 void OnWarningChanged(uint16 u16ActiveWrnID)
 {
-	printf("OnWarningChanged u16ActiveWrnID = %d \n", u16ActiveWrnID);
+	printf("OnWarningChanged u16ActiveWrnID = %u \n", u16ActiveWrnID);
+	if (u16ActiveWrnID == 246)
+	{
+		printf("Invalid WarningID\n");
+	}
 }
 
 
 void RequestTelltale(int id)
 {
-	oTTStrategy.RequestWarning((enum TelltaleIDs)id);
+	poTTStrategy->RequestWarning((enum TelltaleIDs)id);
 }
 
 void ReleaseTelltale(int id)
 {
-	oTTStrategy.ReleaseWarning((enum TelltaleIDs)id);
+	poTTStrategy->ReleaseWarning((enum TelltaleIDs)id);
 }
 
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID)
 {
-	printf("OnTelltaleChanged u16ActiveTelltaleID = %d \n", u16ActiveTelltaleID);
+	printf("OnTelltaleChanged u16ActiveTelltaleID = %u \n", u16ActiveTelltaleID);
 }
 
 void verify_immediate(void)
@@ -122,7 +157,7 @@ void verify_userlocktime(void)
 void verify_telltale(void)
 {
 	RequestTelltale(0);
-	Sleep(500);
+	Sleep(400);
 	RequestTelltale(1);
 	Sleep(500);
 	RequestTelltale(2);
@@ -138,9 +173,9 @@ void print_warninglist(void)
 {
 	printf("++++++++++\n");
 	int i = 0;
-	while (GetWarningIDFromStack(i) != 245)
+	while (GetWarningIDFromStack(i) != 246)
 	{
-		printf("WarningItem = %d\n", GetWarningIDFromStack(i));
+		printf("WarningItem = %u\n", GetWarningIDFromStack(i));
 		i = i + 1;
 	}
 	printf("---------\n");
@@ -180,8 +215,11 @@ void verify_warningmode(void)
 
 }
 
+
+
 void main(void)
 {
+
 	init();
 
 	verify_immediate();
@@ -192,7 +230,11 @@ void main(void)
 
 	verify_warninglist();
 
-	verify_warningmode();
+	//verify_warningmode();
+
+	printf("\nOver!\n");
+
+	//deInit();
 
 	while (true)
 	{
