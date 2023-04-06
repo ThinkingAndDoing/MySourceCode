@@ -5,6 +5,7 @@ Include Header
 #include "warninglist.hpp"
 #include "warningstrategy.hpp"
 #include "telltale.hpp"
+#include "warningresourceids.hpp"
 
 /***********************************************************
 Macro define & Type define
@@ -30,13 +31,14 @@ extern "C"
 	API_DLL void CALL_TYPE RequestTelltale(int id);
 	API_DLL void CALL_TYPE ReleaseTelltale(int id);
 
-	API_DLL void CALL_TYPE dllRegisterPythonFunc(void *pyWarningPtr, void *pyTelltalePtr);
+	API_DLL void CALL_TYPE dllRegisterPythonFunc(void *pyWarningStackPtr, void *pyWarningPtr, void *pyTelltalePtr);
 }
 
 
 /***********************************************************
 Function declaration
 ***********************************************************/
+void OnWarningStackChanged(uint16 u16StackSize);
 void OnWarningChanged(uint16 u16ActiveWrnID);
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID);
 
@@ -47,6 +49,7 @@ Global variant
 WarningStrategy *poWrnStrategy;
 TelltaleStrategy *poTTStrategy;
 cMyTimer *poMyTimer;
+_callback_python_func cbWarningStackChange;
 _callback_python_func cbWarningChange;
 _callback_python_func cbTelltaleChange;
 
@@ -70,6 +73,7 @@ void CALL_TYPE init(void)
 	}
 	poMyTimer = new cMyTimer(poWrnStrategy, poTTStrategy);
 	poMyTimer->CreateTimer(100);
+	poMyTimer->SetWarningStackCallback(OnWarningStackChanged);
 	poMyTimer->SetWarningCallback(OnWarningChanged);
 	poMyTimer->SetTelltaleCallback(OnTelltaleChanged);
 }
@@ -117,6 +121,12 @@ void CALL_TYPE ProcessVirtualKey(int key)
 	poWrnStrategy->ProcessVirtualKey((enum VirtualKey)key);
 }
 
+void OnWarningStackChanged(uint16 u16StackSize)
+{
+	cbWarningStackChange(u16StackSize);
+
+}
+
 void OnWarningChanged(uint16 u16ActiveWrnID)
 {
 	cbWarningChange(u16ActiveWrnID);
@@ -141,8 +151,9 @@ void OnTelltaleChanged(uint16 u16ActiveTelltaleID)
 }
 
 
-void CALL_TYPE dllRegisterPythonFunc(void *pyWarningPtr, void *pyTelltalePtr)
+void CALL_TYPE dllRegisterPythonFunc(void *pyWarningStackPtr, void *pyWarningPtr, void *pyTelltalePtr)
 {
+	cbWarningStackChange = (_callback_python_func)pyWarningStackPtr;
 	cbWarningChange = (_callback_python_func)pyWarningPtr;
 	cbTelltaleChange = (_callback_python_func)pyTelltalePtr;
 }

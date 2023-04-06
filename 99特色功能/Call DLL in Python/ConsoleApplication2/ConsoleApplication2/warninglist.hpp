@@ -2,7 +2,6 @@
 #define WARNINGLIST_HPP
 #include "vector"
 #include "typedefine.hpp"
-#include "warningview.hpp"
 
 
 class WarningView;
@@ -32,6 +31,8 @@ public:
 	enum WarningIDs GetActiveModeWarningFromStack(uint16 u16Index);
 
 	void SetWarningMode(enum WarningMode enMode);
+
+	uint16 GetWarningStackSize(void);
 
 private:
 

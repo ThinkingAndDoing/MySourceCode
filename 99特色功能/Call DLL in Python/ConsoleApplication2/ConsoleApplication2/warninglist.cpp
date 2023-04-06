@@ -1,4 +1,5 @@
 
+#include "warningview.hpp"
 #include "warninglist.hpp"
 
 
@@ -92,4 +93,10 @@ enum WarningIDs WarningList::GetWarningFromStack(uint16 u16Index)
 void WarningList::SetWarningMode(enum WarningMode enMode)
 {
 	enWarningMode = enMode;
+}
+
+
+uint16 WarningList::GetWarningStackSize(void)
+{
+	return (uint16)vecWarningStack.size();
 }

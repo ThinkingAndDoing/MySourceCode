@@ -32,22 +32,30 @@ class My_Dialog(QDialog, Ui_Dialog):
 	
 	def request(self):
 		self.wrnManager.RequestWarning( int(self.lineEdit.text()) )
-		print(self.lineEdit.text())
-		print("Button 1 clicked")
 		
 	def release(self):
-		print(self.lineEdit.text())
-		print ("Button 2 clicked")
+		self.wrnManager.ReleaseWarning( int(self.lineEdit.text()) )
 		
 	def sendkey(self):
-		print(self.lineEdit_2.text())
-		print ("Button 3 clicked")
+		self.wrnManager.ProcessVirtualKey(int(self.lineEdit_2.text()))
+
+
+	def on_warningstack_changed(self, stackSize):
+		'''
+		This functiion will be called in DLL
+		'''
+		print(" stackSize = "+ str(stackSize))
+		self.label_3.setText("WarningItem = " + str(wm.GetWarningIDFromStack(0)))
+		self.label_4.setText("WarningItem = " + str(wm.GetWarningIDFromStack(1)))
+		self.label_5.setText("WarningItem = " + str(wm.GetWarningIDFromStack(2)))
+		self.label_6.setText("WarningItem = " + str(wm.GetWarningIDFromStack(3)))
+		self.label_7.setText("WarningItem = " + str(wm.GetWarningIDFromStack(4)))
 		
 	def on_warning_changed(self, curWrnID):
 		'''
 		This functiion will be called in DLL
 		'''
-		print("on_warning_changed curWrnID is "+str(curWrnID))
+		self.label_2.setText("Current warning ID is " + str(curWrnID))
 
 	def on_telltale_changed(self, curTelltaleID):
 		'''
@@ -58,13 +66,16 @@ class My_Dialog(QDialog, Ui_Dialog):
 	
 def register_callback_func(myDll):
 
+	callbackWrnStack = ctypes.CFUNCTYPE(ctypes.c_bool, ctypes.c_int)(w.on_warningstack_changed)
+	dllapi.gCallbackFuncList.append(callbackWrnStack) #There is an error if this line is missing. OSError: exception: access violation writing 0x00000000
+	
 	callbackWrn = ctypes.CFUNCTYPE(ctypes.c_bool, ctypes.c_int)(w.on_warning_changed)
 	dllapi.gCallbackFuncList.append(callbackWrn) #There is an error if this line is missing. OSError: exception: access violation writing 0x00000000
 	
 	callbackTT = ctypes.CFUNCTYPE(ctypes.c_bool, ctypes.c_int)(w.on_telltale_changed)
 	dllapi.gCallbackFuncList.append(callbackTT) #There is an error if this line is missing. OSError: exception: access violation writing 0x00000000
 	
-	myDll.dllRegisterPythonFunc(callbackWrn, callbackTT)
+	myDll.dllRegisterPythonFunc(callbackWrnStack, callbackWrn, callbackTT)
 
 if __name__ == "__main__": 
 

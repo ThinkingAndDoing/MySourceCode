@@ -26,6 +26,7 @@ void  ProcessVirtualKey(int key);
 void  RequestTelltale(int id);
 void  ReleaseTelltale(int id);
 
+void OnWarningStackChanged(uint16 u16StackSize);
 void OnWarningChanged(uint16 u16ActiveWrnID);
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID);
 
@@ -55,6 +56,7 @@ void init(void)
 	}
 	poMyTimer = new cMyTimer(poWrnStrategy, poTTStrategy);
 	poMyTimer->CreateTimer(100);
+	poMyTimer->SetWarningStackCallback(OnWarningStackChanged);
 	poMyTimer->SetWarningCallback(OnWarningChanged);
 	poMyTimer->SetTelltaleCallback(OnTelltaleChanged);
 }
@@ -103,6 +105,11 @@ void ProcessVirtualKey(int key)
 	poWrnStrategy->ProcessVirtualKey((enum VirtualKey)key);
 }
 
+void OnWarningStackChanged(uint16 u16StackSize)
+{
+	printf("OnWarningStackChanged u16StackSize = %u \n", u16StackSize);
+
+}
 void OnWarningChanged(uint16 u16ActiveWrnID)
 {
 	printf("OnWarningChanged u16ActiveWrnID = %u \n", u16ActiveWrnID);

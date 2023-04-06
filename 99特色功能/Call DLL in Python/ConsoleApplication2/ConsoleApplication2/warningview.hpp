@@ -26,6 +26,8 @@ public:
 
 	WarningView(const WarningView & oWV);
 
+	WarningView& operator=(const WarningView & oWV);
+
     ~WarningView();
 
     void Active(void);

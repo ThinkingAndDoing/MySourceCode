@@ -6,6 +6,7 @@
 #include "warningstrategy.hpp"
 #include "telltale.hpp"
 
+typedef void(*_callback_warningstack_changed)(uint16 u16StackSize);
 typedef void(*_callback_warning_changed)(uint16 u16ActiveWrnID);
 typedef void(*_callback_telltale_changed)(uint16 u16ActiveTelltaleID);
 
@@ -51,6 +52,8 @@ public:
 
     void RemoveDeletedTimer();
 
+	void SetWarningStackCallback(_callback_warningstack_changed cb);
+
 	void SetWarningCallback(_callback_warning_changed cb);
 
 	void SetTelltaleCallback(_callback_warning_changed cb);
@@ -63,6 +66,8 @@ private:
 	WarningStrategy *pWrnStrategy;
 
 	TelltaleStrategy *pTTStrategy;
+
+	_callback_warningstack_changed cbWarningStackChanged;
 
 	_callback_warning_changed cbWarningChanged;
 

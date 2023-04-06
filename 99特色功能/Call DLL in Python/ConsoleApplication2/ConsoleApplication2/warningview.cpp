@@ -50,6 +50,38 @@ WarningView::WarningView(const WarningView & oWV)
 
 }
 
+
+WarningView& WarningView::operator = (const WarningView & oWV)
+{
+	next = oWV.next;
+	pre = oWV.pre;
+	m_oArrivalList = oWV.m_oArrivalList;
+	m_boPendingInterrupt = oWV.m_boPendingInterrupt;
+	m_boPendingRelease = oWV.m_boPendingRelease;
+	m_boImmediate = oWV.m_boImmediate;
+	m_boSaveToStack = oWV.m_boSaveToStack;
+
+	m_lstWarningMode = oWV.m_lstWarningMode;
+	m_enWarningID = oWV.m_enWarningID;
+	m_u16Priority = oWV.m_u16Priority;
+	m_u16CurTimespanIndex = oWV.m_u16CurTimespanIndex;
+
+	for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
+	{
+		if (NULL != oWV.m_paTimespan[i])
+		{
+			m_paTimespan[i] = new Timespan(*(oWV.m_paTimespan[i]));
+		}
+		else{
+			m_paTimespan[i] = oWV.m_paTimespan[i];
+		}
+	}
+
+	return *this;
+}
+
+
+
 WarningView::~WarningView() {
 
 	m_lstWarningMode.clear();

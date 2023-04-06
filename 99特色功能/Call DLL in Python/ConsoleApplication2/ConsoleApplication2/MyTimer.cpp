@@ -3,6 +3,7 @@
 #include "MyTimer.hpp"
 #include "windows.h"
 #include "process.h"
+#include "warninglist.hpp"
 
 void TimerMonitor(void* p);
 
@@ -11,6 +12,7 @@ cMyTimer::cMyTimer(WarningStrategy *pWS, TelltaleStrategy *pTS)
 {
 	pWrnStrategy = pWS;
 	pTTStrategy = pTS;
+	cbWarningStackChanged = NULL;
 	cbWarningChanged = NULL;
 	cbTelltaleChanged = NULL;
 }
@@ -105,14 +107,26 @@ bool cMyTimer::DeleteTimer(int id)
 //定时器处理
 void cMyTimer::OnTimer(unsigned id, int iParam, std::string str)
 {
+	static uint16 u16WarningStackSize = 0;
 	static uint16 u16ActiveWarningID = 0xFFFF;
 	static uint16 u16ActiveTelltaleID = 0xFFFF;
+
 
 	//unsigned timeNow = GetTickCount();
 
 	//printf("cMyTimer::OnTimer() timeNow = %d\n", timeNow);
 
 	pWrnStrategy->TimeTick();
+
+	if (pWrnStrategy->poWarningList->GetWarningStackSize() != u16WarningStackSize)
+	{
+		u16WarningStackSize = pWrnStrategy->poWarningList->GetWarningStackSize();
+		if (NULL != cbWarningStackChanged)
+		{
+			cbWarningStackChanged(u16WarningStackSize);
+		}
+	}
+
 	if (pWrnStrategy->GetActiveWarningID() != u16ActiveWarningID)
 	{
 		u16ActiveWarningID = pWrnStrategy->GetActiveWarningID();
@@ -147,6 +161,11 @@ void cMyTimer::RemoveDeletedTimer()
         }
         ++it;
     }
+}
+
+void cMyTimer::SetWarningStackCallback(_callback_warningstack_changed cb)
+{
+	cbWarningStackChanged = cb;
 }
 
 void cMyTimer::SetWarningCallback(_callback_warning_changed cb)
