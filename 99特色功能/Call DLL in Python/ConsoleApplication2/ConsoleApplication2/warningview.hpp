@@ -2,7 +2,6 @@
 #define WARNINGVIEW_H
 #include "list"
 #include "warningresourceids.hpp"
-#include "timespan.hpp"
 #include "notification.hpp"
 #include "newarrival.hpp"
 
@@ -30,11 +29,7 @@ public:
 
     ~WarningView();
 
-    void Active(void);
-
-    void Release(void);
-
-    void Displace(void);
+	uint16 Active(void);
 
 	bool HasNewInNextTimespan(void);
 
@@ -46,19 +41,19 @@ public:
 
 	void SetCurrentTimespanIndex(uint16 u16Idx);
 
-	uint16 GetCurrentTimespanIndex(void);
-
 	uint16 GetPriority(void);
 
 	void SetPendingRelease(bool boPendingRel);
 
 	bool HasPendingRelease(void);
 
-	bool HasImmediate(void);
-
 	enum WarningIDs GetWarningID(void);
 
 	bool boNeedSaveToStack(void);
+
+	enum WarningAction GetActionOnNewWarningComing(WarningView* poNewView);
+
+	uint16 MoveToNextTimespan(void);
 
     WarningView* next;
     WarningView* pre;

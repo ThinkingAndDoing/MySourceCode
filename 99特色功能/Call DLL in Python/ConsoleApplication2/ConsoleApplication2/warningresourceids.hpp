@@ -7,12 +7,12 @@
 
 enum WarningMode
 {
-	WrnMode1,
-	WrnMode2,
-	WrnMode3,
-	WrnMode4,
-	WrnMode5,
-	WrnModeNone
+	WrnModeNone,
+	Driving,
+	Active,
+	Convenience,
+	Inactive,
+	Abandoned
 };
 
 enum WarningIDs
@@ -79,7 +79,7 @@ enum WarningIDs
     AdjustHeadlampLevelErrTT,
     SeatBeltTT,
 	AutoHoldTT,
-    TSIOffTT,//=61
+	InvalidTelltaleID,//=61
 //Warnings
 	SteColLocFaiWrn,
 	SteColLocTryagainWrn,

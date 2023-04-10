@@ -218,23 +218,7 @@ void WarningStrategy::WarningPrioArbitrate(WarningView * pNewView)
 	}
 	else{
 
-		enum WarningAction enTimeSpanATemp = WBIgnore;
-
-		if (pNewView->GetPriority() > pCurrent->GetPriority())
-		{
-			enTimeSpanATemp = pCurrent->GetCurrentTimespan()->GetOnNewHighPriority();
-		}
-		else if(pNewView->GetPriority() == pCurrent->GetPriority())
-		{
-			enTimeSpanATemp = pCurrent->GetCurrentTimespan()->GetOnNewSamePriority();
-		}
-
-		if (pNewView->GetPriority() >= pCurrent->GetPriority() && pNewView->HasImmediate() == true)
-		{
-			enTimeSpanATemp = WBDisplace;
-		}
-
-		switch (enTimeSpanATemp)
+		switch (pCurrent->GetActionOnNewWarningComing(pNewView))
 		{
 		case WBDisplace:
 			if (pCurrent->HasPendingRelease() == true)
@@ -317,15 +301,8 @@ void WarningStrategy::UpdateCurrentWarning(WarningView * pUpdate)
     // 如果队列中有报警，激活当前报警
     if (NULL != pCurrent)
     {
-		pCurrent->SetCurrentTimespanIndex(0);
-		if (NULL != pCurrent->GetCurrentTimespan())
-        {
-            //若第一个timespan的endtime不为TS_ENDLESS，即当前WarningView存在多段timespan，则启动定时器
-			if (TS_ENDLESS != pCurrent->GetCurrentTimespan()->GetEndTime())
-            {
-				TimerStart(pCurrent->GetCurrentTimespan()->GetEndTime());
-            }
-        }
+		uint16 u16FirstDuration = pCurrent->Active();
+		TimerStart(u16FirstDuration);
     }
 }
 
@@ -723,11 +700,8 @@ void WarningStrategy::OnTimer(void)
 					else
 					{
 						//show current and timespan++
-						if (TS_ENDLESS != pCurrent->GetNextTimespan()->GetEndTime())
-						{
-							TimerStart(pCurrent->GetNextTimespan()->GetEndTime() - pCurrent->GetNextTimespan()->GetStartTime());
-						}
-						pCurrent->SetCurrentTimespanIndex(pCurrent->GetCurrentTimespanIndex() + 1);
+						uint16 u16NextDuration = pCurrent->MoveToNextTimespan();
+						TimerStart(u16NextDuration);
 					}
 				}
 			}
@@ -741,11 +715,8 @@ void WarningStrategy::OnTimer(void)
 				else
 				{
 					//show current and timespan++
-					if (TS_ENDLESS != pCurrent->GetNextTimespan()->GetEndTime())
-					{
-						TimerStart(pCurrent->GetNextTimespan()->GetEndTime() - pCurrent->GetNextTimespan()->GetStartTime());
-					}
-					pCurrent->SetCurrentTimespanIndex(pCurrent->GetCurrentTimespanIndex() + 1);
+					uint16 u16NextDuration = pCurrent->MoveToNextTimespan();
+					TimerStart(u16NextDuration);
 				}
 			}
 		}

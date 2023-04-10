@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include "timespan.hpp"
+
 #include "warningview.hpp"
 
 extern NotiDescriptionVector notiDescriptions;
@@ -99,9 +101,22 @@ WarningView::~WarningView() {
 /*
  * 激活当前 WarningView
  */
-void WarningView::Active(void)
+uint16 WarningView::Active(void)
 {
+	uint16 u16Duration = 0;
 
+	this->m_u16CurTimespanIndex = 0;
+
+	if (NULL != this->m_paTimespan[0])
+	{
+		//若第一个timespan的endtime不为TS_ENDLESS，即当前WarningView存在多段timespan，则启动定时器
+		if (TS_ENDLESS != this->m_paTimespan[0]->GetEndTime())
+		{
+			u16Duration = this->m_paTimespan[0]->GetEndTime();
+		}
+	}
+
+	return u16Duration;
 }
 
 /*
@@ -121,10 +136,21 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
     if (0xFFFF != uNotiDesc)
     {
 		this->m_enWarningID = (enum WarningIDs)notiDescriptions.at(uNotiDesc).m_ACID;
-        this->m_u16Priority = notiDescriptions.at(uNotiDesc).m_Prio;
+        this->m_u16Priority = 100-10*(notiDescriptions.at(uNotiDesc).m_Prio); // for cm1e only
 		this->m_boImmediate = notiDescriptions.at(uNotiDesc).m_Immediate;
 		this->m_boSaveToStack = notiDescriptions.at(uNotiDesc).m_Stack;
-		this->m_lstWarningMode.push_back((enum WarningMode)(notiDescriptions.at(uNotiDesc).m_Prio % 5));
+
+		uint16 u16UsageMode = notiDescriptions.at(uNotiDesc).m_Enable;
+		uint16 u16Mode = 1;
+		while (u16UsageMode != 0)
+		{
+			if (u16UsageMode % 2)
+			{
+				this->m_lstWarningMode.push_back((enum WarningMode)(u16Mode));
+			}
+			u16UsageMode = u16UsageMode / 2;
+			u16Mode++;
+		}
 
 
 		//(int st, int et, enum WarningAction onRel, enum WarningAction oe, enum WarningAction onHighPro, enum WarningAction onSamePro);
@@ -218,23 +244,17 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 			pTmSp->SetOnNewSamePriority(WBDisplace);
 			this->m_paTimespan[1] = pTmSp;
 		}
+
+		/**/
+		printf("----------------------------------------------\n");
+		printf("WarningID = %d, priority = %d \n", this->m_enWarningID, this->m_u16Priority);
+		printf("displaytimeout = %d, mini display time = %d \n", notiDescriptions.at(uNotiDesc).m_diaplayTimeout, notiDescriptions.at(uNotiDesc).m_MinTime);
+		printf("immediate = %d, stack = %d \n", this->m_boImmediate, this->m_boSaveToStack);
+		printf("----------------------------------------------\n");
+		
     }
 }
 
-/*
- * Release当前WarningView
- */
-void WarningView::Release(void)
-{
-}
-
-/*
- * Displace当前WarningView
- */
-void WarningView::Displace(void)
-{
-
-}
 
 /*
  * 检查Timespan的开始时间和结束时间
@@ -298,11 +318,6 @@ void WarningView::SetCurrentTimespanIndex(uint16 u16Idx)
 	}
 }
 
-uint16 WarningView::GetCurrentTimespanIndex(void)
-{
-	return m_u16CurTimespanIndex;
-}
-
 uint16 WarningView::GetPriority(void)
 {
 	return m_u16Priority;
@@ -318,12 +333,6 @@ bool WarningView::HasPendingRelease(void)
 	return m_boPendingRelease;
 }
 
-bool WarningView::HasImmediate(void)
-{
-	return m_boImmediate;
-}
-
-
 enum WarningIDs WarningView::GetWarningID(void)
 {
 	return m_enWarningID;
@@ -333,6 +342,55 @@ bool WarningView::boNeedSaveToStack(void)
 {
 	return m_boSaveToStack;
 }
+
+uint16 WarningView::MoveToNextTimespan(void)
+{
+	uint16 u16Duration = 0;
+
+	if (m_u16CurTimespanIndex + 1 < MAX_TIMESPAN_NUMS && NULL != this->m_paTimespan[m_u16CurTimespanIndex + 1])
+	{
+		if (TS_ENDLESS != this->m_paTimespan[m_u16CurTimespanIndex + 1]->GetEndTime())
+		{
+			u16Duration = this->m_paTimespan[m_u16CurTimespanIndex + 1]->GetEndTime() - this->m_paTimespan[m_u16CurTimespanIndex + 1]->GetStartTime();
+		}
+	}
+	
+	m_u16CurTimespanIndex++;
+
+	if (m_u16CurTimespanIndex >= MAX_TIMESPAN_NUMS)
+	{
+		m_u16CurTimespanIndex = MAX_TIMESPAN_NUMS - 1;
+	}
+
+	return u16Duration;
+}
+
+
+enum WarningAction WarningView::GetActionOnNewWarningComing(WarningView* poNewView)
+{
+	enum WarningAction enTimeSpanATemp = WBIgnore;
+
+	if (m_u16CurTimespanIndex < MAX_TIMESPAN_NUMS &&  NULL != this->m_paTimespan[m_u16CurTimespanIndex])
+	{
+		if (poNewView->m_u16Priority > this->m_u16Priority)
+		{
+			enTimeSpanATemp = this->m_paTimespan[m_u16CurTimespanIndex]->GetOnNewHighPriority();
+
+		}
+		else if (poNewView->m_u16Priority == this->m_u16Priority)
+		{
+			enTimeSpanATemp = this->m_paTimespan[m_u16CurTimespanIndex]->GetOnNewSamePriority();
+		}
+	}
+
+	if (poNewView->m_u16Priority >= this->m_u16Priority && poNewView->m_boImmediate == true)
+	{
+		enTimeSpanATemp = WBDisplace;
+	}
+
+	return enTimeSpanATemp;
+}
+
 
 /*
 * 下一个timespan允许打断 && 有新来高优先级报警？

@@ -3,22 +3,10 @@
 #include "list"
 #include "typedefine.hpp"
 
-enum TelltaleIDs
-{
-	AutoHold,
-	TurnLeft,
-	TurnRight,
-	LowFuel,
-	SftyBelt,
-	FrontFog,
-	RearFog,
-	AFSFailure,
-	InvalidTelltaleID
-};
 
 struct TelltaleView
 {
-	enum TelltaleIDs enTelltaleID;
+	enum WarningIDs enTelltaleID;
 	uint16 u16Priority;
 };
 
@@ -32,15 +20,15 @@ class TelltaleStrategy
 public:
 	TelltaleStrategy(){ lstTelltaleView.clear(); };
 	~TelltaleStrategy(){ lstTelltaleView.clear(); };
-	void RequestWarning(enum TelltaleIDs ttid);
-	void ReleaseWarning(enum TelltaleIDs ttid);
+	void RequestWarning(enum WarningIDs ttid);
+	void ReleaseWarning(enum WarningIDs ttid);
 	uint16 GetFirstTelltaleID(void);
 
 private:
 	TelltaleViewList lstTelltaleView;
 
 	void AddNewTelltale(TelltaleView stNewTelltale);
-	bool boIDAlreadyInList(enum TelltaleIDs ttid);
+	bool boIDAlreadyInList(enum WarningIDs ttid);
 };
 
 

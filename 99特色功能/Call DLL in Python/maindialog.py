@@ -16,12 +16,21 @@ import dllapi
 import ctypes
 
 
+INVALID_ID = 0xFFFF
+
 class My_Dialog(QDialog, Ui_Dialog):
 	def __init__(self, parent=None):
 		super(My_Dialog, self).__init__(parent)
 		self.setupUi(self)
 		self.setWindowTitle("开发中")
 		self.setFixedSize(self.width(), self.height())
+		self.label_3.setText("")
+		self.label_4.setText("")
+		self.label_5.setText("")
+		self.label_6.setText("")
+		self.label_7.setText("")
+		
+		
 		self.pushButton.clicked.connect(self.request)
 		self.pushButton_2.clicked.connect(self.release)
 		self.pushButton_3.clicked.connect(self.sendkey)
@@ -39,23 +48,32 @@ class My_Dialog(QDialog, Ui_Dialog):
 	def sendkey(self):
 		self.wrnManager.ProcessVirtualKey(int(self.lineEdit_2.text()))
 
+	def set_warninglist_item(self, itemLabel, itemValue):
+	
+		if itemValue != INVALID_ID:
+			itemLabel.setText("WarningItem = " + str(itemValue))
+		else:
+			itemLabel.setText("")
 
 	def on_warningstack_changed(self, stackSize):
 		'''
 		This functiion will be called in DLL
 		'''
 		print(" stackSize = "+ str(stackSize))
-		self.label_3.setText("WarningItem = " + str(wm.GetWarningIDFromStack(0)))
-		self.label_4.setText("WarningItem = " + str(wm.GetWarningIDFromStack(1)))
-		self.label_5.setText("WarningItem = " + str(wm.GetWarningIDFromStack(2)))
-		self.label_6.setText("WarningItem = " + str(wm.GetWarningIDFromStack(3)))
-		self.label_7.setText("WarningItem = " + str(wm.GetWarningIDFromStack(4)))
+		self.set_warninglist_item(self.label_3, wm.GetWarningIDFromStack(0))
+		self.set_warninglist_item(self.label_4, wm.GetWarningIDFromStack(1))
+		self.set_warninglist_item(self.label_5, wm.GetWarningIDFromStack(2))
+		self.set_warninglist_item(self.label_6, wm.GetWarningIDFromStack(3))
+		self.set_warninglist_item(self.label_7, wm.GetWarningIDFromStack(4))
 		
 	def on_warning_changed(self, curWrnID):
 		'''
 		This functiion will be called in DLL
 		'''
-		self.label_2.setText("Current warning ID is " + str(curWrnID))
+		if INVALID_ID!=curWrnID:
+			self.label_2.setText("Current warning ID is\n\n" + str(curWrnID))
+		else:
+			self.label_2.setText("No warning display!")
 
 	def on_telltale_changed(self, curTelltaleID):
 		'''

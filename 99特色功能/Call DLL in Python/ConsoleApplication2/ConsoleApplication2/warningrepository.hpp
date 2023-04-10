@@ -2,7 +2,6 @@
 #define WARNINGREPOSITORY_HPP
 #include "vector"
 #include "typedefine.hpp"
-#include "warningview.hpp"
 
 
 class WarningView;

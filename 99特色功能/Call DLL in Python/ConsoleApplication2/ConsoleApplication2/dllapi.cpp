@@ -7,6 +7,9 @@ Include Header
 #include "telltale.hpp"
 #include "warningresourceids.hpp"
 
+
+#define INVALID_ID		0xFFFF
+
 /***********************************************************
 Macro define & Type define
 ***********************************************************/
@@ -113,7 +116,14 @@ void CALL_TYPE SetWarningMode(int id)
 
 uint16 CALL_TYPE GetWarningIDFromStack(int id)
 {
-	return (uint16)poWrnStrategy->poWarningList->GetWarningFromStack((uint16)id);
+	uint16 u16WrnID = (uint16)poWrnStrategy->poWarningList->GetWarningFromStack((uint16)id);
+
+	if (InvalidWarningId == u16WrnID)
+	{
+		u16WrnID = INVALID_ID;
+	}
+
+	return u16WrnID;
 }
 
 void CALL_TYPE ProcessVirtualKey(int key)
@@ -129,24 +139,36 @@ void OnWarningStackChanged(uint16 u16StackSize)
 
 void OnWarningChanged(uint16 u16ActiveWrnID)
 {
-	cbWarningChange(u16ActiveWrnID);
+	if (InvalidWarningId != u16ActiveWrnID)
+	{
+		cbWarningChange(u16ActiveWrnID);
+	}
+	else{
+		cbWarningChange(INVALID_ID);
+	}
 
 }
 
 
 void CALL_TYPE RequestTelltale(int id)
 {
-	poTTStrategy->RequestWarning((enum TelltaleIDs)id);
+	poTTStrategy->RequestWarning((enum WarningIDs)id);
 }
 
 void CALL_TYPE ReleaseTelltale(int id)
 {
-	poTTStrategy->ReleaseWarning((enum TelltaleIDs)id);
+	poTTStrategy->ReleaseWarning((enum WarningIDs)id);
 }
 
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID)
 {
-	cbTelltaleChange(u16ActiveTelltaleID);
+	if (InvalidWarningId != u16ActiveTelltaleID)
+	{
+		cbTelltaleChange(u16ActiveTelltaleID);
+	}
+	else{
+		cbTelltaleChange(INVALID_ID);
+	}
 
 }
 

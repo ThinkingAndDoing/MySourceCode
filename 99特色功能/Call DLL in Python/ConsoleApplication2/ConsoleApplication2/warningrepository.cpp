@@ -1,4 +1,6 @@
 
+#include "warningview.hpp"
+
 #include "warningrepository.hpp"
 
 

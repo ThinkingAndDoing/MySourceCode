@@ -22,9 +22,7 @@ WarningManger framework
 
 [CYO-7378]Notification Manager Framework implementation
 
-release 98
 
-99 98 241
 
 未完成项：
 
@@ -60,6 +58,35 @@ Todo:
 2，代码Review，检查拷贝构造函数，检查STL
 3，QAC++静态分析
 
+
+
+报警进入WarningList后，再次触发报警是否要弹出Popup？
+
+
+
+
+
+
+"update TCs 1~7,13,18,22,25,27,34,39,50~59,66~75
+add TCs 76~84.
+update Traceability."
+
+
+
+
+
+
+remove notifications in check view list(388,393,179)
+
+补充用例：不Confirm 报警，进WarningList检查
+
+
+
+
+
+
+
+切换UsageMode时，要保留最小显示时间
 
 
 

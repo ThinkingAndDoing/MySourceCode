@@ -12,9 +12,10 @@ public:
 	struct NotiDescription
 	{
 		// Constructor.
-		explicit NotiDescription(const int NotiID, const int Prio, const int diaplayTimeout, const bool Immediate, const int IndicatorRequest,
+		explicit NotiDescription(const int NotiID, const int Prio, const int Enable, const int diaplayTimeout, const bool Immediate, const int IndicatorRequest,
 								 const bool Stack, const int MinTime, const int UserLockTime, const std::string text, const int ACID) : m_NotiID(NotiID),
 																																   m_Prio(Prio),
+																																   m_Enable(Enable),
 																																   m_diaplayTimeout(diaplayTimeout),
 																																   m_Immediate(Immediate),
 																																   m_IndicatorRequest(IndicatorRequest),
@@ -28,6 +29,7 @@ public:
 
 		int m_NotiID;
 		int m_Prio;
+		int m_Enable;
 		int m_diaplayTimeout;
 		bool m_Immediate;
 		int m_IndicatorRequest;
