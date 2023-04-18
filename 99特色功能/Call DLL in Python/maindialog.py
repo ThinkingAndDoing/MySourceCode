@@ -34,6 +34,8 @@ class My_Dialog(QDialog, Ui_Dialog):
 		self.pushButton.clicked.connect(self.request)
 		self.pushButton_2.clicked.connect(self.release)
 		self.pushButton_3.clicked.connect(self.sendkey)
+		self.Suspension.clicked.connect(self.suspension)
+		self.Resume.clicked.connect(self.resume)
 		self.wrnManager = None
 		
 	def set_warning_manager(self, wm):
@@ -48,6 +50,12 @@ class My_Dialog(QDialog, Ui_Dialog):
 	def sendkey(self):
 		self.wrnManager.ProcessVirtualKey(int(self.lineEdit_2.text()))
 
+	def suspension(self):
+		self.wrnManager.Suspension()
+		
+	def resume(self):
+		self.wrnManager.Resume()
+	
 	def set_warninglist_item(self, itemLabel, itemValue):
 	
 		if itemValue != INVALID_ID:

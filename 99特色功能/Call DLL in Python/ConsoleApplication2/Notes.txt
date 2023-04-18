@@ -6,18 +6,18 @@ OpenIssue：
 2，对于Timeout的Notification是否要进入列表？要进列表
 3，Notification被按键Press之后进入列表，还是在报警进入Queue时，同时进入Stack？被Press之后进入列表
 UserLockTime：UserLockTime是否一定小于mini_display_time？
-UsageMode：切换UsageMode时，要遵循最小显示时间，DisplayTimeout不需要重新计时。如果一个报警只在Driving下显示，当按键隐藏进入CheckViewList后，UsageMode切换到Inactive，再切换到Driving，这时这个报警应该放到CheckViewList还是WarningQueue？
+UsageMode：切换UsageMode时，要遵循最小显示时间，DisplayTimeout不需要重新计时。如果一个报警在Driving下显示，当按键隐藏进入CheckViewList后，UsageMode切换到任何其他模式，如果触发条件仍然满足，报警需要重新进入WarningQueue。如果一个报警不进入WarningStack，按键隐藏后，切换模式，是否要重新显示？
+
 Available：行为与UsageMode相同。只有0~7八种状态，不需要按照bit位设计。
+suspension（按照需求，与打断的行为一致）：当前报警停止计时；若有新报警触发，报警也应该加入队列，但是，不要启动计时器；若查询当前活跃ID，应该返回无效值；若有新报警取消，报警直接取消。当一个报警在最小显示内被取消，然后suspension，报警是否应该取消？是的
+resume：pCurrent指向链表第一个报警；激活pCurrent
 
 高优先级报警切换到菜单后，如果再触发低优先级报警，这时候要显示报警还是菜单。
 
 
-WarningList如何实现？
 
 
-WarningManger framework
 
-模块功能实现
 
 
 [CYO-7378]Notification Manager Framework implementation
@@ -27,16 +27,18 @@ WarningManger framework
 未完成项：
 
 WarningManger framework 模块功能开发计划
-1.	Immediate属性。  3.13~3.15
-2.	UserLockTime。     3.16~3.22
-3.	WarningList。        3.23~3.29
-4.	UsageMode。        3.30~4.4
-5.	Suspension/Resume		4.6~4.7
+//1.	Immediate属性。  3.13~3.15
+//2.	UserLockTime。     3.16~3.22
+//3.	WarningList。        3.23~3.29
+//4.	UsageMode。        3.30~4.4
+//5.	Suspension/Resume		4.6~4.7
+6.		Available
+7.		trigger time
+8.		Indicator request
+9.		Audio Chime request
 
-New5，报警弹出后切换到菜单，再切换回来，需要重新计时，需要WarningManager提供挂起功能。
-New6，给报警灯提供策略
 
-UserLockTime：
+
 
 
 1，GC系统按键分发流程？按键被报警处理过后，是否还要被其他模块处理？如果报警不处理按键，是否要被其他模块处理？
@@ -52,7 +54,7 @@ UserLockTime：
 已解决问题：1，类中有申请内存，但是缺少深度拷贝函数；2，在多重调用的子函数释放调用者申请的内存；
 
 Todo:
-将WarningStrategy改为单例模式https://www.jb51.net/article/224373.htm
+将WarningStrategy改为单例模式 https://www.jb51.net/article/224373.htm
 
 1，写C++调用程序，使用数据断点，调试DLL。
 2，代码Review，检查拷贝构造函数，检查STL
@@ -60,25 +62,6 @@ Todo:
 
 
 
-报警进入WarningList后，再次触发报警是否要弹出Popup？
-
-
-
-
-
-
-"update TCs 1~7,13,18,22,25,27,34,39,50~59,66~75
-add TCs 76~84.
-update Traceability."
-
-
-
-
-
-
-remove notifications in check view list(388,393,179)
-
-补充用例：不Confirm 报警，进WarningList检查
 
 
 
@@ -86,7 +69,21 @@ remove notifications in check view list(388,393,179)
 
 
 
-切换UsageMode时，要保留最小显示时间
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

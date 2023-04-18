@@ -2,7 +2,6 @@
 #define WARNINGVIEW_H
 #include "list"
 #include "warningresourceids.hpp"
-#include "notification.hpp"
 #include "newarrival.hpp"
 
 #define MAX_TIMESPAN_NUMS           10          //允许的最大Timespan数量
@@ -29,7 +28,9 @@ public:
 
     ~WarningView();
 
-	uint16 Active(void);
+	uint16 Activate(void);
+
+	void Deactivate(void);
 
 	bool HasNewInNextTimespan(void);
 
@@ -38,8 +39,6 @@ public:
 	Timespan *GetNextTimespan(void);
 
 	bool IsActiveMode(enum WarningMode enMode);
-
-	void SetCurrentTimespanIndex(uint16 u16Idx);
 
 	uint16 GetPriority(void);
 
@@ -61,7 +60,6 @@ public:
 
 private:
 
-	bool m_boPendingInterrupt;
 	bool m_boPendingRelease;
 	bool m_boImmediate;
 	bool m_boSaveToStack;

@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include "notification.hpp"
+
 #include "timespan.hpp"
 
 #include "warningview.hpp"
@@ -11,7 +13,6 @@ WarningView::WarningView(enum WarningIDs wrnid)
 	m_lstWarningMode.clear();
 	m_boImmediate = false;
 	m_boPendingRelease = false;
-	m_boPendingInterrupt = false;
 	m_boSaveToStack = false;
 	m_u16CurTimespanIndex = 0; //WarningView创建时指向第一个Timespan
 	m_enWarningID = InvalidWarningId;
@@ -29,7 +30,6 @@ WarningView::WarningView(const WarningView & oWV)
 	next = oWV.next;
 	pre = oWV.pre;
 	m_oArrivalList = oWV.m_oArrivalList;
-	m_boPendingInterrupt = oWV.m_boPendingInterrupt;
 	m_boPendingRelease = oWV.m_boPendingRelease;
 	m_boImmediate = oWV.m_boImmediate;
 	m_boSaveToStack = oWV.m_boSaveToStack;
@@ -58,7 +58,6 @@ WarningView& WarningView::operator = (const WarningView & oWV)
 	next = oWV.next;
 	pre = oWV.pre;
 	m_oArrivalList = oWV.m_oArrivalList;
-	m_boPendingInterrupt = oWV.m_boPendingInterrupt;
 	m_boPendingRelease = oWV.m_boPendingRelease;
 	m_boImmediate = oWV.m_boImmediate;
 	m_boSaveToStack = oWV.m_boSaveToStack;
@@ -99,9 +98,20 @@ WarningView::~WarningView() {
 }
 
 /*
+ * 停止当前 WarningView
+ */
+void WarningView::Deactivate(void)
+{
+	this->m_u16CurTimespanIndex = 0;
+	this->m_oArrivalList.ClearNewArrival();
+}
+
+
+
+/*
  * 激活当前 WarningView
  */
-uint16 WarningView::Active(void)
+uint16 WarningView::Activate(void)
 {
 	uint16 u16Duration = 0;
 
@@ -304,18 +314,6 @@ bool WarningView::IsActiveMode(enum WarningMode enMode)
 		}
 	}
 	return boRet;
-}
-
-
-void WarningView::SetCurrentTimespanIndex(uint16 u16Idx)
-{
-	if (u16Idx < MAX_TIMESPAN_NUMS)
-	{
-		m_u16CurTimespanIndex = u16Idx;
-	}
-	else{
-		m_u16CurTimespanIndex = MAX_TIMESPAN_NUMS - 1;
-	}
 }
 
 uint16 WarningView::GetPriority(void)

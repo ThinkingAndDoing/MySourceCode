@@ -20,6 +20,8 @@ public:
 
 	~WarningList();
 
+	void ClearAll(void);
+
 	void RemoveWarningFromStack(enum WarningIDs wrnid);
 
 	bool boIDAlreadyInList(enum WarningIDs enWrnID);

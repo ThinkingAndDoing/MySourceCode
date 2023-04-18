@@ -10,7 +10,7 @@ public:
 		u16TimeCounter = 0;
 	};
 
-    ~WarningTimer(){};
+    virtual ~WarningTimer(){};
 
     void TimerStart(uint16 u16TimeGap);
 
@@ -22,8 +22,7 @@ public:
 
 private:
 
-    uint16 u16TimeCounter;
-
+	uint16 u16TimeCounter; //注意多线程问题
 };
 
 #endif // MYTIMER_H

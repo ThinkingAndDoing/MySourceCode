@@ -33,25 +33,26 @@ public:
 
     WarningStrategy();
 	WarningStrategy(const WarningStrategy & oWS);
-    ~WarningStrategy();
-    void Clean();
+    virtual ~WarningStrategy();
+	void Deinitialize();
     void SelectNextView(enum SelectWarningPolicy selectpolicy);
     uint16 GetNumberOfWarningView(void);
     void Suspension(void);
     void Resume(void);
     void RequestWarning(enum WarningIDs wrnid);
     void ReleaseWarning(enum WarningIDs wrnid);
+	void ForceReleaseWarning(enum WarningIDs wrnid);
 	bool ProcessVirtualKey(enum VirtualKey enKey);
-    void ForceReleaseWarning(enum WarningIDs wrnid);
+	void RemoveWarningView(enum WarningIDs wrnid);
     uint16 GetActiveWarningID(void);
 	void SetWarningMode(enum WarningMode enWM);
 
 private:
 	void OnTimer(void) override;
-    void UpdateCurrentWarning(WarningView * pUpdate); 
+    void UpdateCurrentWarning(WarningView * poNew); 
     WarningView* GetWarningViewByID(enum WarningIDs wrnid);
 	WarningView* GetFirstViewOfArrivalQueue(void);
-    bool RemoveWarningView(enum WarningIDs wrnid);  
+    bool RemoveViewFromQueue(enum WarningIDs wrnid);  
     bool AddNewWarningView(WarningView * pNewView); 
 	void WarningPrioArbitrate(WarningView * pNewView);
 	bool HasSameViewInQueue(WarningView * pNewView);

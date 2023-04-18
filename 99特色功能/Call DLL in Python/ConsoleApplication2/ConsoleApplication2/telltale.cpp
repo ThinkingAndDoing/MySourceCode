@@ -83,7 +83,6 @@ bool TelltaleStrategy::boIDAlreadyInList(enum WarningIDs ttid)
 
 void TelltaleStrategy::RequestWarning(enum WarningIDs ttid)
 {
-	printf("RequestTelltale ttid = %d\n", ttid);
 	for (int i = 0; i < sizeof(stTelltalePriorityArray) / sizeof(TelltaleView); i++)
 	{
 		if (i == ttid)
@@ -100,7 +99,6 @@ void TelltaleStrategy::RequestWarning(enum WarningIDs ttid)
 
 void TelltaleStrategy::ReleaseWarning(enum WarningIDs ttid)
 {
-	printf("ReleaseTelltale ttid = %d\n", ttid);
 	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); ++it)
 	{
 		if (ttid == it->enTelltaleID)

@@ -16,6 +16,12 @@ WarningList::~WarningList()
 }
 
 
+void WarningList::ClearAll(void)
+{
+	vecWarningStack.clear();
+}
+
+
 void WarningList::RemoveWarningFromStack(enum WarningIDs wrnid)
 {
 	for (itWarningViewVec it = vecWarningStack.begin(); it != vecWarningStack.end(); ++it)

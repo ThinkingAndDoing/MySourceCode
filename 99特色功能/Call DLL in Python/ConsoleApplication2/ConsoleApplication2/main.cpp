@@ -6,10 +6,12 @@ main.cpp: Testing warning manager in win32 console
 /***********************************************************
 Include Header
 ***********************************************************/
+
 #include "MyTimer.hpp"
 #include "warninglist.hpp"
 #include "warningstrategy.hpp"
 #include "telltale.hpp"
+#include "warningresourceids.hpp"
 #include <windows.h>
 
 
@@ -20,12 +22,15 @@ void  init(void);
 void  RequestWarning(int id);
 void  ReleaseWarning(int id);
 void  SetWarningMode(int id);
+void  Suspension(void);
+void  Resume(void);
 uint16  GetWarningIDFromStack(int id);
 void  ProcessVirtualKey(int key);
 
 void  RequestTelltale(int id);
 void  ReleaseTelltale(int id);
 
+void print_warninglist(void);
 void OnWarningStackChanged(uint16 u16StackSize);
 void OnWarningChanged(uint16 u16ActiveWrnID);
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID);
@@ -55,6 +60,10 @@ void init(void)
 		printf("unable to satisfy request for memory\n");
 	}
 	poMyTimer = new cMyTimer(poWrnStrategy, poTTStrategy);
+	if (NULL == poMyTimer)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
 	poMyTimer->CreateTimer(100);
 	poMyTimer->SetWarningStackCallback(OnWarningStackChanged);
 	poMyTimer->SetWarningCallback(OnWarningChanged);
@@ -100,6 +109,16 @@ uint16 GetWarningIDFromStack(int id)
 	return (uint16)poWrnStrategy->poWarningList->GetWarningFromStack((uint16)id);
 }
 
+void Suspension(void)
+{
+	poWrnStrategy->Suspension();
+}
+
+void Resume(void)
+{
+	poWrnStrategy->Resume();
+}
+
 void ProcessVirtualKey(int key)
 {
 	poWrnStrategy->ProcessVirtualKey((enum VirtualKey)key);
@@ -108,7 +127,7 @@ void ProcessVirtualKey(int key)
 void OnWarningStackChanged(uint16 u16StackSize)
 {
 	printf("OnWarningStackChanged u16StackSize = %u \n", u16StackSize);
-
+	print_warninglist();
 }
 void OnWarningChanged(uint16 u16ActiveWrnID)
 {
@@ -122,12 +141,12 @@ void OnWarningChanged(uint16 u16ActiveWrnID)
 
 void RequestTelltale(int id)
 {
-	poTTStrategy->RequestWarning((enum TelltaleIDs)id);
+	poTTStrategy->RequestWarning((enum WarningIDs)id);
 }
 
 void ReleaseTelltale(int id)
 {
-	poTTStrategy->ReleaseWarning((enum TelltaleIDs)id);
+	poTTStrategy->ReleaseWarning((enum WarningIDs)id);
 }
 
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID)
@@ -190,18 +209,21 @@ void print_warninglist(void)
 
 void verify_warninglist(void)
 {
+	RequestWarning(99);
+	Sleep(3000);
+	ProcessVirtualKey(4);
 	RequestWarning(98);
+	Sleep(3000);
+	ProcessVirtualKey(4);
+	RequestWarning(241);
+	Sleep(3000);
+	ProcessVirtualKey(4);
+
+	ReleaseWarning(98);
 	Sleep(500);
-	ProcessVirtualKey(4);
-	Sleep(1000);
-	ProcessVirtualKey(4);
-	Sleep(2000);
-	ProcessVirtualKey(4);
-	print_warninglist();
-	Sleep(1000);
-	RequestWarning(192);
-	Sleep(7000);
-	print_warninglist();
+	ReleaseWarning(99);
+	Sleep(500);
+	ReleaseWarning(241);
 }
 
 void verify_warningmode(void)
@@ -222,26 +244,44 @@ void verify_warningmode(void)
 
 }
 
+void verify_suspension_resume(void)
+{
+	Suspension();
 
+	RequestWarning(98);
+
+	Sleep(500);
+
+	RequestWarning(241);
+
+	Suspension();
+
+	Sleep(500);
+
+	Resume();
+
+}
 
 void main(void)
 {
-
 	init();
 
-	verify_immediate();
+	//verify_immediate();
 
-	verify_userlocktime();
+	//verify_userlocktime();
 
-	verify_telltale();
+	//verify_telltale();
 
-	verify_warninglist();
+	//verify_warninglist();
 
 	//verify_warningmode();
+
+	verify_suspension_resume();
 
 	printf("\nOver!\n");
 
 	//deInit();
+
 
 	while (true)
 	{

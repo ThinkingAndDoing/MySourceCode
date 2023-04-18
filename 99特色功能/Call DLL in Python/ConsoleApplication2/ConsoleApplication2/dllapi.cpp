@@ -28,6 +28,8 @@ extern "C"
 	API_DLL void CALL_TYPE RequestWarning(int id);
 	API_DLL void CALL_TYPE ReleaseWarning(int id);
 	API_DLL void CALL_TYPE SetWarningMode(int id);
+	API_DLL void CALL_TYPE Suspension(void);
+	API_DLL void CALL_TYPE Resume(void);
 	API_DLL uint16 CALL_TYPE GetWarningIDFromStack(int id);
 	API_DLL void CALL_TYPE ProcessVirtualKey(int key);
 
@@ -62,6 +64,8 @@ _callback_python_func cbTelltaleChange;
 Function define
 ***********************************************************/
 
+
+// warning popup
 void CALL_TYPE init(void)
 {
 	poWrnStrategy = new WarningStrategy();
@@ -126,6 +130,19 @@ uint16 CALL_TYPE GetWarningIDFromStack(int id)
 	return u16WrnID;
 }
 
+
+void CALL_TYPE Suspension(void)
+{
+	poWrnStrategy->Suspension();
+}
+
+
+void CALL_TYPE Resume(void)
+{
+	poWrnStrategy->Resume();
+}
+
+
 void CALL_TYPE ProcessVirtualKey(int key)
 {
 	poWrnStrategy->ProcessVirtualKey((enum VirtualKey)key);
@@ -149,7 +166,7 @@ void OnWarningChanged(uint16 u16ActiveWrnID)
 
 }
 
-
+// telltale
 void CALL_TYPE RequestTelltale(int id)
 {
 	poTTStrategy->RequestWarning((enum WarningIDs)id);
@@ -173,6 +190,7 @@ void OnTelltaleChanged(uint16 u16ActiveTelltaleID)
 }
 
 
+// register call back
 void CALL_TYPE dllRegisterPythonFunc(void *pyWarningStackPtr, void *pyWarningPtr, void *pyTelltalePtr)
 {
 	cbWarningStackChange = (_callback_python_func)pyWarningStackPtr;
