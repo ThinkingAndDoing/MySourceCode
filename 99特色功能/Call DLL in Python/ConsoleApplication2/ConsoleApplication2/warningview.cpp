@@ -1,28 +1,29 @@
 #include <stdio.h>
 
-#include "notification.hpp"
+#include "warningmodel.hpp"
 
 #include "timespan.hpp"
 
 #include "warningview.hpp"
 
-extern NotiDescriptionVector notiDescriptions;
 
-WarningView::WarningView(enum WarningIDs wrnid) 
+WarningView::WarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel)
 {
 	m_lstWarningMode.clear();
 	m_boImmediate = false;
 	m_boPendingRelease = false;
 	m_boSaveToStack = false;
 	m_u16CurTimespanIndex = 0; //WarningView创建时指向第一个Timespan
-	m_enWarningID = InvalidWarningId;
+	m_enWarningID = NumberOfWarnings;
+	m_u16TriggerDelay = 0;
+	m_u16Priority = 0;
     next = pre = NULL;
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
     {
 		m_paTimespan[i] = NULL;
     }
 
-    BuildWarningView(wrnid);
+	BuildWarningView(wrnid, oWrnModel);
 }
 
 WarningView::WarningView(const WarningView & oWV)
@@ -38,6 +39,7 @@ WarningView::WarningView(const WarningView & oWV)
 	m_enWarningID = oWV.m_enWarningID;
 	m_u16Priority = oWV.m_u16Priority;
 	m_u16CurTimespanIndex = oWV.m_u16CurTimespanIndex;
+	m_u16TriggerDelay = oWV.m_u16TriggerDelay;
 
 	for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
 	{
@@ -66,6 +68,8 @@ WarningView& WarningView::operator = (const WarningView & oWV)
 	m_enWarningID = oWV.m_enWarningID;
 	m_u16Priority = oWV.m_u16Priority;
 	m_u16CurTimespanIndex = oWV.m_u16CurTimespanIndex;
+	m_u16TriggerDelay = oWV.m_u16TriggerDelay;
+
 
 	for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
 	{
@@ -132,25 +136,16 @@ uint16 WarningView::Activate(void)
 /*
 * 构建 WarningView
 */
-void WarningView::BuildWarningView(enum WarningIDs wrnid)
+void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel)
 {
-    unsigned int uNotiDesc = 0xFFFF;
-    for (unsigned i = 0; i < notiDescriptions.size(); i++) {
-        if (notiDescriptions.at(i).m_ACID == wrnid)
-        {
-            uNotiDesc = i;
-            break;
-        }
-    }
+	if (wrnid < NumberOfWarnings)
+	{
+		this->m_enWarningID = wrnid;
+		this->m_u16Priority = oWrnModel.GetPriority(wrnid);
+		this->m_boImmediate = oWrnModel.GetImmediate(wrnid) > 0 ? true : false;
+		this->m_boSaveToStack = oWrnModel.GetStack(wrnid) > 0 ? true : false;
 
-    if (0xFFFF != uNotiDesc)
-    {
-		this->m_enWarningID = (enum WarningIDs)notiDescriptions.at(uNotiDesc).m_ACID;
-        this->m_u16Priority = 100-10*(notiDescriptions.at(uNotiDesc).m_Prio); // for cm1e only
-		this->m_boImmediate = notiDescriptions.at(uNotiDesc).m_Immediate;
-		this->m_boSaveToStack = notiDescriptions.at(uNotiDesc).m_Stack;
-
-		uint16 u16UsageMode = notiDescriptions.at(uNotiDesc).m_Enable;
+		uint16 u16UsageMode = oWrnModel.GetUsageMode(wrnid);
 		uint16 u16Mode = 1;
 		while (u16UsageMode != 0)
 		{
@@ -162,107 +157,57 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid)
 			u16Mode++;
 		}
 
-
 		//(int st, int et, enum WarningAction onRel, enum WarningAction oe, enum WarningAction onHighPro, enum WarningAction onSamePro);
-		Timespan *pTmSp = NULL;
-		if (notiDescriptions.at(uNotiDesc).m_MinTime > notiDescriptions.at(uNotiDesc).m_UserLockTime)
+		if (oWrnModel.GetMinDispTime(wrnid) > oWrnModel.GetUserLockTime(wrnid))
 		{
-			pTmSp = new Timespan(0, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
-			if (NULL == pTmSp)
-			{
-				printf("unable to satisfy request for memory\n");
-				return;
-			}
-			pTmSp->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
-			this->m_paTimespan[0] = pTmSp;
+			this->m_paTimespan[0] = new Timespan(0, oWrnModel.GetUserLockTime(wrnid) / 100);
+			this->m_paTimespan[0]->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 
-			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
-			if (NULL == pTmSp)
-			{
-				printf("unable to satisfy request for memory\n");
-				return ;
-			}
-			this->m_paTimespan[1] = pTmSp;
+			this->m_paTimespan[1] = new Timespan(oWrnModel.GetUserLockTime(wrnid) / 100, oWrnModel.GetMinDispTime(wrnid) / 100);
 
-			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
-			if (NULL == pTmSp)
-			{
-				printf("unable to satisfy request for memory\n");
-				return ;
-			}
-			pTmSp->SetOnRelease(WBRelease);
-			pTmSp->SetOnEnd(WBRelease);
-			pTmSp->SetOnNewHighPriority(WBDisplace);
-			pTmSp->SetOnNewSamePriority(WBDisplace);
-			this->m_paTimespan[2] = pTmSp;
+			this->m_paTimespan[2] = new Timespan(oWrnModel.GetMinDispTime(wrnid) / 100, oWrnModel.GetMaxDispTime(wrnid) / 100);
+			this->m_paTimespan[2]->SetOnRelease(WBRelease);
+			this->m_paTimespan[2]->SetOnEnd(WBRelease);
+			this->m_paTimespan[2]->SetOnNewHighPriority(WBDisplace);
+			this->m_paTimespan[2]->SetOnNewSamePriority(WBDisplace);
 		}
-		else if (notiDescriptions.at(uNotiDesc).m_MinTime < notiDescriptions.at(uNotiDesc).m_UserLockTime)
+		else if (oWrnModel.GetMinDispTime(wrnid) < oWrnModel.GetUserLockTime(wrnid))
 		{
-			pTmSp = new Timespan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
-			if (NULL == pTmSp)
-			{
-				printf("unable to satisfy request for memory\n");
-				return ;
-			}
-			pTmSp->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
-			this->m_paTimespan[0] = pTmSp;
+			this->m_paTimespan[0] = new Timespan(0, oWrnModel.GetMinDispTime(wrnid) / 100);
+			this->m_paTimespan[0]->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 
-			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_UserLockTime / 100);
-			if (NULL == pTmSp)
-			{
-				printf("unable to satisfy request for memory\n");
-				return ;
-			}
-			pTmSp->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
-			pTmSp->SetOnRelease(WBRelease);
-			pTmSp->SetOnNewHighPriority(WBDisplace);
-			pTmSp->SetOnNewSamePriority(WBDisplace);
-			this->m_paTimespan[1] = pTmSp;
+			this->m_paTimespan[1] = new Timespan(oWrnModel.GetMinDispTime(wrnid) / 100, oWrnModel.GetUserLockTime(wrnid) / 100);
+			this->m_paTimespan[1]->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
+			this->m_paTimespan[1]->SetOnRelease(WBRelease);
+			this->m_paTimespan[1]->SetOnNewHighPriority(WBDisplace);
+			this->m_paTimespan[1]->SetOnNewSamePriority(WBDisplace);
 
-			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_UserLockTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
-			if (NULL == pTmSp)
-			{
-				printf("unable to satisfy request for memory\n");
-				return ;
-			}
-			pTmSp->SetOnRelease(WBRelease);
-			pTmSp->SetOnEnd(WBRelease);
-			pTmSp->SetOnNewHighPriority(WBDisplace);
-			pTmSp->SetOnNewSamePriority(WBDisplace);
-			this->m_paTimespan[2] = pTmSp;
+			this->m_paTimespan[2] = new Timespan(oWrnModel.GetUserLockTime(wrnid) / 100, oWrnModel.GetMaxDispTime(wrnid) / 100);
+			this->m_paTimespan[2]->SetOnRelease(WBRelease);
+			this->m_paTimespan[2]->SetOnEnd(WBRelease);
+			this->m_paTimespan[2]->SetOnNewHighPriority(WBDisplace);
+			this->m_paTimespan[2]->SetOnNewSamePriority(WBDisplace);
 		}
 		else
 		{
-			pTmSp = new Timespan(0, notiDescriptions.at(uNotiDesc).m_MinTime / 100);
-			if (NULL == pTmSp)
-			{
-				printf("unable to satisfy request for memory\n");
-				return ;
-			}
-			pTmSp->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
-			this->m_paTimespan[0] = pTmSp;
+			this->m_paTimespan[0] = new Timespan(0, oWrnModel.GetMinDispTime(wrnid) / 100);
+			this->m_paTimespan[0]->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 
-			pTmSp = new Timespan(notiDescriptions.at(uNotiDesc).m_MinTime / 100, notiDescriptions.at(uNotiDesc).m_diaplayTimeout / 100);
-			if (NULL == pTmSp)
-			{
-				printf("unable to satisfy request for memory\n");
-				return ;
-			}
-			pTmSp->SetOnRelease(WBRelease);
-			pTmSp->SetOnEnd(WBRelease);
-			pTmSp->SetOnNewHighPriority(WBDisplace);
-			pTmSp->SetOnNewSamePriority(WBDisplace);
-			this->m_paTimespan[1] = pTmSp;
+			this->m_paTimespan[1] = new Timespan(oWrnModel.GetMinDispTime(wrnid) / 100, oWrnModel.GetMaxDispTime(wrnid) / 100);
+			this->m_paTimespan[1]->SetOnRelease(WBRelease);
+			this->m_paTimespan[1]->SetOnEnd(WBRelease);
+			this->m_paTimespan[1]->SetOnNewHighPriority(WBDisplace);
+			this->m_paTimespan[1]->SetOnNewSamePriority(WBDisplace);
 		}
 
 		/**/
 		printf("----------------------------------------------\n");
 		printf("WarningID = %d, priority = %d \n", this->m_enWarningID, this->m_u16Priority);
-		printf("displaytimeout = %d, mini display time = %d \n", notiDescriptions.at(uNotiDesc).m_diaplayTimeout, notiDescriptions.at(uNotiDesc).m_MinTime);
+		printf("displaytimeout = %d, mini display time = %d \n", oWrnModel.GetMaxDispTime(wrnid), oWrnModel.GetMinDispTime(wrnid));
 		printf("immediate = %d, stack = %d \n", this->m_boImmediate, this->m_boSaveToStack);
 		printf("----------------------------------------------\n");
-		
-    }
+	}
+
 }
 
 

@@ -1,5 +1,5 @@
-#ifndef MYTIMER_H
-#define MYTIMER_H
+#ifndef MYTIMER_HPP
+#define MYTIMER_HPP
 
 #include "string"
 #include "list"

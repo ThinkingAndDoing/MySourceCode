@@ -1,5 +1,5 @@
-#ifndef ACKNOWLEDGE_H
-#define ACKNOWLEDGE_H
+#ifndef ACKNOWLEDGE_HPP
+#define ACKNOWLEDGE_HPP
 #include "list"
 #include "typedefine.hpp"
 

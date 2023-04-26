@@ -1,5 +1,5 @@
-#ifndef TIMESPAN_H
-#define TIMESPAN_H
+#ifndef TIMESPAN_HPP
+#define TIMESPAN_HPP
 
 #include "acknowledge.hpp"
 

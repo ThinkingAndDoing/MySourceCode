@@ -1,5 +1,5 @@
-#ifndef WARNINGVIEW_H
-#define WARNINGVIEW_H
+#ifndef WARNINGVIEW_HPP
+#define WARNINGVIEW_HPP
 #include "list"
 #include "warningresourceids.hpp"
 #include "newarrival.hpp"
@@ -13,14 +13,14 @@ typedef std::list<enum WarningMode> enWarningModeList;
 typedef std::list<enum WarningMode>::iterator itWarningModeLst;
 
 
-
+class WarningModel;
 class Timespan;
 class WarningStrategy;
 
 class WarningView
 {
 public:
-	explicit WarningView(enum WarningIDs wrnid);
+	explicit WarningView(enum WarningIDs wrnid, const WarningModel & oWrnModel);
 
 	WarningView(const WarningView & oWV);
 
@@ -69,10 +69,11 @@ private:
 
 	uint16 m_u16Priority;
 	uint16 m_u16CurTimespanIndex;		//µ±Ç°timespan 
+	uint16 m_u16TriggerDelay;
 
 	Timespan *m_paTimespan[MAX_TIMESPAN_NUMS];
 
-	void BuildWarningView(enum WarningIDs wrnid);
+	void BuildWarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel);
 
 };
 

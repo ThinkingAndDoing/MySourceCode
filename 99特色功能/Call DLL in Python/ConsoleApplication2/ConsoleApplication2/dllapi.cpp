@@ -122,7 +122,7 @@ uint16 CALL_TYPE GetWarningIDFromStack(int id)
 {
 	uint16 u16WrnID = (uint16)poWrnStrategy->poWarningList->GetWarningFromStack((uint16)id);
 
-	if (InvalidWarningId == u16WrnID)
+	if (NumberOfWarnings == u16WrnID)
 	{
 		u16WrnID = INVALID_ID;
 	}
@@ -156,7 +156,7 @@ void OnWarningStackChanged(uint16 u16StackSize)
 
 void OnWarningChanged(uint16 u16ActiveWrnID)
 {
-	if (InvalidWarningId != u16ActiveWrnID)
+	if (NumberOfWarnings != u16ActiveWrnID)
 	{
 		cbWarningChange(u16ActiveWrnID);
 	}
@@ -179,7 +179,7 @@ void CALL_TYPE ReleaseTelltale(int id)
 
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID)
 {
-	if (InvalidWarningId != u16ActiveTelltaleID)
+	if (NumberOfWarnings != u16ActiveTelltaleID)
 	{
 		cbTelltaleChange(u16ActiveTelltaleID);
 	}

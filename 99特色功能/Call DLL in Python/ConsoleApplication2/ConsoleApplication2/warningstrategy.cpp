@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 
+#include "warningmodel.hpp"
 #include "timespan.hpp"
 #include "warningview.hpp"
 #include "warninglist.hpp"
@@ -28,6 +29,12 @@ WarningStrategy::WarningStrategy()
 	{
 		printf("unable to satisfy request for memory\n");
 	}
+
+	poWarningModel = new WarningModel();
+	if (NULL == poWarningModel)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
 }
 
 
@@ -48,6 +55,12 @@ WarningStrategy::WarningStrategy(const WarningStrategy & oWS)
 
 	poWarningList = new WarningList();
 	if (NULL == poWarningList)
+	{
+		printf("unable to satisfy request for memory\n");
+	}
+
+	poWarningModel = new WarningModel();
+	if (NULL == poWarningModel)
 	{
 		printf("unable to satisfy request for memory\n");
 	}
@@ -87,6 +100,19 @@ void WarningStrategy::Deinitialize()
 		delete poWarningList;
 		poWarningList = NULL;
 	}
+	if (NULL != poWarningModel)
+	{
+		delete poWarningModel;
+		poWarningModel = NULL;
+	}
+}
+
+
+void WarningStrategy::TimeTick(void)
+{
+	WarningTimer::TimeTick();
+
+
 }
 
 /*
@@ -142,7 +168,7 @@ bool WarningStrategy::InsertPriority(WarningView *pNode)
 
 void WarningStrategy::ReleaseCurrentShowNew(WarningView *pNewView)
 {
-    enum WarningIDs toBeRemovedID = InvalidWarningId;
+	enum WarningIDs toBeRemovedID = NumberOfWarnings;
 
     if(NULL != pCurrent)
     {
@@ -429,7 +455,7 @@ uint16 WarningStrategy::GetNumberOfWarningView(void)
 
 void WarningStrategy::RequestWarning(enum WarningIDs wrnid)
 {
-    WarningView *pView = new WarningView(wrnid);
+	WarningView *pView = new WarningView(wrnid, *poWarningModel);
 
 	if (NULL == pView)
 	{
@@ -437,7 +463,7 @@ void WarningStrategy::RequestWarning(enum WarningIDs wrnid)
 		return;
 	}
 
-	if (pView->GetWarningID() != InvalidWarningId)
+	if (pView->GetWarningID() != NumberOfWarnings)
 	{
 		if (NULL != poWarningRepo)
 		{
@@ -621,7 +647,7 @@ uint16 WarningStrategy::GetActiveWarningID(void)
 {
 	if (NULL == pCurrent || this->boSuspension == true)
     {
-        return (uint16)InvalidWarningId;
+		return (uint16)NumberOfWarnings;
     }
     else{
 		return (uint16)pCurrent->GetWarningID();
@@ -682,7 +708,7 @@ WarningView* WarningStrategy::GetFirstViewOfArrivalQueue(void)
     if(pCurrent != NULL)
     {
 		enum WarningIDs enWrnID = pCurrent->m_oArrivalList.GetFirstIDOfArrivalQueue();
-		if (InvalidWarningId != enWrnID)
+		if (NumberOfWarnings != enWrnID)
         {
 			pNewView = GetWarningViewByID(enWrnID);
         }

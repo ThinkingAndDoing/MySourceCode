@@ -1,5 +1,5 @@
-#ifndef WARNINGTIMER_H
-#define WARNINGTIMER_H
+#ifndef WARNINGTIMER_HPP
+#define WARNINGTIMER_HPP
 #include "typedefine.hpp"
 
 class WarningTimer
@@ -16,7 +16,7 @@ public:
 
     void TimerStop(void);
 
-    void TimeTick(void);
+    virtual void TimeTick(void);
 
     virtual void OnTimer(void) = 0;
 

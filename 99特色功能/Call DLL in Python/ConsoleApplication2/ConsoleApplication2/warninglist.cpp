@@ -82,7 +82,7 @@ enum WarningIDs WarningList::GetActiveModeWarningFromStack(uint16 u16Index)
 		u16++;
 	}
 
-	return InvalidWarningId;
+	return NumberOfWarnings;
 }
 
 enum WarningIDs WarningList::GetWarningFromStack(uint16 u16Index)
@@ -92,7 +92,7 @@ enum WarningIDs WarningList::GetWarningFromStack(uint16 u16Index)
 		return vecWarningStack[u16Index].GetWarningID();
 	}
 	else{
-		return InvalidWarningId;
+		return NumberOfWarnings;
 	}
 }
 

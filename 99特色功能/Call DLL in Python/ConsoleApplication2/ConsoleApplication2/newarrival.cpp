@@ -23,7 +23,7 @@ enum WarningIDs NewArrivalList::GetFirstIDOfArrivalQueue(void)
 		return pNew->enWarningID;
 	}
 	else{
-		return InvalidWarningId;
+		return NumberOfWarnings;
 	}
 }
 

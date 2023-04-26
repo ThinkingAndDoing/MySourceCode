@@ -1,9 +1,9 @@
-#ifndef WARNINGSTRATEGY_H
-#define WARNINGSTRATEGY_H
+#ifndef WARNINGSTRATEGY_HPP
+#define WARNINGSTRATEGY_HPP
 #include "list"
 #include "warningtimer.hpp"
 
-
+class WarningModel;
 class TimeSpan;
 class WarningView;
 class WarningList;
@@ -30,10 +30,13 @@ class WarningStrategy: public WarningTimer
 public:
 	WarningRepository* poWarningRepo;
 	WarningList* poWarningList;
+	WarningModel* poWarningModel;
 
     WarningStrategy();
 	WarningStrategy(const WarningStrategy & oWS);
     virtual ~WarningStrategy();
+
+	virtual void TimeTick(void);
 	void Deinitialize();
     void SelectNextView(enum SelectWarningPolicy selectpolicy);
     uint16 GetNumberOfWarningView(void);

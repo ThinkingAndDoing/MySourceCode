@@ -1,5 +1,5 @@
-#ifndef WARNINGRESOURCEIDS_H
-#define WARNINGRESOURCEIDS_H
+#ifndef WARNINGRESOURCEIDS_HPP
+#define WARNINGRESOURCEIDS_HPP
 
 
 #define DISABLE_WARNING_MODE
@@ -265,7 +265,7 @@ enum WarningIDs
 	SrvRmnWarning3Wrn,
 	WarningID244,
 	DoorOpnWrn,
-    InvalidWarningId
+    NumberOfWarnings
 };
 
 

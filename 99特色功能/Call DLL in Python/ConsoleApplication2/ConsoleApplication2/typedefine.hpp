@@ -1,10 +1,9 @@
-#ifndef TYPEDEFINE_H
-#define TYPEDEFINE_H
+#ifndef TYPEDEFINE_HPP
+#define TYPEDEFINE_HPP
 
 
-#define  uint32     unsigned long int
-#define  uint16     unsigned int
-#define  uint8      unsigned short int
+#define  uint32     unsigned int
+#define  uint16     unsigned short int
 
 
 enum VirtualKey
