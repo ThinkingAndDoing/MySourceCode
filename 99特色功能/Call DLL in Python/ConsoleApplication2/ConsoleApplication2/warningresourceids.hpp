@@ -5,6 +5,15 @@
 #define DISABLE_WARNING_MODE
 
 
+enum Availiable
+{
+	OFF,
+	Mode1,
+	Mode2,
+	Mode3,
+	Stale
+};
+
 enum WarningMode
 {
 	WrnModeNone,

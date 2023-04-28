@@ -2,7 +2,7 @@
 #define WARNINGVIEW_HPP
 #include "list"
 #include "warningresourceids.hpp"
-#include "newarrival.hpp"
+#include "warningnodelist.hpp"
 
 #define MAX_TIMESPAN_NUMS           10          //允许的最大Timespan数量
 #define INVALID_TIMESPAN_ID         255         //无效的Timespan ID
@@ -54,9 +54,11 @@ public:
 
 	uint16 MoveToNextTimespan(void);
 
+	uint16 GetTriggerDelay(void);
+
     WarningView* next;
     WarningView* pre;
-	NewArrivalList m_oArrivalList;
+	WarningNodeList m_oNewArrivalList;
 
 private:
 

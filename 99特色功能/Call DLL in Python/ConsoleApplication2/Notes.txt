@@ -32,10 +32,10 @@ WarningManger framework 模块功能开发计划
 //3.	WarningList。        3.23~3.29
 //4.	UsageMode。        3.30~4.4
 //5.	Suspension/Resume		4.6~4.7
-6.		Available
-7.		trigger time
-8.		Indicator request
-9.		Audio Chime request
+6.		Available				5.6~5.11
+//7.		trigger time		5.4~5.5
+8.		Indicator request		5.12~5.17
+9.		Audio Chime request		5.18~5.30
 
 
 

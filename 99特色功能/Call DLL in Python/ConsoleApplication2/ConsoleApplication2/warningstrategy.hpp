@@ -2,6 +2,7 @@
 #define WARNINGSTRATEGY_HPP
 #include "list"
 #include "warningtimer.hpp"
+#include "warningnodelist.hpp"
 
 class WarningModel;
 class TimeSpan;
@@ -42,23 +43,25 @@ public:
     uint16 GetNumberOfWarningView(void);
     void Suspension(void);
     void Resume(void);
-    void RequestWarning(enum WarningIDs wrnid);
-    void ReleaseWarning(enum WarningIDs wrnid);
-	void ForceReleaseWarning(enum WarningIDs wrnid);
+    virtual void RequestWarning(enum WarningIDs wrnid);
+	virtual void ReleaseWarning(enum WarningIDs wrnid);
+	virtual void ForceReleaseWarning(enum WarningIDs wrnid);
 	bool ProcessVirtualKey(enum VirtualKey enKey);
 	void RemoveWarningView(enum WarningIDs wrnid);
     uint16 GetActiveWarningID(void);
 	void SetWarningMode(enum WarningMode enWM);
+	void CreateNewWarningView(enum WarningIDs wrnid);
+
 
 private:
 	void OnTimer(void) override;
     void UpdateCurrentWarning(WarningView * poNew); 
     WarningView* GetWarningViewByID(enum WarningIDs wrnid);
 	WarningView* GetFirstViewOfArrivalQueue(void);
-    bool RemoveViewFromQueue(enum WarningIDs wrnid);  
+    bool RemoveViewFromQueue(enum WarningIDs wrnid);
     bool AddNewWarningView(WarningView * pNewView); 
 	void WarningPrioArbitrate(WarningView * pNewView);
-	bool HasSameViewInQueue(WarningView * pNewView);
+	bool HasSameWarningInQueue(enum WarningIDs enWrnID);
     bool InsertPriority(WarningView *pNode);      //按照优先级插入
     void ReleaseCurrentShowNew(WarningView *pNewView);
 	WarningView* GetLastWarningOfQueue(void);

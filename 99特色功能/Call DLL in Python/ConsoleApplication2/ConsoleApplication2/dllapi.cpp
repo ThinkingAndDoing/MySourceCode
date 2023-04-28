@@ -3,7 +3,7 @@ Include Header
 ***********************************************************/
 #include "MyTimer.hpp"
 #include "warninglist.hpp"
-#include "warningstrategy.hpp"
+#include "warningstrategycm1e.hpp"
 #include "telltale.hpp"
 #include "warningresourceids.hpp"
 
@@ -51,7 +51,7 @@ void OnTelltaleChanged(uint16 u16ActiveTelltaleID);
 /***********************************************************
 Global variant
 ***********************************************************/
-WarningStrategy *poWrnStrategy;
+WarningStrategyCM1E *poWrnStrategy;
 TelltaleStrategy *poTTStrategy;
 cMyTimer *poMyTimer;
 _callback_python_func cbWarningStackChange;
@@ -68,7 +68,7 @@ Function define
 // warning popup
 void CALL_TYPE init(void)
 {
-	poWrnStrategy = new WarningStrategy();
+	poWrnStrategy = new WarningStrategyCM1E();
 	if (NULL == poWrnStrategy)
 	{
 		printf("unable to satisfy request for memory\n");

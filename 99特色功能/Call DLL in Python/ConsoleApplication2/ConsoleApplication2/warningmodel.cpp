@@ -37,6 +37,17 @@ void WarningModel::initialize(void)
 	}
 }
 
+uint16 WarningModel::GetNotificationID(uint16 u16ID) const
+{
+	if (u16ID < NumberOfWarnings)
+	{
+		return au16WarningAttribute[u16ID][enNotiID];
+	}
+	else{
+		return 0;
+	}
+}
+
 uint16 WarningModel::GetPriority(uint16 u16ID) const
 {
 	if (u16ID < NumberOfWarnings)
@@ -126,3 +137,13 @@ uint16 WarningModel::GetIndicatorRequest(uint16 u16ID) const
 	}
 }
 
+uint16 WarningModel::GetTriggerTime(uint16 u16ID) const
+{
+	if (u16ID < NumberOfWarnings)
+	{
+		return au16WarningAttribute[u16ID][enMinTime];
+	}
+	else{
+		return 0;
+	}
+}

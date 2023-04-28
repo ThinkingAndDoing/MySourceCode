@@ -30,7 +30,7 @@ WarningView::WarningView(const WarningView & oWV)
 {
 	next = oWV.next;
 	pre = oWV.pre;
-	m_oArrivalList = oWV.m_oArrivalList;
+	m_oNewArrivalList = oWV.m_oNewArrivalList;
 	m_boPendingRelease = oWV.m_boPendingRelease;
 	m_boImmediate = oWV.m_boImmediate;
 	m_boSaveToStack = oWV.m_boSaveToStack;
@@ -59,7 +59,7 @@ WarningView& WarningView::operator = (const WarningView & oWV)
 {
 	next = oWV.next;
 	pre = oWV.pre;
-	m_oArrivalList = oWV.m_oArrivalList;
+	m_oNewArrivalList = oWV.m_oNewArrivalList;
 	m_boPendingRelease = oWV.m_boPendingRelease;
 	m_boImmediate = oWV.m_boImmediate;
 	m_boSaveToStack = oWV.m_boSaveToStack;
@@ -107,7 +107,7 @@ WarningView::~WarningView() {
 void WarningView::Deactivate(void)
 {
 	this->m_u16CurTimespanIndex = 0;
-	this->m_oArrivalList.ClearNewArrival();
+	this->m_oNewArrivalList.ClearAll();
 }
 
 
@@ -138,12 +138,13 @@ uint16 WarningView::Activate(void)
 */
 void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel)
 {
-	if (wrnid < NumberOfWarnings)
+	if (wrnid < NumberOfWarnings && 0 != oWrnModel.GetNotificationID(wrnid))
 	{
 		this->m_enWarningID = wrnid;
 		this->m_u16Priority = oWrnModel.GetPriority(wrnid);
 		this->m_boImmediate = oWrnModel.GetImmediate(wrnid) > 0 ? true : false;
 		this->m_boSaveToStack = oWrnModel.GetStack(wrnid) > 0 ? true : false;
+		this->m_u16TriggerDelay = oWrnModel.GetTriggerTime(wrnid);
 
 		uint16 u16UsageMode = oWrnModel.GetUsageMode(wrnid);
 		uint16 u16Mode = 1;
@@ -286,6 +287,11 @@ bool WarningView::boNeedSaveToStack(void)
 	return m_boSaveToStack;
 }
 
+uint16 WarningView::GetTriggerDelay(void)
+{
+	return m_u16TriggerDelay;
+}
+
 uint16 WarningView::MoveToNextTimespan(void)
 {
 	uint16 u16Duration = 0;
@@ -340,7 +346,7 @@ enum WarningAction WarningView::GetActionOnNewWarningComing(WarningView* poNewVi
 */
 bool WarningView::HasNewInNextTimespan(void)
 {
-	NewArrival *pNewArrival = m_oArrivalList.GetFirstOfArrivalQueue();
+	WarningNode *pNewArrival = m_oNewArrivalList.GetFirstNodeOfList();
 
 	if (NULL == pNewArrival || NULL == GetNextTimespan())
 	{

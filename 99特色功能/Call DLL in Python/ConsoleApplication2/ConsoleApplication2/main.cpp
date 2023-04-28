@@ -262,6 +262,23 @@ void verify_suspension_resume(void)
 
 }
 
+void verify_triggertime(void)
+{
+	RequestWarning(241);
+
+	Sleep(5000);
+
+	RequestWarning(99);
+
+	Sleep(800);
+
+	ReleaseWarning(99);
+
+	Sleep(500);
+
+	RequestWarning(98);
+}
+
 void main(void)
 {
 	init();
@@ -276,7 +293,9 @@ void main(void)
 
 	//verify_warningmode();
 
-	verify_suspension_resume();
+	//verify_suspension_resume();
+
+	verify_triggertime();
 
 	printf("\nOver!\n");
 

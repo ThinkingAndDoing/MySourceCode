@@ -29,6 +29,8 @@ public:
 
 	void initialize(void);
 
+	uint16 GetNotificationID(uint16 u16ID) const;
+
 	uint16 GetPriority(uint16 u16ID) const;
 
 	uint16 GetUserLockTime(uint16 u16ID) const;
@@ -44,6 +46,8 @@ public:
 	uint16 GetUsageMode(uint16 u16ID) const;
 
 	uint16 GetIndicatorRequest(uint16 u16ID) const;
+
+	uint16 GetTriggerTime(uint16 u16ID) const;
 
 private:
 	
