@@ -5,7 +5,6 @@
 
 WarningList::WarningList()
 { 
-	enWarningMode = WrnModeNone;
 	vecWarningStack.clear(); 
 }
 
@@ -62,29 +61,6 @@ void WarningList::AddWarningToStack(WarningView* pView)
 
 }
 
-enum WarningIDs WarningList::GetActiveModeWarningFromStack(uint16 u16Index)
-{
-
-	uint16 u16Counter = u16Index;
-
-	for (uint16 u16 = 0; u16 < vecWarningStack.size(); u16++)
-	{
-		if (vecWarningStack[u16].IsActiveMode(enWarningMode))
-		{
-			if (u16Counter == 0)
-			{
-				return vecWarningStack[u16].GetWarningID();
-			}
-			else{
-				u16Counter--;
-			}
-		}
-		u16++;
-	}
-
-	return NumberOfWarnings;
-}
-
 enum WarningIDs WarningList::GetWarningFromStack(uint16 u16Index)
 {
 	if (vecWarningStack.size() > u16Index)
@@ -94,11 +70,6 @@ enum WarningIDs WarningList::GetWarningFromStack(uint16 u16Index)
 	else{
 		return NumberOfWarnings;
 	}
-}
-
-void WarningList::SetWarningMode(enum WarningMode enMode)
-{
-	enWarningMode = enMode;
 }
 
 

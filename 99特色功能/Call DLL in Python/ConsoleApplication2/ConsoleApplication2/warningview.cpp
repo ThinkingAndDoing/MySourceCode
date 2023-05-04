@@ -16,6 +16,7 @@ WarningView::WarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel)
 	m_u16CurTimespanIndex = 0; //WarningView创建时指向第一个Timespan
 	m_enWarningID = NumberOfWarnings;
 	m_u16TriggerDelay = 0;
+	m_u16Available = 0;
 	m_u16Priority = 0;
     next = pre = NULL;
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
@@ -40,6 +41,7 @@ WarningView::WarningView(const WarningView & oWV)
 	m_u16Priority = oWV.m_u16Priority;
 	m_u16CurTimespanIndex = oWV.m_u16CurTimespanIndex;
 	m_u16TriggerDelay = oWV.m_u16TriggerDelay;
+	m_u16Available = oWV.m_u16Available;
 
 	for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
 	{
@@ -69,6 +71,7 @@ WarningView& WarningView::operator = (const WarningView & oWV)
 	m_u16Priority = oWV.m_u16Priority;
 	m_u16CurTimespanIndex = oWV.m_u16CurTimespanIndex;
 	m_u16TriggerDelay = oWV.m_u16TriggerDelay;
+	m_u16Available = oWV.m_u16Available;
 
 
 	for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
@@ -145,6 +148,7 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oW
 		this->m_boImmediate = oWrnModel.GetImmediate(wrnid) > 0 ? true : false;
 		this->m_boSaveToStack = oWrnModel.GetStack(wrnid) > 0 ? true : false;
 		this->m_u16TriggerDelay = oWrnModel.GetTriggerTime(wrnid);
+		this->m_u16Available = oWrnModel.GetAvailable(wrnid);
 
 		uint16 u16UsageMode = oWrnModel.GetUsageMode(wrnid);
 		uint16 u16Mode = 1;
@@ -291,6 +295,12 @@ uint16 WarningView::GetTriggerDelay(void)
 {
 	return m_u16TriggerDelay;
 }
+
+uint16 WarningView::GetAvailable(void)
+{
+	return m_u16Available;
+}
+
 
 uint16 WarningView::MoveToNextTimespan(void)
 {

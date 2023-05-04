@@ -672,7 +672,6 @@ void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 		if (NULL != poWarningList)
 		{
 			this->poWarningList->ClearAll();
-			this->poWarningList->SetWarningMode(enWM);
 		}
 
 		RefreshWarningQueue();

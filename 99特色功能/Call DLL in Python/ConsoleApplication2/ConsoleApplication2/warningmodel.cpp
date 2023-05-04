@@ -147,3 +147,14 @@ uint16 WarningModel::GetTriggerTime(uint16 u16ID) const
 		return 0;
 	}
 }
+
+uint16 WarningModel::GetAvailable(uint16 u16ID) const
+{
+	if (u16ID < NumberOfWarnings)
+	{
+		return au16WarningAttribute[u16ID][enIndicatorRequest] % 8;
+	}
+	else{
+		return 0;
+	}
+}

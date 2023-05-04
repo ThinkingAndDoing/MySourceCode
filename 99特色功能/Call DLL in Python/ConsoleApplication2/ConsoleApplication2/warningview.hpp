@@ -56,6 +56,8 @@ public:
 
 	uint16 GetTriggerDelay(void);
 
+	uint16 GetAvailable(void);
+
     WarningView* next;
     WarningView* pre;
 	WarningNodeList m_oNewArrivalList;
@@ -72,6 +74,8 @@ private:
 	uint16 m_u16Priority;
 	uint16 m_u16CurTimespanIndex;		//µ±Ç°timespan 
 	uint16 m_u16TriggerDelay;
+	uint16 m_u16Available;
+
 
 	Timespan *m_paTimespan[MAX_TIMESPAN_NUMS];
 

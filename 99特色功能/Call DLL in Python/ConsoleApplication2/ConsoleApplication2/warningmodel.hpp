@@ -49,6 +49,8 @@ public:
 
 	uint16 GetTriggerTime(uint16 u16ID) const;
 
+	uint16 GetAvailable(uint16 u16ID) const;
+
 private:
 	
 	// m_NotiID, m_Prio, m_UserLockTime, m_MinTime, m_diaplayTimeout, m_Immediate, m_Stack, m_Enable, m_IndicatorRequest

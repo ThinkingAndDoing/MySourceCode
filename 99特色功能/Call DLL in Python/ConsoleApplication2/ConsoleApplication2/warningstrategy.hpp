@@ -49,7 +49,7 @@ public:
 	bool ProcessVirtualKey(enum VirtualKey enKey);
 	void RemoveWarningView(enum WarningIDs wrnid);
     uint16 GetActiveWarningID(void);
-	void SetWarningMode(enum WarningMode enWM);
+	virtual void SetWarningMode(enum WarningMode enWM);
 	void CreateNewWarningView(enum WarningIDs wrnid);
 
 
