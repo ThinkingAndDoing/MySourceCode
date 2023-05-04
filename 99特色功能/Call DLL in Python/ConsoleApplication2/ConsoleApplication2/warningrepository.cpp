@@ -15,13 +15,13 @@ WarningRepository::~WarningRepository()
 	lstViewRepository.clear();
 }
 
-stWarningIDList WarningRepository::GetWarningIDListByMode(enum WarningMode enWrnMode)
+stWarningIDList WarningRepository::GetActiveWarningIDList(enum WarningMode enWrnMode, enum Availiable enWrnAvai)
 {
 	stWarningIDList lstWarningID;
 
 	for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
 	{
-		if (it->IsActiveMode(enWrnMode))
+		if (it->IsActiveMode(enWrnMode) && it->IsAvailiable(enWrnAvai))
 		{
 			lstWarningID.push_back(it->GetWarningID());
 		}

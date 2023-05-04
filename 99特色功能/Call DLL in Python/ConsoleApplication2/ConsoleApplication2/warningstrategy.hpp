@@ -50,8 +50,10 @@ public:
 	void RemoveWarningView(enum WarningIDs wrnid);
     uint16 GetActiveWarningID(void);
 	virtual void SetWarningMode(enum WarningMode enWM);
-	void CreateNewWarningView(enum WarningIDs wrnid);
+	virtual void SetAvailiable(enum Availiable enAvai);
 
+protected:
+	void CreateNewWarningView(enum WarningIDs wrnid);
 
 private:
 	void OnTimer(void) override;
@@ -74,6 +76,7 @@ private:
     enum SelectWarningPolicy enSelectWarningPolicy;
     bool boSuspension;
 	enum WarningMode enWarningMode;
+	enum Availiable enAvailiable;
 };
 
 #endif

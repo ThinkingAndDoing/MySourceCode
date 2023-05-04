@@ -104,6 +104,11 @@ void SetWarningMode(int id)
 	poWrnStrategy->SetWarningMode((enum WarningMode)id);
 }
 
+void SetAvailiable(int id)
+{
+	poWrnStrategy->SetAvailiable((enum Availiable)id);
+}
+
 uint16 GetWarningIDFromStack(int id)
 {
 	return (uint16)poWrnStrategy->poWarningList->GetWarningFromStack((uint16)id);
@@ -279,6 +284,24 @@ void verify_triggertime(void)
 	RequestWarning(98);
 }
 
+void verify_availiable(void)
+{
+	SetAvailiable(3);
+
+	RequestWarning(98);
+
+	Sleep(500);
+
+	RequestWarning(99);
+
+	Sleep(500);
+
+	RequestWarning(241);
+
+	SetAvailiable(4);
+
+}
+
 void main(void)
 {
 	init();
@@ -295,7 +318,9 @@ void main(void)
 
 	//verify_suspension_resume();
 
-	verify_triggertime();
+	//verify_triggertime();
+
+	verify_availiable();
 
 	printf("\nOver!\n");
 

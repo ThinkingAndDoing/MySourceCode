@@ -12,6 +12,9 @@
 typedef std::list<enum WarningMode> enWarningModeList;
 typedef std::list<enum WarningMode>::iterator itWarningModeLst;
 
+typedef std::list<enum Availiable> enAvailiableList;
+typedef std::list<enum Availiable>::iterator itAvailiableLst;
+
 
 class WarningModel;
 class Timespan;
@@ -40,6 +43,12 @@ public:
 
 	bool IsActiveMode(enum WarningMode enMode);
 
+	bool IsAvailiable(enum Availiable enAvai);
+
+	void SetWarningModeList(uint16 u16WarningMode);
+
+	void SetAvailiableList(uint16 u16Availiable);
+
 	uint16 GetPriority(void);
 
 	void SetPendingRelease(bool boPendingRel);
@@ -56,8 +65,6 @@ public:
 
 	uint16 GetTriggerDelay(void);
 
-	uint16 GetAvailable(void);
-
     WarningView* next;
     WarningView* pre;
 	WarningNodeList m_oNewArrivalList;
@@ -68,14 +75,13 @@ private:
 	bool m_boImmediate;
 	bool m_boSaveToStack;
 	enWarningModeList m_lstWarningMode;
+	enAvailiableList m_lstAvailiable;
 
 	enum WarningIDs m_enWarningID;
 
 	uint16 m_u16Priority;
 	uint16 m_u16CurTimespanIndex;		//µ±Ç°timespan 
 	uint16 m_u16TriggerDelay;
-	uint16 m_u16Available;
-
 
 	Timespan *m_paTimespan[MAX_TIMESPAN_NUMS];
 

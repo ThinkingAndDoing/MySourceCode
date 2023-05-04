@@ -29,7 +29,7 @@ public:
 
 	void RemoveViewFromRepository(enum WarningIDs enWrnID);
 
-	stWarningIDList GetWarningIDListByMode(enum WarningMode enWrnMode);
+	stWarningIDList GetActiveWarningIDList(enum WarningMode enWrnMode, enum Availiable enWrnAvai);
 
 private:
 

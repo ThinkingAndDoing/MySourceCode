@@ -10,13 +10,13 @@
 WarningView::WarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel)
 {
 	m_lstWarningMode.clear();
+	m_lstAvailiable.clear();
 	m_boImmediate = false;
 	m_boPendingRelease = false;
 	m_boSaveToStack = false;
 	m_u16CurTimespanIndex = 0; //WarningView创建时指向第一个Timespan
 	m_enWarningID = NumberOfWarnings;
 	m_u16TriggerDelay = 0;
-	m_u16Available = 0;
 	m_u16Priority = 0;
     next = pre = NULL;
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
@@ -37,11 +37,11 @@ WarningView::WarningView(const WarningView & oWV)
 	m_boSaveToStack = oWV.m_boSaveToStack;
 
 	m_lstWarningMode = oWV.m_lstWarningMode;
+	m_lstAvailiable = oWV.m_lstAvailiable;
 	m_enWarningID = oWV.m_enWarningID;
 	m_u16Priority = oWV.m_u16Priority;
 	m_u16CurTimespanIndex = oWV.m_u16CurTimespanIndex;
 	m_u16TriggerDelay = oWV.m_u16TriggerDelay;
-	m_u16Available = oWV.m_u16Available;
 
 	for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
 	{
@@ -67,11 +67,11 @@ WarningView& WarningView::operator = (const WarningView & oWV)
 	m_boSaveToStack = oWV.m_boSaveToStack;
 
 	m_lstWarningMode = oWV.m_lstWarningMode;
+	m_lstAvailiable = oWV.m_lstAvailiable;
 	m_enWarningID = oWV.m_enWarningID;
 	m_u16Priority = oWV.m_u16Priority;
 	m_u16CurTimespanIndex = oWV.m_u16CurTimespanIndex;
 	m_u16TriggerDelay = oWV.m_u16TriggerDelay;
-	m_u16Available = oWV.m_u16Available;
 
 
 	for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
@@ -93,6 +93,7 @@ WarningView& WarningView::operator = (const WarningView & oWV)
 WarningView::~WarningView() {
 
 	m_lstWarningMode.clear();
+	m_lstAvailiable.clear();
 
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
     {
@@ -148,19 +149,10 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oW
 		this->m_boImmediate = oWrnModel.GetImmediate(wrnid) > 0 ? true : false;
 		this->m_boSaveToStack = oWrnModel.GetStack(wrnid) > 0 ? true : false;
 		this->m_u16TriggerDelay = oWrnModel.GetTriggerTime(wrnid);
-		this->m_u16Available = oWrnModel.GetAvailable(wrnid);
 
-		uint16 u16UsageMode = oWrnModel.GetUsageMode(wrnid);
-		uint16 u16Mode = 1;
-		while (u16UsageMode != 0)
-		{
-			if (u16UsageMode % 2)
-			{
-				this->m_lstWarningMode.push_back((enum WarningMode)(u16Mode));
-			}
-			u16UsageMode = u16UsageMode / 2;
-			u16Mode++;
-		}
+		this->SetWarningModeList(oWrnModel.GetUsageMode(wrnid));
+
+		this->SetAvailiableList(oWrnModel.GetAvailable(wrnid));
 
 		//(int st, int et, enum WarningAction onRel, enum WarningAction oe, enum WarningAction onHighPro, enum WarningAction onSamePro);
 		if (oWrnModel.GetMinDispTime(wrnid) > oWrnModel.GetUserLockTime(wrnid))
@@ -266,6 +258,78 @@ bool WarningView::IsActiveMode(enum WarningMode enMode)
 	return boRet;
 }
 
+bool WarningView::IsAvailiable(enum Availiable enAvai)
+{
+	bool boRet = false;
+
+	for (itAvailiableLst it = m_lstAvailiable.begin(); it != m_lstAvailiable.end(); ++it)
+	{
+		if (enAvai == *it)
+		{
+			boRet = true;
+			break;
+		}
+	}
+	return boRet;
+}
+
+void WarningView::SetWarningModeList(uint16 u16WarningMode)
+{
+	uint16 u16Mode = 1;
+
+	while (u16WarningMode != 0)
+	{
+		if (u16WarningMode % 2)
+		{
+			this->m_lstWarningMode.push_back((enum WarningMode)(u16Mode));
+		}
+		u16WarningMode = u16WarningMode / 2;
+		u16Mode++;
+	}
+}
+
+void WarningView::SetAvailiableList(uint16 u16Availiable)
+{
+	switch (u16Availiable)
+	{
+	case 1:
+		this->m_lstAvailiable.push_back(Mode1);
+		this->m_lstAvailiable.push_back(Stale);
+		break;
+	case 2:
+		this->m_lstAvailiable.push_back(Mode1);
+		this->m_lstAvailiable.push_back(Mode2);
+		this->m_lstAvailiable.push_back(Stale);
+		break;
+	case 3:
+		this->m_lstAvailiable.push_back(Mode1);
+		this->m_lstAvailiable.push_back(Mode3);
+		this->m_lstAvailiable.push_back(Stale);
+		break;
+	case 4:
+		this->m_lstAvailiable.push_back(Mode2);
+		this->m_lstAvailiable.push_back(Stale);
+		break;
+	case 5:
+		this->m_lstAvailiable.push_back(Mode2);
+		this->m_lstAvailiable.push_back(Mode3);
+		this->m_lstAvailiable.push_back(Stale);
+		break;
+	case 6:
+		this->m_lstAvailiable.push_back(Mode3);
+		this->m_lstAvailiable.push_back(Stale);
+		break;
+	case 7:
+		this->m_lstAvailiable.push_back(Mode1);
+		this->m_lstAvailiable.push_back(Mode2);
+		this->m_lstAvailiable.push_back(Mode3);
+		this->m_lstAvailiable.push_back(Stale);
+		break;
+
+	default:
+		break;
+	}
+}
 uint16 WarningView::GetPriority(void)
 {
 	return m_u16Priority;
@@ -295,12 +359,6 @@ uint16 WarningView::GetTriggerDelay(void)
 {
 	return m_u16TriggerDelay;
 }
-
-uint16 WarningView::GetAvailable(void)
-{
-	return m_u16Available;
-}
-
 
 uint16 WarningView::MoveToNextTimespan(void)
 {

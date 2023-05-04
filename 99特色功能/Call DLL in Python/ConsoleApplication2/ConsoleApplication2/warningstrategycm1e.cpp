@@ -2,7 +2,6 @@
 #include "warningstrategycm1e.hpp"
 #include "warningmodel.hpp"
 
-
 void WarningStrategyCM1E::TimeTick(void)
 {
 	WarningStrategy::TimeTick();
@@ -50,3 +49,4 @@ void WarningStrategyCM1E::RequestWarning(enum WarningIDs wrnid)
 	}
 	
 }
+

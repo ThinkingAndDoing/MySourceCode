@@ -410,7 +410,7 @@ void WarningStrategy::RefreshWarningQueue(void)
 
 	if (NULL != poWarningRepo)
 	{
-		stWarningIDList lstWarningID = poWarningRepo->GetWarningIDListByMode(enWarningMode);
+		stWarningIDList lstWarningID = poWarningRepo->GetActiveWarningIDList(enWarningMode, enAvailiable);
 		for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); ++it)
 		{
 			CreateNewWarningView(*it);
@@ -542,7 +542,7 @@ void WarningStrategy::CreateNewWarningView(enum WarningIDs wrnid)
 			poWarningRepo->AddViewToRepository(*pView);
 		}
 
-		if (pView->IsActiveMode(enWarningMode))
+		if (pView->IsActiveMode(enWarningMode) && pView->IsAvailiable(enAvailiable))
 		{
 			if (AddNewWarningView(pView) == false)
 			{
@@ -670,6 +670,21 @@ void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 		this->enWarningMode = enWM;
 
 		if (NULL != poWarningList)
+		{
+			this->poWarningList->ClearAll();
+		}
+
+		RefreshWarningQueue();
+	}
+}
+
+void WarningStrategy::SetAvailiable(enum Availiable enAvai)
+{
+	if (this->enAvailiable != enAvai)
+	{
+		this->enAvailiable = enAvai;
+
+		if (NULL != this->poWarningList)
 		{
 			this->poWarningList->ClearAll();
 		}
