@@ -11,27 +11,28 @@
 
 WarningStrategy::WarningStrategy()
 {
-    pHead = NULL;
-    pCurrent = NULL;
-	boSuspension = false;
-    enAddWarningPolicy = AddWarningByPriority;
-    enSelectWarningPolicy = SelectNext;
-	enWarningMode = WrnModeNone;
+    m_poHead = NULL;
+    m_poCurrent = NULL;
+	m_boSuspension = false;
+    m_enAddWarningPolicy = AddWarningByPriority;
+    m_enSelectWarningPolicy = SelectNext;
+	m_enWarningMode = Abandoned;
+	m_enAvailiable = OFF;
 
-	poWarningRepo = new WarningRepository();
-	if (NULL == poWarningRepo)
+	m_poWarningRepo = new WarningRepository();
+	if (NULL == m_poWarningRepo)
 	{
 		printf("unable to satisfy request for memory\n");
 	}
 
-	poWarningList = new WarningList();
-	if (NULL == poWarningList)
+	m_poWarningList = new WarningList();
+	if (NULL == m_poWarningList)
 	{
 		printf("unable to satisfy request for memory\n");
 	}
 
-	poWarningModel = new WarningModel();
-	if (NULL == poWarningModel)
+	m_poWarningModel = new WarningModel();
+	if (NULL == m_poWarningModel)
 	{
 		printf("unable to satisfy request for memory\n");
 	}
@@ -40,27 +41,27 @@ WarningStrategy::WarningStrategy()
 
 WarningStrategy::WarningStrategy(const WarningStrategy & oWS)
 {
-	pHead = NULL;
-	pCurrent = NULL;
-	enAddWarningPolicy = oWS.enAddWarningPolicy;
-	enSelectWarningPolicy = oWS.enSelectWarningPolicy;
-	boSuspension = oWS.boSuspension;
-	enWarningMode = oWS.enWarningMode;
+	m_poHead = NULL;
+	m_poCurrent = NULL;
+	m_enAddWarningPolicy = oWS.m_enAddWarningPolicy;
+	m_enSelectWarningPolicy = oWS.m_enSelectWarningPolicy;
+	m_boSuspension = oWS.m_boSuspension;
+	m_enWarningMode = oWS.m_enWarningMode;
 
-	poWarningRepo = new WarningRepository();
-	if (NULL == poWarningRepo)
+	m_poWarningRepo = new WarningRepository();
+	if (NULL == m_poWarningRepo)
 	{
 		printf("unable to satisfy request for memory\n");
 	}
 
-	poWarningList = new WarningList();
-	if (NULL == poWarningList)
+	m_poWarningList = new WarningList();
+	if (NULL == m_poWarningList)
 	{
 		printf("unable to satisfy request for memory\n");
 	}
 
-	poWarningModel = new WarningModel();
-	if (NULL == poWarningModel)
+	m_poWarningModel = new WarningModel();
+	if (NULL == m_poWarningModel)
 	{
 		printf("unable to satisfy request for memory\n");
 	}
@@ -69,16 +70,16 @@ WarningStrategy::WarningStrategy(const WarningStrategy & oWS)
 
 WarningStrategy::~WarningStrategy()
 {
-	boSuspension = false;
-	enAddWarningPolicy = AddWarningByPriority;
-	enSelectWarningPolicy = SelectNext;
+	m_boSuspension = false;
+	m_enAddWarningPolicy = AddWarningByPriority;
+	m_enSelectWarningPolicy = SelectNext;
 
 	Deinitialize();
 }
 
 void WarningStrategy::Deinitialize()
 {
-	WarningView *poWV = pHead;
+	WarningView *poWV = m_poHead;
 	WarningView *poPendingReleased = NULL;
 
 	while (NULL != poWV)
@@ -88,23 +89,23 @@ void WarningStrategy::Deinitialize()
 		delete poPendingReleased;
 	}
 
-	pHead = NULL;
-	pCurrent = NULL;
+	m_poHead = NULL;
+	m_poCurrent = NULL;
 
-	if (NULL != poWarningRepo)
+	if (NULL != m_poWarningRepo)
 	{
-		delete poWarningRepo;
-		poWarningRepo = NULL;
+		delete m_poWarningRepo;
+		m_poWarningRepo = NULL;
 	}
-	if (NULL != poWarningList)
+	if (NULL != m_poWarningRepo)
 	{
-		delete poWarningList;
-		poWarningList = NULL;
+		delete m_poWarningRepo;
+		m_poWarningRepo = NULL;
 	}
-	if (NULL != poWarningModel)
+	if (NULL != m_poWarningModel)
 	{
-		delete poWarningModel;
-		poWarningModel = NULL;
+		delete m_poWarningModel;
+		m_poWarningModel = NULL;
 	}
 }
 
@@ -120,47 +121,47 @@ void WarningStrategy::TimeTick(void)
  */
 bool WarningStrategy::InsertPriority(WarningView *pNode)
 {
-    WarningView* p = pHead;
+    WarningView* poWrnView = m_poHead;
 
-    if (NULL == p)
+    if (NULL == poWrnView)
     {
         // add node to head
-        pHead = pNode;
+        m_poHead = pNode;
         pNode->next = NULL;
         pNode->pre = NULL;
         return true;
     }
 
-	//If new warning's priority is lower than the priority of p, continue to search the insertion position towards the back of the Double Linked List.
-    while (p->GetPriority() > pNode->GetPriority())
+	//If new warning's priority is lower than the priority of poWrnView, continue to search the insertion position towards the back of the Double Linked List.
+    while (poWrnView->GetPriority() > pNode->GetPriority())
     {
-        if (NULL != p->next)
+        if (NULL != poWrnView->next)
         {
-            p = p->next;
+            poWrnView = poWrnView->next;
         }
         else{
             // add node to the tail.
-            p->next = pNode;
-            pNode->pre = p;
+            poWrnView->next = pNode;
+            pNode->pre = poWrnView;
             pNode->next = NULL;
             return true;
         }
     }
 
     //新报警pNode加入到链表头部
-    if (NULL == p->pre)         
+    if (NULL == poWrnView->pre)         
     {
-        p->pre = pNode;
+        poWrnView->pre = pNode;
         pNode->pre = NULL;
-        pNode->next = p;
-        pHead = pNode;
+        pNode->next = poWrnView;
+        m_poHead = pNode;
     }
     else{           
         //新报警pNode加入到找到的位置的前面
-        p->pre->next = pNode;
-        pNode->pre = p->pre;
-        pNode->next = p;
-        p->pre = pNode;
+        poWrnView->pre->next = pNode;
+        pNode->pre = poWrnView->pre;
+        pNode->next = poWrnView;
+        poWrnView->pre = pNode;
     }
     return true;
 }
@@ -168,77 +169,59 @@ bool WarningStrategy::InsertPriority(WarningView *pNode)
 
 void WarningStrategy::ReleaseCurrentShowNew(WarningView *pNewView)
 {
-	enum WarningIDs toBeRemovedID = NumberOfWarnings;
+	enum WarningIDs enPendingRemove = NumberOfWarnings;
 
-    if(NULL != pCurrent)
+    if(NULL != m_poCurrent)
     {
-		toBeRemovedID = pCurrent->GetWarningID();
+		enPendingRemove = m_poCurrent->GetWarningID();
     }
 
     UpdateCurrentWarning(pNewView);
-	RemoveViewFromQueue(toBeRemovedID);
+	RemoveFromLinkList(enPendingRemove);
 }
 
 /*
  * Remove warning view from the Double Linked List by the WarningID.
  */
-bool WarningStrategy::RemoveViewFromQueue(enum WarningIDs wrnid)
+bool WarningStrategy::RemoveFromLinkList(enum WarningIDs enWrnID)
 {
-    WarningView *p = pHead;
+    WarningView *poWrnView = m_poHead;
 
-	while (NULL != p && p->GetWarningID() != wrnid)
-        p = p->next;
+	bool boIsRemoved = false;
 
-    if (NULL == p)
-    {
-        return false;
-    }
-    else
-    {
-        // remove the only one from warning strategy
-        if (NULL == p->pre && NULL == p->next) 
-        {
-            pHead = NULL; 
-        } 
-        // remove the warning view from head
-        else if (NULL == p->pre) 
-        {
-            pHead = p->next;
-            p->next->pre = NULL;
-        }
-        // remove the warning view from tail
-        else if (NULL == p->next) 
-        {
-            p->pre->next = NULL;
-        }
-        else{
-            p->pre->next = p->next;
-            p->next->pre = p->pre;
-        }
-        delete p;
-        return true;
-    }
-}
-
-/*
- * The WarningID of warningview should be unique in warningstrategy, or else new warningview won't be added to warningstrategy
- */
-bool WarningStrategy::HasSameWarningInQueue(enum WarningIDs enWrnID)
-{
-	WarningView *p = pHead;
-	while (NULL != p && p->GetWarningID() != enWrnID)
-		p = p->next;
-
-	
-	if (NULL != p)
+	while (NULL != poWrnView)
 	{
-		p->SetPendingRelease(false);   //重新触发后，报警的m_boPendingRelease状态需要设置为false
-		return true;
+		if (poWrnView->GetWarningID() == enWrnID)
+		{
+			// remove the only one from warning strategy
+			if (NULL == poWrnView->pre && NULL == poWrnView->next)
+			{
+				m_poHead = NULL;
+			}
+			// remove the warning view from head
+			else if (NULL == poWrnView->pre)
+			{
+				m_poHead = poWrnView->next;
+				poWrnView->next->pre = NULL;
+			}
+			// remove the warning view from tail
+			else if (NULL == poWrnView->next)
+			{
+				poWrnView->pre->next = NULL;
+			}
+			else{
+				poWrnView->pre->next = poWrnView->next;
+				poWrnView->next->pre = poWrnView->pre;
+			}
+			delete poWrnView;
+			boIsRemoved = true;
+
+			break;
+		}
+		poWrnView = poWrnView->next;
 	}
-	else
-	{
-		return false;
-	}
+
+	return boIsRemoved;
 }
 
 /*
@@ -246,16 +229,16 @@ bool WarningStrategy::HasSameWarningInQueue(enum WarningIDs enWrnID)
  */
 void WarningStrategy::WarningPrioArbitrate(WarningView * pNewView)
 {
-	if (NULL == pCurrent)
+	if (NULL == m_poCurrent)
 	{
 		UpdateCurrentWarning(pNewView);
 	}
 	else{
 
-		switch (pCurrent->GetActionOnNewWarningComing(pNewView))
+		switch (m_poCurrent->GetActionOnNewWarningComing(pNewView))
 		{
 		case WBDisplace:
-			if (pCurrent->HasPendingRelease() == true)
+			if (m_poCurrent->HasPendingRelease() == true)
 			{
 				ReleaseCurrentShowNew(pNewView);
 			}
@@ -268,7 +251,7 @@ void WarningStrategy::WarningPrioArbitrate(WarningView * pNewView)
 		case WBIgnore:
 		{
 			WarningNode stNewArrivalTemp(pNewView->GetWarningID(), pNewView->GetPriority(), pNewView->GetTriggerDelay());
-			pCurrent->m_oNewArrivalList.AddNewNodeToList(stNewArrivalTemp);          //值传递，STL list自带内存管理
+			m_poCurrent->m_oNewArrivalList.AddNewNodeToList(stNewArrivalTemp);          //值传递，STL list自带内存管理
 		}
 		break;
 
@@ -290,28 +273,35 @@ void WarningStrategy::WarningPrioArbitrate(WarningView * pNewView)
 
 
 /*
- * 新增报警处理
+ * Add new warning
  */
 bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
 {
-    if (NULL == pNewView)
+	WarningView * poWrnView = NULL;
+
+	bool boIsAdded = false;
+
+    if (NULL != pNewView)
     {
-        return false;
-    }
+		poWrnView = GetWarningViewByID(pNewView->GetWarningID());
 
-	if (HasSameWarningInQueue(pNewView->GetWarningID()) == true)
-	{
-		return false;
+		if (poWrnView == NULL)
+		{
+			InsertPriority(pNewView);
+
+			if (this->m_boSuspension == false)
+			{
+				WarningPrioArbitrate(pNewView);
+			}
+
+			boIsAdded = true;
+		}
+		else
+		{
+			poWrnView->SetPendingRelease(false);   // After retriggering, the boPendingRelease should be set to false
+		}
 	}
-
-    InsertPriority(pNewView);
-
-	if (this->boSuspension == false)
-	{
-		WarningPrioArbitrate(pNewView);
-	}
-
-    return true;
+	return boIsAdded;
 }
 
 /*
@@ -320,23 +310,23 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
 void WarningStrategy::UpdateCurrentWarning(WarningView * poNew)
 {
     // 停止之前 WarningView 的 Timespan 的 Timer，并且WarningView重新指向第一个Timespan
-    if (NULL != pCurrent) 
+    if (NULL != m_poCurrent) 
     {
-		pCurrent->Deactivate();
+		m_poCurrent->Deactivate();
 		TimerStop();
     }
 
-	if (NULL != pCurrent && pCurrent != poNew)
+	if (NULL != m_poCurrent && m_poCurrent != poNew)
     {
-		pCurrent->m_oNewArrivalList.ClearAll();
+		m_poCurrent->m_oNewArrivalList.ClearAll();
     }
 
-	pCurrent = poNew;
+	m_poCurrent = poNew;
 
     // 如果队列中有报警，激活当前报警
-	if (NULL != pCurrent && this->boSuspension == false)
+	if (NULL != m_poCurrent && this->m_boSuspension == false)
     {
-		uint16 u16FirstDuration = pCurrent->Activate();
+		uint16 u16FirstDuration = m_poCurrent->Activate();
 		TimerStart(u16FirstDuration);
     }
 }
@@ -350,25 +340,25 @@ void WarningStrategy::SelectNextView(enum SelectWarningPolicy selectpolicy)
     {
 
     case SelectPrevious:
-        if (NULL != pCurrent){
-            if (NULL != pCurrent->pre)
+        if (NULL != m_poCurrent){
+            if (NULL != m_poCurrent->pre)
             {
-                UpdateCurrentWarning(pCurrent->pre);
+                UpdateCurrentWarning(m_poCurrent->pre);
             }
             else{
-				UpdateCurrentWarning(GetLastWarningOfQueue());
+				UpdateCurrentWarning(GetLastFromLinkList());
             }
         }
         break;
 
     case SelectNext:
-        if (NULL != pCurrent){
-            if (NULL != pCurrent->next)
+        if (NULL != m_poCurrent){
+            if (NULL != m_poCurrent->next)
             {
-                UpdateCurrentWarning(pCurrent->next);
+                UpdateCurrentWarning(m_poCurrent->next);
             }
             else{
-                UpdateCurrentWarning(pHead);
+                UpdateCurrentWarning(m_poHead);
             }
         }
         break;
@@ -383,34 +373,34 @@ void WarningStrategy::SelectNextView(enum SelectWarningPolicy selectpolicy)
 }
 
 /*
- * Release all warnings from queue and add all warnings whose warningmode is enWarningMode to queue.
+ * Release all warnings from queue and add all warnings whose warningmode is m_enWarningMode to queue.
  */
-void WarningStrategy::RefreshWarningQueue(void)
+void WarningStrategy::RefreshLinkList(void)
 {
-	WarningView *poView = pHead; 
+	WarningView *poView = m_poHead; 
 
 	// release all warnings except current warning
 	while (NULL != poView)
 	{
-		if (pCurrent != poView)
+		if (m_poCurrent != poView)
 		{
-			enum WarningIDs toBeRemovedID = poView->GetWarningID();
+			enum WarningIDs enPendingRemove = poView->GetWarningID();
 			poView = poView->next;
-			RemoveWarningView(toBeRemovedID);
+			RemoveWarningView(enPendingRemove);
 		}
 		else{
 			poView = poView->next;
 		}
 	}
 	// release current warning
-	if (NULL != pCurrent)
+	if (NULL != m_poCurrent)
 	{
-		ReleaseWarning(pCurrent->GetWarningID());
+		ReleaseWarningView(m_poCurrent->GetWarningID());
 	}
 
-	if (NULL != poWarningRepo)
+	if (NULL != m_poWarningRepo)
 	{
-		stWarningIDList lstWarningID = poWarningRepo->GetActiveWarningIDList(enWarningMode, enAvailiable);
+		stWarningIDList lstWarningID = m_poWarningRepo->GetActiveWarningIDList(m_enWarningMode, m_enAvailiable);
 		for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); ++it)
 		{
 			CreateNewWarningView(*it);
@@ -420,77 +410,62 @@ void WarningStrategy::RefreshWarningQueue(void)
 
 
 
-WarningView* WarningStrategy::GetLastWarningOfQueue(void)
+WarningView* WarningStrategy::GetLastFromLinkList(void)
 {
-    WarningView *p = pHead;
+    WarningView *poWrnView = m_poHead;
 
-    if (NULL == p){
-        return p;
+    if (NULL != poWrnView){
+
+		while (NULL != poWrnView->next)
+		{
+			poWrnView = poWrnView->next;
+		}
     }
-
-    while (NULL != p->next)
-        p = p->next;
-
-    return p;
+    
+	return poWrnView;
 }
 
 /*
- * 获取链表中所有报警的个数
+ * Get the number of warning view in the linked list
  */
 uint16 WarningStrategy::GetNumberOfWarningView(void)
 {
-    WarningView *p = pHead;
-    uint16 number = 0;
+    WarningView *poWrnView = m_poHead;
+    uint16 u16Num = 0;
 
-    while (NULL != p)
+	while (NULL != poWrnView)
     {
-        p = p->next;
-        number++;
+		u16Num ++;
+		poWrnView = poWrnView->next;
     }
 
-    return number;
+	return u16Num;
 }
 
-void WarningStrategy::ForceReleaseWarning(enum WarningIDs wrnid)
+void WarningStrategy::ReleaseWarningView(enum WarningIDs enWrnID)
 {
-	RemoveWarningView(wrnid);
-
-	if (NULL != poWarningList)
+	if (NULL != m_poCurrent && NULL != GetWarningViewByID(enWrnID))
 	{
-		poWarningList->RemoveWarningFromStack(wrnid);
-	}
-
-	if (NULL != poWarningRepo)
-	{
-		poWarningRepo->RemoveViewFromRepository(wrnid);
-	}
-}
-
-void WarningStrategy::ReleaseWarning(enum WarningIDs wrnid)
-{
-
-	if (NULL != pCurrent && NULL != GetWarningViewByID(wrnid))
-	{
-		if (pCurrent->GetWarningID() == wrnid && this->boSuspension == false)
+		if (m_poCurrent->GetWarningID() == enWrnID && this->m_boSuspension == false)
 		{
-			switch (pCurrent->GetCurrentTimespan()->GetOnRelease())
+			switch (m_poCurrent->GetCurrentTimespan()->GetOnRelease())
 			{
 			case WBRelease:
-				RemoveWarningView(wrnid);
+				RemoveWarningView(enWrnID);
 				break;
 
 			case WBIgnore:
-				pCurrent->SetPendingRelease(true);
+				m_poCurrent->SetPendingRelease(true);
 				break;
 
 			case WBDisplace:
 				if (GetNumberOfWarningView() == 1)
 				{
-					boSuspension = true;
+					m_boSuspension = true;
 				}
 				else
 				{
-					SelectNextView(enSelectWarningPolicy);
+					SelectNextView(m_enSelectWarningPolicy);
 				}
 				break;
 
@@ -498,36 +473,57 @@ void WarningStrategy::ReleaseWarning(enum WarningIDs wrnid)
 				break;
 
 			default:
-				RemoveWarningView(wrnid);
+				RemoveWarningView(enWrnID);
 				break;
 
 			}
 		}
 		else{
-			RemoveWarningView(wrnid);
+			RemoveWarningView(enWrnID);
 		}
 
 	}
+}
 
-	if (NULL != poWarningList)
+void WarningStrategy::ForceReleaseWarning(enum WarningIDs enWrnID)
+{
+	RemoveWarningView(enWrnID);
+
+	if (NULL != m_poWarningList)
 	{
-		poWarningList->RemoveWarningFromStack(wrnid);
+		m_poWarningList->RemoveWarningFromStack(enWrnID);
 	}
 
-	if (NULL != poWarningRepo)
+	if (NULL != m_poWarningRepo)
 	{
-		poWarningRepo->RemoveViewFromRepository(wrnid);
+		m_poWarningRepo->RemoveViewFromRepository(enWrnID);
 	}
 }
 
-void WarningStrategy::RequestWarning(enum WarningIDs wrnid)
+void WarningStrategy::ReleaseWarning(enum WarningIDs enWrnID)
 {
-	CreateNewWarningView(wrnid);
+
+	ReleaseWarningView(enWrnID);
+
+	if (NULL != m_poWarningList)
+	{
+		m_poWarningList->RemoveWarningFromStack(enWrnID);
+	}
+
+	if (NULL != m_poWarningRepo)
+	{
+		m_poWarningRepo->RemoveViewFromRepository(enWrnID);
+	}
 }
 
-void WarningStrategy::CreateNewWarningView(enum WarningIDs wrnid)
+void WarningStrategy::RequestWarning(enum WarningIDs enWrnID)
 {
-	WarningView *pView = new WarningView(wrnid, *poWarningModel);
+	CreateNewWarningView(enWrnID);
+}
+
+void WarningStrategy::CreateNewWarningView(enum WarningIDs enWrnID)
+{
+	WarningView *pView = new WarningView(enWrnID, *m_poWarningModel);
 
 	if (NULL == pView)
 	{
@@ -537,12 +533,12 @@ void WarningStrategy::CreateNewWarningView(enum WarningIDs wrnid)
 
 	if (pView->GetWarningID() != NumberOfWarnings)
 	{
-		if (NULL != poWarningRepo)
+		if (NULL != m_poWarningRepo)
 		{
-			poWarningRepo->AddViewToRepository(*pView);
+			m_poWarningRepo->AddViewToRepository(*pView);
 		}
 
-		if (pView->IsActiveMode(enWarningMode) && pView->IsAvailiable(enAvailiable))
+		if (pView->IsActiveMode(m_enWarningMode) && pView->IsAvailiable(m_enAvailiable))
 		{
 			if (AddNewWarningView(pView) == false)
 			{
@@ -559,15 +555,15 @@ void WarningStrategy::CreateNewWarningView(enum WarningIDs wrnid)
 
 void WarningStrategy::Suspension(void)
 {
-	if (this->boSuspension == false)
+	if (this->m_boSuspension == false)
 	{
-		this->boSuspension = true;
+		this->m_boSuspension = true;
 
-		if (NULL != pCurrent)
+		if (NULL != m_poCurrent)
 		{
-			if (pCurrent->HasPendingRelease())
+			if (m_poCurrent->HasPendingRelease())
 			{
-				RemoveWarningView(pCurrent->GetWarningID());
+				RemoveWarningView(m_poCurrent->GetWarningID());
 			}
 		}
 	}
@@ -575,22 +571,22 @@ void WarningStrategy::Suspension(void)
 
 void WarningStrategy::Resume(void)
 {
-	if (this->boSuspension == true)
+	if (this->m_boSuspension == true)
 	{
-		this->boSuspension = false;
-		UpdateCurrentWarning(pHead);
+		this->m_boSuspension = false;
+		UpdateCurrentWarning(m_poHead);
 	}
 }
 
 bool WarningStrategy::ProcessVirtualKey(enum VirtualKey enKey)
 {
-	if (NULL != pCurrent)
+	if (NULL != m_poCurrent)
 	{
 		enum WarningAction enAction = WBInvalid;
 
-		if (NULL != pCurrent->GetCurrentTimespan())
+		if (NULL != m_poCurrent->GetCurrentTimespan())
 		{
-			enAction = pCurrent->GetCurrentTimespan()->m_oAcknowledge.GetActionByKey(enKey);
+			enAction = m_poCurrent->GetCurrentTimespan()->m_oAcknowledge.GetActionByKey(enKey);
 		}
 
 		switch (enAction)
@@ -600,11 +596,11 @@ bool WarningStrategy::ProcessVirtualKey(enum VirtualKey enKey)
 			return false;
 
 		case WBRelease:
-			if (NULL != poWarningList)
+			if (NULL != m_poWarningList)
 			{
-				poWarningList->AddWarningToStack(pCurrent);
+				m_poWarningList->AddWarningToStack(*m_poCurrent);
 			}
-			RemoveWarningView(pCurrent->GetWarningID());
+			RemoveWarningView(m_poCurrent->GetWarningID());
 			return true;
 
 		case WBInvalid:
@@ -617,30 +613,25 @@ bool WarningStrategy::ProcessVirtualKey(enum VirtualKey enKey)
 	return false;
 }
 
-void WarningStrategy::RemoveWarningView(enum WarningIDs wrnid)
+void WarningStrategy::RemoveWarningView(enum WarningIDs enWrnID)
 {
-    if (NULL != pCurrent)
+	if (NULL != m_poCurrent)
     {
-        //如果释放当前活跃的报警，就需要先切换到下一个
-		if (pCurrent->GetWarningID() == wrnid)
+		if (m_poCurrent->GetWarningID() == enWrnID)
         {
-            SelectNextView(enSelectWarningPolicy);
-
-            /* 
-			 * 若切换到下一个报警后，报警ID未变，表明链表中只有一个报警
-			 * Only one warningview is in warningstrategy and the one will be released.
-             */
-			if (pCurrent->GetWarningID() == wrnid)
-            {
-                UpdateCurrentWarning(NULL);
-            }
+			if (GetNumberOfWarningView() == 1)
+			{
+				UpdateCurrentWarning(NULL); // Only one warningview is in warningstrategy and the one will be released.
+			}
+			else{
+				SelectNextView(m_enSelectWarningPolicy);
+			}
         }
         else{
-			pCurrent->m_oNewArrivalList.RemoveNodeFromList(wrnid);
+			m_poCurrent->m_oNewArrivalList.RemoveNodeFromList(enWrnID);
         }
 
-        //
-		RemoveViewFromQueue(wrnid);
+		RemoveFromLinkList(enWrnID);
     }
 }
 
@@ -649,83 +640,88 @@ void WarningStrategy::RemoveWarningView(enum WarningIDs wrnid)
  */
 uint16 WarningStrategy::GetActiveWarningID(void)
 {
-	if (NULL == pCurrent || this->boSuspension == true)
+	if (NULL == m_poCurrent || this->m_boSuspension == true)
     {
 		return (uint16)NumberOfWarnings;
     }
     else{
-		return (uint16)pCurrent->GetWarningID();
+		return (uint16)m_poCurrent->GetWarningID();
     }
 }
 
-
+#ifdef DISABLE_WARNING_MODE
 void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 {
-#ifdef DISABLE_WARNING_MODE
-	return;
+}
+#else
+void WarningStrategy::SetWarningMode(enum WarningMode enWM)
+{
+	if (this->m_enWarningMode != enWM)
+	{
+		this->m_enWarningMode = enWM;
+
+		if (NULL != m_poWarningList)
+		{
+			this->m_poWarningList->ClearAll();
+		}
+
+		RefreshLinkList();
+	}
+}
 #endif
 
-	if (this->enWarningMode != enWM)
-	{
-		this->enWarningMode = enWM;
-
-		if (NULL != poWarningList)
-		{
-			this->poWarningList->ClearAll();
-		}
-
-		RefreshWarningQueue();
-	}
-}
-
+#ifdef DISABLE_WARNING_AVAILIABLE
 void WarningStrategy::SetAvailiable(enum Availiable enAvai)
 {
-	if (this->enAvailiable != enAvai)
+}
+#else
+void WarningStrategy::SetAvailiable(enum Availiable enAvai)
+{
+	if (this->m_enAvailiable != enAvai)
 	{
-		this->enAvailiable = enAvai;
+		this->m_enAvailiable = enAvai;
 
-		if (NULL != this->poWarningList)
+		if (NULL != this->m_poWarningList)
 		{
-			this->poWarningList->ClearAll();
+			this->m_poWarningList->ClearAll();
 		}
 
-		RefreshWarningQueue();
+		RefreshLinkList();
 	}
 }
-
+#endif
 
 /*
  * 根据WarningID获取对应的WarningView
  */
-WarningView* WarningStrategy::GetWarningViewByID(enum WarningIDs wrnid)
+WarningView* WarningStrategy::GetWarningViewByID(enum WarningIDs enWrnID)
 {
-    WarningView* p = pHead, *pWV = NULL;
+	WarningView *poWrnView = m_poHead;
 
-    while (NULL != p)
-    {
-		if (p->GetWarningID() == wrnid)
-        {
-            pWV = p;
-            break;
-        }
-        else
-            p = p->next;
-    }
+	while (NULL != poWrnView)
+	{
+		if (poWrnView->GetWarningID() == enWrnID)
+		{
+			break;
+		}
+		poWrnView = poWrnView->next;
+	}
 
-    return pWV;
+	return poWrnView;
 }
 
 
 /*
  * 获取指向新来报警中优先级最高的WarningView的指针
  */
-WarningView* WarningStrategy::GetFirstViewOfArrivalQueue(void)
+WarningView* WarningStrategy::GetFirstViewOfArrivalList(void)
 {
     WarningView *pNewView = NULL;
 
-    if(pCurrent != NULL)
+    if(m_poCurrent != NULL)
     {
-		enum WarningIDs enWrnID = pCurrent->m_oNewArrivalList.GetWarningIDOfFirstNode();
+		enum WarningIDs enWrnID = m_poCurrent->m_oNewArrivalList.GetWarningIDOfFirstNode();
+
 		if (NumberOfWarnings != enWrnID)
         {
 			pNewView = GetWarningViewByID(enWrnID);
@@ -742,71 +738,71 @@ void WarningStrategy::OnTimer(void)
 {
 	TimerStop();
 
-	if (NULL == pCurrent)
+	if (NULL == m_poCurrent)
 	{
 		return;
 	}
 
-	if (NULL == pCurrent->GetCurrentTimespan())
+	if (NULL == m_poCurrent->GetCurrentTimespan())
 	{
 		return;
 	}
 
-	//printf("The %u th timespan of WarningID=%d \n\n\n", pCurrent->GetCurrentTimespanIndex(), pCurrent->GetWarningID());
-	switch (pCurrent->GetCurrentTimespan()->GetOnEnd())
+	//printf("The %u th timespan of WarningID=%d \n\n\n", m_poCurrent->GetCurrentTimespanIndex(), m_poCurrent->GetWarningID());
+	switch (m_poCurrent->GetCurrentTimespan()->GetOnEnd())
 	{
 	case WBRelease:
-		if (NULL != poWarningList)
+		if (NULL != m_poWarningList)
 		{
-			poWarningList->AddWarningToStack(pCurrent);
+			m_poWarningList->AddWarningToStack(*m_poCurrent);
 		}
-		RemoveWarningView(pCurrent->GetWarningID());
+		RemoveWarningView(m_poCurrent->GetWarningID());
 		break;
 
 	case WBIgnore:
 		//当前timespan可能有被打断或者取消的标志
-		if (NULL != pCurrent->GetNextTimespan())  //下一个timespan存在
+		if (NULL != m_poCurrent->GetNextTimespan())  //下一个timespan存在
 		{
-			if (pCurrent->HasPendingRelease())
+			if (m_poCurrent->HasPendingRelease())
 			{
-				if (pCurrent->HasNewInNextTimespan())  //下一个timespan允许打断 && 有新来高优先级报警？
+				if (m_poCurrent->HasNewInNextTimespan())  //下一个timespan允许打断 && 有新来高优先级报警？
 				{
 					//release current and show new
-					ReleaseCurrentShowNew(GetFirstViewOfArrivalQueue());
+					ReleaseCurrentShowNew(GetFirstViewOfArrivalList());
 				}
 				else
 				{
-					if (pCurrent->GetNextTimespan()->GetOnRelease() == WBRelease)
+					if (m_poCurrent->GetNextTimespan()->GetOnRelease() == WBRelease)
 					{
 						//release current and show next
-						RemoveWarningView(pCurrent->GetWarningID());
+						RemoveWarningView(m_poCurrent->GetWarningID());
 					}
 					else
 					{
 						//show current and timespan++
-						uint16 u16NextDuration = pCurrent->MoveToNextTimespan();
+						uint16 u16NextDuration = m_poCurrent->MoveToNextTimespan();
 						TimerStart(u16NextDuration);
 					}
 				}
 			}
 			else
 			{
-				if (pCurrent->HasNewInNextTimespan())  //下一个timespan允许打断 && 有新来高优先级报警？
+				if (m_poCurrent->HasNewInNextTimespan())  //下一个timespan允许打断 && 有新来高优先级报警？
 				{
 					//show new
-					UpdateCurrentWarning(GetFirstViewOfArrivalQueue());
+					UpdateCurrentWarning(GetFirstViewOfArrivalList());
 				}
 				else
 				{
 					//show current and timespan++
-					uint16 u16NextDuration = pCurrent->MoveToNextTimespan();
+					uint16 u16NextDuration = m_poCurrent->MoveToNextTimespan();
 					TimerStart(u16NextDuration);
 				}
 			}
 		}
 		else{
 			//release current and show next
-			RemoveWarningView(pCurrent->GetWarningID());
+			RemoveWarningView(m_poCurrent->GetWarningID());
 		}
 
 		break;
@@ -814,11 +810,11 @@ void WarningStrategy::OnTimer(void)
 	case WBDisplace:
 		if (GetNumberOfWarningView() == 1)
 		{
-			boSuspension = true;
+			m_boSuspension = true;
 		}
 		else
 		{
-			SelectNextView(enSelectWarningPolicy);
+			SelectNextView(m_enSelectWarningPolicy);
 		}
 		break;
 
@@ -826,7 +822,7 @@ void WarningStrategy::OnTimer(void)
 		break;
 
 	default:
-		RemoveWarningView(pCurrent->GetWarningID());
+		RemoveWarningView(m_poCurrent->GetWarningID());
 		break;
 	}
 }

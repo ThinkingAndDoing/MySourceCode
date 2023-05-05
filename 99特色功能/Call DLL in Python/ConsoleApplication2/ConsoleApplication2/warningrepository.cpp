@@ -42,7 +42,7 @@ bool WarningRepository::boIDAlreadyInList(enum WarningIDs enWrnID)
 	return false;
 }
 
-void WarningRepository::AddViewToRepository(WarningView oWV)
+void WarningRepository::AddViewToRepository(const WarningView & oWV)
 {
 	if (false == boIDAlreadyInList(oWV.GetWarningID()))
 	{

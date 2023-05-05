@@ -25,7 +25,7 @@ public:
 
 	bool boIDAlreadyInList(enum WarningIDs enWrnID);
 
-	void AddViewToRepository(WarningView oWV);
+	void AddViewToRepository(const WarningView & oWV);
 
 	void RemoveViewFromRepository(enum WarningIDs enWrnID);
 

@@ -25,58 +25,56 @@ enum SelectWarningPolicy
 };
 
 
-
 class WarningStrategy: public WarningTimer
 {
 public:
-	WarningRepository* poWarningRepo;
-	WarningList* poWarningList;
-	WarningModel* poWarningModel;
+	WarningRepository* m_poWarningRepo;
+	WarningList* m_poWarningList;
+	WarningModel* m_poWarningModel;
 
     WarningStrategy();
 	WarningStrategy(const WarningStrategy & oWS);
     virtual ~WarningStrategy();
 
-	virtual void TimeTick(void);
 	void Deinitialize();
     void SelectNextView(enum SelectWarningPolicy selectpolicy);
     uint16 GetNumberOfWarningView(void);
     void Suspension(void);
     void Resume(void);
-    virtual void RequestWarning(enum WarningIDs wrnid);
-	virtual void ReleaseWarning(enum WarningIDs wrnid);
-	virtual void ForceReleaseWarning(enum WarningIDs wrnid);
+    virtual void RequestWarning(enum WarningIDs enWrnID);
+	virtual void ReleaseWarning(enum WarningIDs enWrnID);
+	virtual void ForceReleaseWarning(enum WarningIDs enWrnID);
 	bool ProcessVirtualKey(enum VirtualKey enKey);
-	void RemoveWarningView(enum WarningIDs wrnid);
+	void RemoveWarningView(enum WarningIDs enWrnID);
     uint16 GetActiveWarningID(void);
 	virtual void SetWarningMode(enum WarningMode enWM);
 	virtual void SetAvailiable(enum Availiable enAvai);
+	virtual void TimeTick(void);
 
 protected:
-	void CreateNewWarningView(enum WarningIDs wrnid);
+	void CreateNewWarningView(enum WarningIDs enWrnID);
 
 private:
 	void OnTimer(void) override;
     void UpdateCurrentWarning(WarningView * poNew); 
-    WarningView* GetWarningViewByID(enum WarningIDs wrnid);
-	WarningView* GetFirstViewOfArrivalQueue(void);
-    bool RemoveViewFromQueue(enum WarningIDs wrnid);
+	WarningView* GetWarningViewByID(enum WarningIDs enWrnID);
+	WarningView* GetFirstViewOfArrivalList(void);
+	bool RemoveFromLinkList(enum WarningIDs enWrnID);
     bool AddNewWarningView(WarningView * pNewView); 
 	void WarningPrioArbitrate(WarningView * pNewView);
-	bool HasSameWarningInQueue(enum WarningIDs enWrnID);
-    bool InsertPriority(WarningView *pNode);      //按照优先级插入
+    bool InsertPriority(WarningView *pNode);
     void ReleaseCurrentShowNew(WarningView *pNewView);
-	WarningView* GetLastWarningOfQueue(void);
-	void RefreshWarningQueue(void);
+	WarningView* GetLastFromLinkList(void);
+	void RefreshLinkList(void);
+	void ReleaseWarningView(enum WarningIDs enWrnID);
 
-    //头节点 pre 为 NULL，尾节点 next 为 NULL
-    WarningView* pHead;     //链表头指针
-    WarningView* pCurrent;
-    enum AddWarningPolicy enAddWarningPolicy;
-    enum SelectWarningPolicy enSelectWarningPolicy;
-    bool boSuspension;
-	enum WarningMode enWarningMode;
-	enum Availiable enAvailiable;
+    WarningView* m_poHead;  // First pointer of linked list, m_poHead->pre = m_poHead->next = NULL
+    WarningView* m_poCurrent;
+    enum AddWarningPolicy m_enAddWarningPolicy;
+    enum SelectWarningPolicy m_enSelectWarningPolicy;
+	bool m_boSuspension;
+	enum WarningMode m_enWarningMode;
+	enum Availiable m_enAvailiable;
 };
 
 #endif

@@ -39,9 +39,9 @@ void WarningStrategyCM1E::RequestWarning(enum WarningIDs wrnid)
 {
 
 	printf("RequestWarning wrnid = %u!\n", wrnid);
-	if (WarningStrategy::poWarningModel->GetTriggerTime(wrnid) > 0)
+	if (WarningStrategy::m_poWarningModel->GetTriggerTime(wrnid) > 0)
 	{
-		WarningNode oPendingTriggerWrn(wrnid, WarningStrategy::poWarningModel->GetPriority(wrnid), WarningStrategy::poWarningModel->GetTriggerTime(wrnid));
+		WarningNode oPendingTriggerWrn(wrnid, WarningStrategy::m_poWarningModel->GetPriority(wrnid), WarningStrategy::m_poWarningModel->GetTriggerTime(wrnid));
 		m_oPendingTriggerList.AddNewNodeToList(oPendingTriggerWrn);
 	}
 	else{

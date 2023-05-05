@@ -9,7 +9,7 @@ Include Header
 
 #include "MyTimer.hpp"
 #include "warninglist.hpp"
-#include "warningstrategy.hpp"
+#include "warningstrategycm1e.hpp"
 #include "telltale.hpp"
 #include "warningresourceids.hpp"
 #include <windows.h>
@@ -39,7 +39,7 @@ void OnTelltaleChanged(uint16 u16ActiveTelltaleID);
 /***********************************************************
 Global variant
 ***********************************************************/
-WarningStrategy *poWrnStrategy;
+WarningStrategyCM1E *poWrnStrategy;
 TelltaleStrategy *poTTStrategy;
 cMyTimer *poMyTimer;
 
@@ -49,7 +49,7 @@ Function define
 
 void init(void)
 {
-	poWrnStrategy = new WarningStrategy();
+	poWrnStrategy = new WarningStrategyCM1E();
 	if (NULL == poWrnStrategy)
 	{
 		printf("unable to satisfy request for memory\n");
@@ -111,7 +111,7 @@ void SetAvailiable(int id)
 
 uint16 GetWarningIDFromStack(int id)
 {
-	return (uint16)poWrnStrategy->poWarningList->GetWarningFromStack((uint16)id);
+	return (uint16)poWrnStrategy->m_poWarningList->GetWarningFromStack((uint16)id);
 }
 
 void Suspension(void)
@@ -286,20 +286,23 @@ void verify_triggertime(void)
 
 void verify_availiable(void)
 {
-	SetAvailiable(3);
+	SetAvailiable(4);
 
 	RequestWarning(98);
+
+	Sleep(4000);
+
+	SetAvailiable(3);
 
 	Sleep(500);
 
 	RequestWarning(99);
 
-	Sleep(500);
-
-	RequestWarning(241);
-
 	SetAvailiable(4);
 
+	Sleep(5000);
+
+	ReleaseWarning(98);
 }
 
 void main(void)

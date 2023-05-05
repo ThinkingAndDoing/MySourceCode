@@ -26,7 +26,7 @@ public:
 
 	bool boIDAlreadyInList(enum WarningIDs enWrnID);
 
-	void AddWarningToStack(WarningView* pView);
+	void AddWarningToStack(const WarningView & oWrnView);
 
 	enum WarningIDs GetWarningFromStack(uint16 u16Index);
 

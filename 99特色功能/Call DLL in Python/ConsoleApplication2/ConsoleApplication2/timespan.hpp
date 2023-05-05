@@ -3,7 +3,6 @@
 
 #include "acknowledge.hpp"
 
-#define TS_ENDLESS		0
 
 class Timespan
 {

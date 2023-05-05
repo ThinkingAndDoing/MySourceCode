@@ -4,6 +4,8 @@
 #include "typedefine.hpp"
 
 #define NUM_OF_ATTRIBUTE           9          
+#define MAX_USAGE_MODE			   31
+#define TS_ENDLESS				   0
 
 
 enum WarningAttribute
@@ -16,7 +18,8 @@ enum WarningAttribute
 	enImmediate,
 	enStack,
 	enUsageMode,
-	enIndicatorRequest
+	enIndicatorRequest,
+	enAudioChimeRequest
 };
 
 
@@ -27,7 +30,9 @@ public:
 
 	~WarningModel();
 
-	void initialize(void);
+	void Initialize(void);
+
+	void ValidityTransformation(void);
 
 	uint16 GetNotificationID(uint16 u16ID) const;
 
@@ -46,6 +51,8 @@ public:
 	uint16 GetUsageMode(uint16 u16ID) const;
 
 	uint16 GetIndicatorRequest(uint16 u16ID) const;
+
+	uint16 GetAudioChimeRequest(uint16 u16ID) const;
 
 	uint16 GetTriggerTime(uint16 u16ID) const;
 

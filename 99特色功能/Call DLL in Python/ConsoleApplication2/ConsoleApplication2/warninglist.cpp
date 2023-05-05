@@ -45,20 +45,16 @@ bool WarningList::boIDAlreadyInList(enum WarningIDs enWrnID)
 	return false;
 }
 
-void WarningList::AddWarningToStack(WarningView* pView)
+void WarningList::AddWarningToStack(const WarningView & oWrnView)
 {
-	if (NULL != pView)
+	if (false == boIDAlreadyInList(oWrnView.GetWarningID()))
 	{
-		if (false == boIDAlreadyInList(pView->GetWarningID()))
+		if (oWrnView.boNeedSaveToStack())
 		{
-			if (pView->boNeedSaveToStack())
-			{
-				itWarningViewVec it = vecWarningStack.begin();
-				vecWarningStack.insert(it, *pView);
-			}
+			itWarningViewVec it = vecWarningStack.begin();
+			vecWarningStack.insert(it, oWrnView);
 		}
 	}
-
 }
 
 enum WarningIDs WarningList::GetWarningFromStack(uint16 u16Index)

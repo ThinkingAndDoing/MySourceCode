@@ -49,21 +49,21 @@ public:
 
 	void SetAvailiableList(uint16 u16Availiable);
 
-	uint16 GetPriority(void);
+	uint16 GetPriority(void) const;
 
 	void SetPendingRelease(bool boPendingRel);
 
-	bool HasPendingRelease(void);
+	bool HasPendingRelease(void) const;
 
-	enum WarningIDs GetWarningID(void);
+	enum WarningIDs GetWarningID(void) const;
 
-	bool boNeedSaveToStack(void);
+	bool boNeedSaveToStack(void) const;
 
-	enum WarningAction GetActionOnNewWarningComing(WarningView* poNewView);
+	enum WarningAction GetActionOnNewWarningComing(WarningView* poNewView) const;
 
 	uint16 MoveToNextTimespan(void);
 
-	uint16 GetTriggerDelay(void);
+	uint16 GetTriggerDelay(void) const;
 
     WarningView* next;
     WarningView* pre;
@@ -82,6 +82,8 @@ private:
 	uint16 m_u16Priority;
 	uint16 m_u16CurTimespanIndex;		//µ±Ç°timespan 
 	uint16 m_u16TriggerDelay;
+	uint16 m_u16IndicatorID;
+	uint16 m_u16AudioChimeID;
 
 	Timespan *m_paTimespan[MAX_TIMESPAN_NUMS];
 

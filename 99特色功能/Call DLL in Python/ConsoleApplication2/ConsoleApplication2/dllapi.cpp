@@ -28,6 +28,7 @@ extern "C"
 	API_DLL void CALL_TYPE RequestWarning(int id);
 	API_DLL void CALL_TYPE ReleaseWarning(int id);
 	API_DLL void CALL_TYPE SetWarningMode(int id);
+	API_DLL void CALL_TYPE SetAvailiable(int id);
 	API_DLL void CALL_TYPE Suspension(void);
 	API_DLL void CALL_TYPE Resume(void);
 	API_DLL uint16 CALL_TYPE GetWarningIDFromStack(int id);
@@ -118,9 +119,14 @@ void CALL_TYPE SetWarningMode(int id)
 	poWrnStrategy->SetWarningMode((enum WarningMode)id);
 }
 
+void CALL_TYPE SetAvailiable(int id)
+{
+	poWrnStrategy->SetAvailiable((enum Availiable)id);
+}
+
 uint16 CALL_TYPE GetWarningIDFromStack(int id)
 {
-	uint16 u16WrnID = (uint16)poWrnStrategy->poWarningList->GetWarningFromStack((uint16)id);
+	uint16 u16WrnID = (uint16)poWrnStrategy->m_poWarningList->GetWarningFromStack((uint16)id);
 
 	if (NumberOfWarnings == u16WrnID)
 	{

@@ -149,6 +149,8 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oW
 		this->m_boImmediate = oWrnModel.GetImmediate(wrnid) > 0 ? true : false;
 		this->m_boSaveToStack = oWrnModel.GetStack(wrnid) > 0 ? true : false;
 		this->m_u16TriggerDelay = oWrnModel.GetTriggerTime(wrnid);
+		this->m_u16AudioChimeID = oWrnModel.GetAudioChimeRequest(wrnid);
+		this->m_u16IndicatorID = oWrnModel.GetIndicatorRequest(wrnid);
 
 		this->SetWarningModeList(oWrnModel.GetUsageMode(wrnid));
 
@@ -199,20 +201,12 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oW
 
 		/**/
 		printf("----------------------------------------------\n");
-		printf("WarningID = %d, priority = %d \n", this->m_enWarningID, this->m_u16Priority);
+		printf("WarningID = %d, priority = %d \n", m_enWarningID, 0xFFFF - m_u16Priority);
 		printf("displaytimeout = %d, mini display time = %d \n", oWrnModel.GetMaxDispTime(wrnid), oWrnModel.GetMinDispTime(wrnid));
-		printf("immediate = %d, stack = %d \n", this->m_boImmediate, this->m_boSaveToStack);
+		printf("immediate = %d, stack = %d \n", m_boImmediate, m_boSaveToStack);
+		printf("usagemode = %d, availiable = %d \n", oWrnModel.GetUsageMode(wrnid), oWrnModel.GetAvailable(wrnid));
 		printf("----------------------------------------------\n");
 	}
-
-}
-
-
-/*
- * 检查Timespan的开始时间和结束时间
- */
-void checktimespanofwarningview(void)
-{
 
 }
 
@@ -238,13 +232,14 @@ Timespan *WarningView::GetNextTimespan(void)
 	}
 }
 
-
+#ifdef DISABLE_WARNING_MODE
 bool WarningView::IsActiveMode(enum WarningMode enMode)
 {
-#ifdef DISABLE_WARNING_MODE
 	return true;
-#endif
-
+}
+#else
+bool WarningView::IsActiveMode(enum WarningMode enMode)
+{
 	bool boRet = false;
 
 	for (itWarningModeLst it = m_lstWarningMode.begin(); it != m_lstWarningMode.end(); ++it)
@@ -257,7 +252,15 @@ bool WarningView::IsActiveMode(enum WarningMode enMode)
 	}
 	return boRet;
 }
+#endif
 
+
+#ifdef DISABLE_WARNING_AVAILIABLE
+bool WarningView::IsAvailiable(enum Availiable enAvai)
+{
+	return true;
+}
+#else
 bool WarningView::IsAvailiable(enum Availiable enAvai)
 {
 	bool boRet = false;
@@ -272,6 +275,7 @@ bool WarningView::IsAvailiable(enum Availiable enAvai)
 	}
 	return boRet;
 }
+#endif
 
 void WarningView::SetWarningModeList(uint16 u16WarningMode)
 {
@@ -330,7 +334,7 @@ void WarningView::SetAvailiableList(uint16 u16Availiable)
 		break;
 	}
 }
-uint16 WarningView::GetPriority(void)
+uint16 WarningView::GetPriority(void) const
 {
 	return m_u16Priority;
 }
@@ -340,22 +344,22 @@ void WarningView::SetPendingRelease(bool boPendingRel)
 	m_boPendingRelease = boPendingRel;
 }
 
-bool WarningView::HasPendingRelease(void)
+bool WarningView::HasPendingRelease(void) const
 {
 	return m_boPendingRelease;
 }
 
-enum WarningIDs WarningView::GetWarningID(void)
+enum WarningIDs WarningView::GetWarningID(void) const
 {
 	return m_enWarningID;
 }
 
-bool WarningView::boNeedSaveToStack(void)
+bool WarningView::boNeedSaveToStack(void) const
 {
 	return m_boSaveToStack;
 }
 
-uint16 WarningView::GetTriggerDelay(void)
+uint16 WarningView::GetTriggerDelay(void) const
 {
 	return m_u16TriggerDelay;
 }
@@ -383,7 +387,7 @@ uint16 WarningView::MoveToNextTimespan(void)
 }
 
 
-enum WarningAction WarningView::GetActionOnNewWarningComing(WarningView* poNewView)
+enum WarningAction WarningView::GetActionOnNewWarningComing(WarningView* poNewView) const
 {
 	enum WarningAction enTimeSpanATemp = WBIgnore;
 

@@ -15,9 +15,19 @@ resume：pCurrent指向链表第一个报警；激活pCurrent
 高优先级报警切换到菜单后，如果再触发低优先级报警，这时候要显示报警还是菜单。
 
 
+Indicator request：
 
+Pattern A:
+Turn ON when notification becomes active
+Turn Off when notification no longer is active
+与显示状态保持一致
+ 
+Pattern B:
+Turn ON when notification becomes shown
+Turn OFF when notification no longer is shown
+与触发信号保持一致
 
-
+对于Pattern B，若触发多个报警，是否要显示多个报警灯？
 
 
 [CYO-7378]Notification Manager Framework implementation
@@ -61,8 +71,9 @@ Todo:
 3，QAC++静态分析
 
 
-
-
-
+数据有效性转换：
+1，UsageMode若大于31，那么转换成31
+2，Available若大于7，那么转换成7
+3，若最大显示时间小于最小显示时间，或者小于UserLockTime，那么maxdisptime = minidisptime > userlocktime? minidisptime:userlocktime;
 
 

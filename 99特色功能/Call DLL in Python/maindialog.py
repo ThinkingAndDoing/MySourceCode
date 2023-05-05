@@ -19,24 +19,79 @@ import ctypes
 INVALID_ID = 0xFFFF
 
 class My_Dialog(QDialog, Ui_Dialog):
+
 	def __init__(self, parent=None):
 		super(My_Dialog, self).__init__(parent)
 		self.setupUi(self)
 		self.setWindowTitle("开发中")
 		self.setFixedSize(self.width(), self.height())
+		self.lineEdit.setFocus()
+		self.lineEdit_2.setText("4")
+		
+		self.qbusagemode = QButtonGroup(self)
+		self.qbusagemode.addButton(self.radioAbandoned, 11)
+		self.qbusagemode.addButton(self.radioInactive, 12)
+		self.qbusagemode.addButton(self.radioConvenience, 13)
+		self.qbusagemode.addButton(self.radioActive, 14)
+		self.qbusagemode.addButton(self.radioDriving, 15)
+		self.qbusagemode.buttonClicked.connect(self.usagemode_changed)
+		self.radioAbandoned.setChecked(True)
+		
+		self.qbavailiable = QButtonGroup(self)
+		self.qbavailiable.addButton(self.radioOFF, 21)
+		self.qbavailiable.addButton(self.radioMode1, 22)
+		self.qbavailiable.addButton(self.radioMode2, 23)
+		self.qbavailiable.addButton(self.radioMode3, 24)
+		self.qbavailiable.addButton(self.radioStale, 25)
+		self.qbavailiable.buttonClicked.connect(self.availiable_changed)
+		self.radioOFF.setChecked(True)
+		
 		self.label_3.setText("")
 		self.label_4.setText("")
 		self.label_5.setText("")
 		self.label_6.setText("")
 		self.label_7.setText("")
-		
-		
+				
 		self.pushButton.clicked.connect(self.request)
 		self.pushButton_2.clicked.connect(self.release)
 		self.pushButton_3.clicked.connect(self.sendkey)
 		self.Suspension.clicked.connect(self.suspension)
 		self.Resume.clicked.connect(self.resume)
 		self.wrnManager = None
+		
+	def usagemode_changed(self):
+	
+		sender = self.sender()
+		if sender == self.qbusagemode:
+			if self.qbusagemode.checkedId() == 11:
+				self.wrnManager.SetWarningMode(5)
+			elif self.qbusagemode.checkedId() == 12:
+				self.wrnManager.SetWarningMode(4)
+			elif self.qbusagemode.checkedId() == 13:
+				self.wrnManager.SetWarningMode(3)
+			elif self.qbusagemode.checkedId() == 14:
+				self.wrnManager.SetWarningMode(2)
+			elif self.qbusagemode.checkedId() == 15:
+				self.wrnManager.SetWarningMode(1)
+			else:
+				self.wrnManager.SetWarningMode(5)
+		
+	def availiable_changed(self):
+	
+		sender = self.sender()
+		if sender == self.qbavailiable:
+			if self.qbavailiable.checkedId() == 21:
+				self.wrnManager.SetAvailiable(0)
+			elif self.qbavailiable.checkedId() == 22:
+				self.wrnManager.SetAvailiable(1)
+			elif self.qbavailiable.checkedId() == 23:
+				self.wrnManager.SetAvailiable(2)
+			elif self.qbavailiable.checkedId() == 24:
+				self.wrnManager.SetAvailiable(3)
+			elif self.qbavailiable.checkedId() == 25:
+				self.wrnManager.SetAvailiable(4)
+			else:
+				self.wrnManager.SetAvailiable(0)
 		
 	def set_warning_manager(self, wm):
 		self.wrnManager = wm
