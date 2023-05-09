@@ -14,7 +14,7 @@ WarningView::WarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel)
 	m_boImmediate = false;
 	m_boPendingRelease = false;
 	m_boSaveToStack = false;
-	m_u16CurTimespanIndex = 0; //WarningView创建时指向第一个Timespan
+	m_u16CurTimespanIndex = 0;
 	m_enWarningID = NumberOfWarnings;
 	m_u16TriggerDelay = 0;
 	m_u16Priority = 0;
@@ -106,7 +106,7 @@ WarningView::~WarningView() {
 }
 
 /*
- * 停止当前 WarningView
+ * Deactivate WarningView
  */
 void WarningView::Deactivate(void)
 {
@@ -117,7 +117,7 @@ void WarningView::Deactivate(void)
 
 
 /*
- * 激活当前 WarningView
+ * Activate WarningView
  */
 uint16 WarningView::Activate(void)
 {
@@ -127,7 +127,7 @@ uint16 WarningView::Activate(void)
 
 	if (NULL != this->m_paTimespan[0])
 	{
-		//若第一个timespan的endtime不为TS_ENDLESS，即当前WarningView存在多段timespan，则启动定时器
+		//If the endtime of the first timespan is not TS_ ENDLESS, that is, there are more than one timespan in the current WarningView, start the timer
 		if (TS_ENDLESS != this->m_paTimespan[0]->GetEndTime())
 		{
 			u16Duration = this->m_paTimespan[0]->GetEndTime();
@@ -138,7 +138,7 @@ uint16 WarningView::Activate(void)
 }
 
 /*
-* 构建 WarningView
+* Build WarningView
 */
 void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel)
 {
@@ -414,7 +414,7 @@ enum WarningAction WarningView::GetActionOnNewWarningComing(WarningView* poNewVi
 
 
 /*
-* 下一个timespan允许打断 && 有新来高优先级报警？
+* Allows interruption in the next timespan and there is a new warning with higher priority
 */
 bool WarningView::HasNewInNextTimespan(void)
 {

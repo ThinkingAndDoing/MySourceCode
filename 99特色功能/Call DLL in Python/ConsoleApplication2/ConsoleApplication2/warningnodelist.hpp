@@ -34,11 +34,11 @@ public:
 
 	bool boIDAlreadyInList(enum WarningIDs enWrnID);
 
-	void AddNewNodeToList(WarningNode stNewArrivalTemp);
+	bool AddNewNodeToList(WarningNode stNewArrivalTemp);
 
 	WarningNode *GetFirstNodeOfList(void);
 
-	void RemoveNodeFromList(enum WarningIDs wrnid);
+	bool RemoveNodeFromList(enum WarningIDs wrnid);
 
 	void ClearAll(void);
 

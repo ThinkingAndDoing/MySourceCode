@@ -25,9 +25,9 @@ public:
 
 	bool boIDAlreadyInList(enum WarningIDs enWrnID);
 
-	void AddViewToRepository(const WarningView & oWV);
+	bool AddViewToRepository(const WarningView & oWV);
 
-	void RemoveViewFromRepository(enum WarningIDs enWrnID);
+	bool RemoveViewFromRepository(enum WarningIDs enWrnID);
 
 	stWarningIDList GetActiveWarningIDList(enum WarningMode enWrnMode, enum Availiable enWrnAvai);
 

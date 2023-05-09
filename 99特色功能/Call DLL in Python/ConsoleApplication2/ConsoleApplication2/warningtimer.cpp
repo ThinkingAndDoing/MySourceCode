@@ -5,6 +5,15 @@
 
 
 
+WarningTimer::WarningTimer()
+{
+	u16TimeCounter = 0;
+}
+
+WarningTimer::~WarningTimer()
+{
+}
+
 void WarningTimer::TimeTick(void)
 {
     if (u16TimeCounter > 0)

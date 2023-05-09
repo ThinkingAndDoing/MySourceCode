@@ -40,10 +40,12 @@ bool WarningNodeList::boIDAlreadyInList(enum WarningIDs enWrnID)
 }
 
 /*
-* 按照优先级从高到低加入新报警到 m_newarrivallist
-*/
-void WarningNodeList::AddNewNodeToList(WarningNode stNewArrivalTemp)
+ * Add new warning to m_lstWarningNode by priority
+ */
+bool WarningNodeList::AddNewNodeToList(WarningNode stNewArrivalTemp)
 {
+	bool boInserted = false;
+
 	if (false == boIDAlreadyInList(stNewArrivalTemp.enWarningID))
 	{
 		for (itWarningNode it = m_lstWarningNode.begin(); it != m_lstWarningNode.end(); ++it)
@@ -51,12 +53,19 @@ void WarningNodeList::AddNewNodeToList(WarningNode stNewArrivalTemp)
 			if (stNewArrivalTemp.u16Priority >= it->u16Priority)
 			{
 				m_lstWarningNode.insert(it, stNewArrivalTemp);
-				return;
+				boInserted = true;
+				break;
 			}
 		}
 
-		m_lstWarningNode.push_back(stNewArrivalTemp);
+		if (!boInserted)
+		{
+			m_lstWarningNode.push_back(stNewArrivalTemp);
+			boInserted = true;
+		}
 	}
+
+	return boInserted;
 }
 
 
@@ -74,16 +83,21 @@ WarningNode *WarningNodeList::GetFirstNodeOfList(void)
 
 
 
-void WarningNodeList::RemoveNodeFromList(enum WarningIDs wrnid)
+bool WarningNodeList::RemoveNodeFromList(enum WarningIDs wrnid)
 {
+	bool boDel = false;
+
 	for (itWarningNode it = m_lstWarningNode.begin(); it != m_lstWarningNode.end(); ++it)
 	{
 		if (wrnid == it->enWarningID)
 		{
 			m_lstWarningNode.erase(it);
+			boDel = true;
 			break;
 		}
 	}
+
+	return boDel;
 }
 
 void WarningNodeList::ClearAll(void)
@@ -93,7 +107,7 @@ void WarningNodeList::ClearAll(void)
 
 
 /*
- * 每个报警节点的u16TriggerDelay减少u16Minuend，单位ms
+ * Reduce the u16TriggerDelay of every warning by u16Minuend, in milliseconds
  */
 void WarningNodeList::DecreaseTriggerDelay(uint16 u16Minuend)
 {

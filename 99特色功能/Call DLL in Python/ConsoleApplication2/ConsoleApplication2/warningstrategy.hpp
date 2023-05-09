@@ -2,11 +2,12 @@
 #define WARNINGSTRATEGY_HPP
 #include "list"
 #include "warningtimer.hpp"
+#include "warninglinklist.hpp"
 #include "warningnodelist.hpp"
 
-class WarningModel;
-class TimeSpan;
+
 class WarningView;
+class WarningModel;
 class WarningList;
 class WarningRepository;
 
@@ -25,7 +26,7 @@ enum SelectWarningPolicy
 };
 
 
-class WarningStrategy: public WarningTimer
+class WarningStrategy : public WarningTimer, public WarningLinkList
 {
 public:
 	WarningRepository* m_poWarningRepo;
@@ -35,10 +36,9 @@ public:
     WarningStrategy();
 	WarningStrategy(const WarningStrategy & oWS);
     virtual ~WarningStrategy();
-
-	void Deinitialize();
+	virtual void Initialize();
+	virtual void Deinitialize();
     void SelectNextView(enum SelectWarningPolicy selectpolicy);
-    uint16 GetNumberOfWarningView(void);
     void Suspension(void);
     void Resume(void);
     virtual void RequestWarning(enum WarningIDs enWrnID);
@@ -55,26 +55,22 @@ protected:
 	void CreateNewWarningView(enum WarningIDs enWrnID);
 
 private:
-	void OnTimer(void) override;
-    void UpdateCurrentWarning(WarningView * poNew); 
-	WarningView* GetWarningViewByID(enum WarningIDs enWrnID);
-	WarningView* GetFirstViewOfArrivalList(void);
-	bool RemoveFromLinkList(enum WarningIDs enWrnID);
-    bool AddNewWarningView(WarningView * pNewView); 
-	void WarningPrioArbitrate(WarningView * pNewView);
-    bool InsertPriority(WarningView *pNode);
-    void ReleaseCurrentShowNew(WarningView *pNewView);
-	WarningView* GetLastFromLinkList(void);
-	void RefreshLinkList(void);
-	void ReleaseWarningView(enum WarningIDs enWrnID);
-
-    WarningView* m_poHead;  // First pointer of linked list, m_poHead->pre = m_poHead->next = NULL
-    WarningView* m_poCurrent;
-    enum AddWarningPolicy m_enAddWarningPolicy;
-    enum SelectWarningPolicy m_enSelectWarningPolicy;
+	enum AddWarningPolicy m_enAddWarningPolicy;
+	enum Availiable m_enAvailiable;
+	WarningView* m_poCurrent;
+	enum SelectWarningPolicy m_enSelectWarningPolicy;
 	bool m_boSuspension;
 	enum WarningMode m_enWarningMode;
-	enum Availiable m_enAvailiable;
+
+	virtual void OnTimer(void) override;
+	void UpdateCurrentWarning(WarningView * poNew);
+	WarningView* GetFirstViewOfArrivalList(void);
+    bool AddNewWarningView(WarningView * pNewView); 
+	void WarningPrioArbitrate(WarningView * pNewView);
+    void ReleaseCurrentShowNew(WarningView *pNewView);
+	void RestartAllWarningView(void);
+	void ReleaseWarningView(enum WarningIDs enWrnID);
+
 };
 
 #endif

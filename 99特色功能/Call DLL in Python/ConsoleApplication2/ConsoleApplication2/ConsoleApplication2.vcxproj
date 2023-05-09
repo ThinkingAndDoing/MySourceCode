@@ -78,16 +78,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="acknowledge.cpp" />
+    <ClCompile Include="MyTimer.cpp" />
     <ClCompile Include="notification.cpp" />
     <ClCompile Include="dllapi.cpp" />
+    <ClCompile Include="telltale.cpp" />
+    <ClCompile Include="timespan.cpp" />
+    <ClCompile Include="warninglinklist.cpp" />
+    <ClCompile Include="warninglist.cpp" />
+    <ClCompile Include="warningmodel.cpp" />
+    <ClCompile Include="warningnodelist.cpp" />
+    <ClCompile Include="warningrepository.cpp" />
     <ClCompile Include="warningstrategy.cpp" />
+    <ClCompile Include="warningstrategycm1e.cpp" />
+    <ClCompile Include="warningtimer.cpp" />
     <ClCompile Include="warningview.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="acknowledge.hpp" />
+    <ClInclude Include="MyTimer.hpp" />
     <ClInclude Include="notification.hpp" />
+    <ClInclude Include="telltale.hpp" />
     <ClInclude Include="timespan.hpp" />
+    <ClInclude Include="typedefine.hpp" />
+    <ClInclude Include="warninglinklist.hpp" />
+    <ClInclude Include="warninglist.hpp" />
+    <ClInclude Include="warningmodel.hpp" />
+    <ClInclude Include="warningnodelist.hpp" />
+    <ClInclude Include="warningrepository.hpp" />
     <ClInclude Include="warningresourceids.hpp" />
     <ClInclude Include="warningstrategy.hpp" />
+    <ClInclude Include="warningstrategycm1e.hpp" />
+    <ClInclude Include="warningtimer.hpp" />
     <ClInclude Include="warningview.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

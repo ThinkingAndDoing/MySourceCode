@@ -13,7 +13,7 @@ Acknowledge::~Acknowledge()
 }
 
 /*
- * 注册新的按键处理，若按键已经注册过，更新Action，否则增加新的按键处理。
+ * Register a new button. If the button has already been registered, update the Action.
  */
 void Acknowledge::AddKeyAction(enum VirtualKey vk, enum WarningAction wrnAction)
 {

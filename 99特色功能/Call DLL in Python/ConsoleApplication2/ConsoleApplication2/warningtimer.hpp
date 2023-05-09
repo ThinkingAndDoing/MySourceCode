@@ -6,11 +6,9 @@ class WarningTimer
 {
 public:
 
-	WarningTimer(){
-		u16TimeCounter = 0;
-	};
+	WarningTimer();
 
-    virtual ~WarningTimer(){};
+    virtual ~WarningTimer();
 
     void TimerStart(uint16 u16TimeGap);
 

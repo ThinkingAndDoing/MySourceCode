@@ -7,9 +7,9 @@ class WarningStrategyCM1E : public WarningStrategy
 {
 public:
 
-	WarningStrategyCM1E() :WarningStrategy(){ m_oPendingTriggerList.ClearAll(); }
-	WarningStrategyCM1E(const WarningStrategyCM1E & oWS) :WarningStrategy(oWS){ m_oPendingTriggerList.ClearAll(); }
-	virtual ~WarningStrategyCM1E(){ m_oPendingTriggerList.ClearAll(); }
+	WarningStrategyCM1E();
+	WarningStrategyCM1E(const WarningStrategyCM1E & oWS);
+	virtual ~WarningStrategyCM1E();
 
 	virtual void TimeTick(void);
 	virtual void RequestWarning(enum WarningIDs wrnid);

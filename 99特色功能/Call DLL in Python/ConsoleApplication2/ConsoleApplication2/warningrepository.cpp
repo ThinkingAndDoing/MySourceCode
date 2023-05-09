@@ -42,12 +42,12 @@ bool WarningRepository::boIDAlreadyInList(enum WarningIDs enWrnID)
 	return false;
 }
 
-void WarningRepository::AddViewToRepository(const WarningView & oWV)
+bool WarningRepository::AddViewToRepository(const WarningView & oWV)
 {
+	bool boInserted = false;
+
 	if (false == boIDAlreadyInList(oWV.GetWarningID()))
 	{
-		bool boInserted = false;
-
 		for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
 		{
 			if (it->GetPriority() < oWV.GetPriority())
@@ -61,18 +61,26 @@ void WarningRepository::AddViewToRepository(const WarningView & oWV)
 		if (!boInserted)
 		{
 			lstViewRepository.push_back(oWV);
+			boInserted = true;
 		}
 	}
+
+	return boInserted;
 }
 
-void WarningRepository::RemoveViewFromRepository(enum WarningIDs enWrnID)
+bool WarningRepository::RemoveViewFromRepository(enum WarningIDs enWrnID)
 {
+	bool boDel = false;
+
 	for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
 	{
 		if (it->GetWarningID() == enWrnID)
 		{
 			lstViewRepository.erase(it);
+			boDel = true;
 			break;
 		}
 	}
+
+	return boDel;
 }

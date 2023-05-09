@@ -1,34 +1,14 @@
 
-Immediate属性：Immediate属性在高优先级打断低优先级时生效。无视最小显示时间和UserLockTime
-CheckViewList：列表按照进入顺序排序，最多显示10个。创建10个变量通过Datasource提供给View
-OpenIssue：
-1，若列表中间的Notification被取消后，列表后面的Notification是否要往上移？要上移
-2，对于Timeout的Notification是否要进入列表？要进列表
-3，Notification被按键Press之后进入列表，还是在报警进入Queue时，同时进入Stack？被Press之后进入列表
-UserLockTime：UserLockTime是否一定小于mini_display_time？
-UsageMode：切换UsageMode时，要遵循最小显示时间，DisplayTimeout不需要重新计时。如果一个报警在Driving下显示，当按键隐藏进入CheckViewList后，UsageMode切换到任何其他模式，如果触发条件仍然满足，报警需要重新进入WarningQueue。如果一个报警不进入WarningStack，按键隐藏后，切换模式，是否要重新显示？
 
-Available：行为与UsageMode相同。只有0~7八种状态，不需要按照bit位设计。
+对于Pattern B，若触发多个报警，是否要显示多个报警灯？是的
+CheckViewList（MessageStack）
+问题1：高优先级报警显示过程中，按键切换到菜单后，如果再触发低优先级报警，这时候要显示报警还是菜单？显示高优先级报警。
+问题2：如果一个Notification显示后，切换到菜单，Notification是否要停止计时？当从菜单切回到Notification之后，Notification的Display Timeout是否要重新计时？停止计时，切换到Notification之后，重新计时。
+
+
+
 suspension（按照需求，与打断的行为一致）：当前报警停止计时；若有新报警触发，报警也应该加入队列，但是，不要启动计时器；若查询当前活跃ID，应该返回无效值；若有新报警取消，报警直接取消。当一个报警在最小显示内被取消，然后suspension，报警是否应该取消？是的
-resume：pCurrent指向链表第一个报警；激活pCurrent
-
-高优先级报警切换到菜单后，如果再触发低优先级报警，这时候要显示报警还是菜单。
-
-
-Indicator request：
-
-Pattern A:
-Turn ON when notification becomes active
-Turn Off when notification no longer is active
-与显示状态保持一致
- 
-Pattern B:
-Turn ON when notification becomes shown
-Turn OFF when notification no longer is shown
-与触发信号保持一致
-
-对于Pattern B，若触发多个报警，是否要显示多个报警灯？
-
+resume：pCurrent指向链表第一个报警；激活pCurrent 
 
 [CYO-7378]Notification Manager Framework implementation
 
@@ -42,10 +22,16 @@ WarningManger framework 模块功能开发计划
 //3.	WarningList。        3.23~3.29
 //4.	UsageMode。        3.30~4.4
 //5.	Suspension/Resume		4.6~4.7
-6.		Available				5.6~5.11
+//6.		Available				5.6~5.11
 //7.		trigger time		5.4~5.5
 8.		Indicator request		5.12~5.17
 9.		Audio Chime request		5.18~5.30
+
+
+
+
+
+
 
 
 
@@ -63,8 +49,6 @@ WarningManger framework 模块功能开发计划
 如何解决内存溢出问题？
 已解决问题：1，类中有申请内存，但是缺少深度拷贝函数；2，在多重调用的子函数释放调用者申请的内存；
 
-Todo:
-将WarningStrategy改为单例模式 https://www.jb51.net/article/224373.htm
 
 1，写C++调用程序，使用数据断点，调试DLL。
 2，代码Review，检查拷贝构造函数，检查STL
@@ -74,6 +58,21 @@ Todo:
 数据有效性转换：
 1，UsageMode若大于31，那么转换成31
 2，Available若大于7，那么转换成7
-3，若最大显示时间小于最小显示时间，或者小于UserLockTime，那么maxdisptime = minidisptime > userlocktime? minidisptime:userlocktime;
+3，若最大显示时间小于最小显示时间，或者小于UserLockTime，那么maxdisptime = minidisptime > userlocktime? minidisptime:userlocktime；
+
+
+
+1，如何访问系统时钟？
+
+2，
+
+3，WarningManager放在哪里？
+hmiapp。
+WarningManager分为两部分，core放WarningManager，adapt放Notification插件内容prj_wrn。
+数据流向：
+AC -> ICOM -> MVC Interface -> hmiapp(Warning Manager/prj_wrn) -> datasource plugin -> KanziView <-> Notification plugin
+
+4，WarningManager模块介绍？
+创建一个双向链表，每个结点存储一个报警ID，
 
 
