@@ -7,8 +7,10 @@ from lib.jsonio import Jsoner
 import platform
 print (platform.python_version())
 import pandas as pd
-str_ffmpegPath = "C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe"
-#str_ffmpegPath = "D:\\01Myprogram\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe"
+#str_ffmpegPath = "C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe"
+str_ffmpegPath = "D:\\01Myprogram\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe"
+#subprocess.call('C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe -y -i test.mp4 -ss 00:00:0.0 -t 00:00:40.0 -acodec copy -vcodec copy -async 1 test2.mp4')
+#subprocess.call('C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe -y -i test.mp4 -ss 00:00:0.0 -to 00:01:40.0 -acodec copy -vcodec copy -async 1 test2.mp4')
 #dict_video = {"file_name":"乌里：外科手术式打击BD中字.mkv", "start_time":"00:02:23", "end_time":"00:13:13"}
 '''
 subprocess.call('C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe -y -i test.mp4 -ss 00:00:0.0 -t 00:00:40.0 -acodec copy -vcodec copy -async 1 test2.mp4')

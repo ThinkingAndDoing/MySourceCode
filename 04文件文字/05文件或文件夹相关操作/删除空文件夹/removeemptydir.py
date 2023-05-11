@@ -7,13 +7,13 @@ import sys
 
 _InputDir = ".\\Bitmaps"
 
-def isEmpty(distfolder):
+def is_empty(distfolder):
 	if os.listdir(distfolder)==[]:
 		return True
 	else:
 		return False
 
-def removedir(adir):
+def remove_dir(adir):
 	try:
 		os.rmdir(adir)
 	except Exception as e:
@@ -22,11 +22,11 @@ def removedir(adir):
 		print(adir + " is deleted!")
 	
 
-def removeEmptyDir(distfolder):
+def remove_empty_dir(distfolder):
 	for root, dirs, files in os.walk(distfolder, topdown=False):
 		for name in dirs:
-			if isEmpty(os.path.join(root, name))==True:
-				removedir(os.path.join(root, name))
+			if is_empty(os.path.join(root, name))==True:
+				remove_dir(os.path.join(root, name))
 
 if __name__ == "__main__":
 	try:
@@ -35,7 +35,7 @@ if __name__ == "__main__":
 	except Exception as e:
 		print(e)
 	
-	removeEmptyDir(_InputDir)
+	remove_empty_dir(_InputDir)
 
 	
 
