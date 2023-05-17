@@ -15,6 +15,18 @@ WarningRepository::~WarningRepository()
 	lstViewRepository.clear();
 }
 
+stWarningIDList WarningRepository::GetAllWarningIDList(void)
+{
+	stWarningIDList lstWarningID;
+
+	for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
+	{
+		lstWarningID.push_back(it->GetWarningID());
+	}
+
+	return lstWarningID;
+}
+
 stWarningIDList WarningRepository::GetActiveWarningIDList(enum WarningMode enWrnMode, enum Availiable enWrnAvai)
 {
 	stWarningIDList lstWarningID;

@@ -142,3 +142,15 @@ WarningNode WarningNodeList::PopNoTriggerDelayNode(void)
 }
 
 
+stWarningIDList WarningNodeList::GetAllWarningIDList(void)
+{
+	stWarningIDList lstWarningID;
+
+	for (itWarningNode it = m_lstWarningNode.begin(); it != m_lstWarningNode.end(); ++it)
+	{
+		lstWarningID.push_back(it->enWarningID);
+	}
+
+	return lstWarningID;
+}
+

@@ -3,6 +3,9 @@
 #include "warningstrategy.hpp"
 
 
+#define SIZE_U16_BIT 16
+
+
 class WarningStrategyCM1E : public WarningStrategy
 {
 public:
@@ -16,9 +19,16 @@ public:
 	virtual void ReleaseWarning(enum WarningIDs wrnid);
 	virtual void ForceReleaseWarning(enum WarningIDs wrnid);
 
+	uint16 u16GetBitValById(uint16 u16GroupStatus, uint16 index);
+	void vSetBitValById(uint16 * ptGroupStatus, uint16 index, uint16 u16value);
+	void UpdateIndicStatusOfPatternA(void);
+
+	uint16 GetIndicatorOfPatternB(uint16 u16WrnID);
+
 private:
 
 	WarningNodeList m_oPendingTriggerList;
+	uint16 m_u16IndicStatusOfPatternB;
 };
 
 #endif

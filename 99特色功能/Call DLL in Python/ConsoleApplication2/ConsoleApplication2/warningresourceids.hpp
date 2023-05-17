@@ -1,5 +1,6 @@
 #ifndef WARNINGRESOURCEIDS_HPP
 #define WARNINGRESOURCEIDS_HPP
+#include "list"
 
 
 //#define DISABLE_WARNING_MODE
@@ -24,6 +25,24 @@ enum WarningMode
 	Convenience,
 	Inactive,
 	Abandoned
+};
+
+enum WarningIndicator{
+	NotificationLampIndic,
+	InfoSignLampIndic,
+	SteeringAssistanceWarningIndic,
+	ChildLockStatusONIndic,
+	ChildLockStatusOFFIndic,
+	TurnIndicWarnIndic,
+	NoTorqueAvailIndic,
+	MaximunSpeedReachedIndic,
+	WiperFailureIndicationIndic,
+	CrashUnlockFailIndic,
+	PassAirbagStatusONIndic,
+	PassAirbagStatusOFFIndic,
+	SuspensionerrorIndic,
+	BrakeLightFailureIndic,
+	NumberOfIndicator
 };
 
 enum WarningIDs
@@ -279,6 +298,9 @@ enum WarningIDs
     NumberOfWarnings
 };
 
+
+typedef std::list<enum WarningIDs> stWarningIDList;
+typedef std::list<enum WarningIDs>::iterator itWarningIDList;
 
 
 #endif

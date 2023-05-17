@@ -19,8 +19,6 @@ struct WarningNode
 typedef std::list<WarningNode> stWarningNodeList;
 typedef std::list<WarningNode>::iterator itWarningNode;
 
-
-
 class WarningNodeList
 {
 
@@ -45,6 +43,8 @@ public:
 	void DecreaseTriggerDelay(uint16 u16Minuend);
 
 	WarningNode PopNoTriggerDelayNode(void);
+
+	stWarningIDList GetAllWarningIDList(void);
 
 private:
 

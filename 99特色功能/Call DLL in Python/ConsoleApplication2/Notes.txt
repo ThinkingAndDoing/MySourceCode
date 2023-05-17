@@ -32,7 +32,23 @@ WarningManger framework 模块功能开发计划
 
 
 
+PatternB
 
+On: Notification is shown
+Off: Notification is not shown
+
+shown代表报警为 TopOfQueue 或者在 WarningStack中显示
+
+
+
+
+
+
+
+
+
+9:30~10:30 Indicator
+10:30~11:20 引用与值传递
 
 
 

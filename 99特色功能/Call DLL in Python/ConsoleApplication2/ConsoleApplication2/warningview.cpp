@@ -205,6 +205,7 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oW
 		printf("displaytimeout = %d, mini display time = %d \n", oWrnModel.GetMaxDispTime(wrnid), oWrnModel.GetMinDispTime(wrnid));
 		printf("immediate = %d, stack = %d \n", m_boImmediate, m_boSaveToStack);
 		printf("usagemode = %d, availiable = %d \n", oWrnModel.GetUsageMode(wrnid), oWrnModel.GetAvailable(wrnid));
+		printf("IndicatorRequest = %d, AudioChimeRequest = %d \n", oWrnModel.GetIndicatorRequest(wrnid), oWrnModel.GetAudioChimeRequest(wrnid));
 		printf("----------------------------------------------\n");
 	}
 
