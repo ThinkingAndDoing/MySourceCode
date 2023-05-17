@@ -32,9 +32,15 @@ public:
 
 	uint16 GetWarningStackSize(void);
 
+	void SetWarningMode(enum WarningMode enMode);
+
+	enum WarningIDs GetActiveModeWarningFromStack(uint16 u16Index);
+
 private:
 
 	stWarningViewVector vecWarningStack;
+
+	enum WarningMode m_enWarningMode;
 };
 
 

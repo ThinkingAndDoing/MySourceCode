@@ -53,6 +53,7 @@ public:
 
 protected:
 	void CreateNewWarningView(enum WarningIDs enWrnID);
+	uint16 m_au16IndicatorReq[NumberOfIndicator];
 
 private:
 	enum AddWarningPolicy m_enAddWarningPolicy;
@@ -69,6 +70,7 @@ private:
 	void WarningPrioArbitrate(WarningView * pNewView);
     void ReleaseCurrentShowNew(WarningView *pNewView);
 	void RestartAllWarningView(void);
+	void UpdateWarningQueueOnStateChanged(void);
 	void ReleaseWarningView(enum WarningIDs enWrnID);
 
 };

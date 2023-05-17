@@ -49,6 +49,11 @@ WarningStrategy::~WarningStrategy()
 
 void WarningStrategy::Initialize()
 {
+	for (int i = 0; i < NumberOfIndicator; i++)
+	{
+		m_au16IndicatorReq[i] = 0;
+	}
+
 	m_poWarningRepo = new WarningRepository();
 	if (NULL == m_poWarningRepo)
 	{
@@ -71,6 +76,11 @@ void WarningStrategy::Initialize()
 
 void WarningStrategy::Deinitialize()
 {
+	for (int i = 0; i < NumberOfIndicator; i++)
+	{
+		m_au16IndicatorReq[i] = 0;
+	}
+
 	if (NULL != m_poWarningRepo)
 	{
 		delete m_poWarningRepo;
@@ -252,6 +262,45 @@ void WarningStrategy::SelectNextView(enum SelectWarningPolicy selectpolicy)
     }
 }
 
+void WarningStrategy::UpdateWarningQueueOnStateChanged(void)
+{
+	WarningView *poView = GetFirstFromLinkList();
+
+	// release all warnings except current warning
+	while (NULL != poView)
+	{
+		if (m_poCurrent != poView && (!poView->IsActiveMode(m_enWarningMode) || !poView->IsAvailiable(m_enAvailiable)))
+		{
+			enum WarningIDs enPendingRemove = poView->GetWarningID();
+			poView = poView->next;
+			RemoveWarningView(enPendingRemove);
+		}
+		else{
+			poView = poView->next;
+		}
+	}
+	// release current warning
+	if (NULL != m_poCurrent && (!poView->IsActiveMode(m_enWarningMode) || !poView->IsAvailiable(m_enAvailiable)))
+	{
+		ReleaseWarningView(m_poCurrent->GetWarningID());
+	}
+
+	if (NULL != m_poWarningRepo)
+	{
+		stWarningIDList lstWarningID = m_poWarningRepo->GetActiveWarningIDList(m_enWarningMode, m_enAvailiable);
+
+		for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); ++it)
+		{
+			if (!m_poWarningList->boIDAlreadyInList(*it))
+			{
+				CreateNewWarningView(*it);
+			}
+		}
+	}
+}
+
+
+
 /*
  * Release all warnings from queue and add all warnings whose warningmode is m_enWarningMode to queue.
  */
@@ -281,6 +330,7 @@ void WarningStrategy::RestartAllWarningView(void)
 	if (NULL != m_poWarningRepo)
 	{
 		stWarningIDList lstWarningID = m_poWarningRepo->GetActiveWarningIDList(m_enWarningMode, m_enAvailiable);
+
 		for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); ++it)
 		{
 			CreateNewWarningView(*it);
@@ -504,14 +554,29 @@ void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 {
 	if (this->m_enWarningMode != enWM)
 	{
-		this->m_enWarningMode = enWM;
-
-		if (NULL != m_poWarningList)
+		if ((m_enWarningMode == Driving || m_enWarningMode == Active) && (enWM != Driving && enWM != Active))
 		{
-			this->m_poWarningList->ClearAll();
+			this->m_enWarningMode = enWM;
+
+			if (NULL != m_poWarningList)
+			{
+				this->m_poWarningList->SetWarningMode(enWM);
+				this->m_poWarningList->ClearAll();
+			}
+
+			RestartAllWarningView();
+		}
+		else{
+			this->m_enWarningMode = enWM;
+
+			if (NULL != m_poWarningList)
+			{
+				this->m_poWarningList->SetWarningMode(enWM);
+			}
+
+			UpdateWarningQueueOnStateChanged();
 		}
 
-		RestartAllWarningView();
 	}
 }
 #endif
