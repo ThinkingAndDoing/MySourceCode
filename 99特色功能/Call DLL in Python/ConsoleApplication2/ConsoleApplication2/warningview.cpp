@@ -350,6 +350,11 @@ bool WarningView::HasPendingRelease(void) const
 	return m_boPendingRelease;
 }
 
+bool WarningView::HasImmediate(void) const
+{
+	return m_boImmediate;
+}
+
 enum WarningIDs WarningView::GetWarningID(void) const
 {
 	return m_enWarningID;
@@ -405,6 +410,7 @@ enum WarningAction WarningView::GetActionOnNewWarningComing(WarningView* poNewVi
 		}
 	}
 
+	// The notification should be interruptted by the Immediate Notification immediately.
 	if (poNewView->m_u16Priority >= this->m_u16Priority && poNewView->m_boImmediate == true)
 	{
 		enTimeSpanATemp = WBDisplace;

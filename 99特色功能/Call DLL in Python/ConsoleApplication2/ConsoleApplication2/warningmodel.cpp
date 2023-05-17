@@ -55,6 +55,16 @@ void WarningModel::ValidityTransformation(void)
 			au16WarningAttribute[u][enUsageMode] = MAX_USAGE_MODE;
 		}
 
+		if (au16WarningAttribute[u][enPrio] < MIN_PRIORITY)
+		{
+			au16WarningAttribute[u][enPrio] = MIN_PRIORITY;
+		}
+
+		if (au16WarningAttribute[u][enPrio] > MAX_PRIORITY)
+		{
+			au16WarningAttribute[u][enPrio] = MAX_PRIORITY;
+		}
+
 		/* TODO
 		if (au16WarningAttribute[u][enAvailable] > MAX_USAGE_MODE)
 		{
@@ -87,7 +97,7 @@ uint16 WarningModel::GetPriority(uint16 u16ID) const
 {
 	if (u16ID < NumberOfWarnings)
 	{
-		return (0xFFFF - au16WarningAttribute[u16ID][enPrio]); // for cm1e only
+		return (MAX_PRIORITY + 1 - au16WarningAttribute[u16ID][enPrio]); // for cm1e only
 	}
 	else{
 		return 0;

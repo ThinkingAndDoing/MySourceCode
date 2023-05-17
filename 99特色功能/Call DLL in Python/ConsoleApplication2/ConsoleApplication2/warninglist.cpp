@@ -6,6 +6,7 @@
 WarningList::WarningList()
 { 
 	m_enWarningMode = Abandoned;
+	m_enAvailiable = OFF;
 	vecWarningStack.clear(); 
 }
 
@@ -70,9 +71,20 @@ enum WarningIDs WarningList::GetWarningFromStack(uint16 u16Index)
 }
 
 
-uint16 WarningList::GetWarningStackSize(void)
+uint16 WarningList::GetVisiableWarningNumOfStack(void)
 {
-	return (uint16)vecWarningStack.size();
+	uint16 u16WarningNum = 0;
+
+	for (uint16 u16 = 0; u16 < vecWarningStack.size(); u16++)
+	{
+		if (vecWarningStack[u16].IsActiveMode(m_enWarningMode) && vecWarningStack[u16].IsAvailiable(m_enAvailiable))
+		{
+			u16WarningNum++;
+		}
+	}
+
+	return u16WarningNum;
+
 }
 
 void WarningList::SetWarningMode(enum WarningMode enMode)
@@ -80,14 +92,18 @@ void WarningList::SetWarningMode(enum WarningMode enMode)
 	m_enWarningMode = enMode;
 }
 
-enum WarningIDs WarningList::GetActiveModeWarningFromStack(uint16 u16Index)
+void WarningList::SetAvailiable(enum Availiable enAvi)
 {
+	m_enAvailiable = enAvi;
+}
 
+enum WarningIDs WarningList::GetVisiableWarningFromStack(uint16 u16Index)
+{
 	uint16 u16Counter = u16Index;
 
 	for (uint16 u16 = 0; u16 < vecWarningStack.size(); u16++)
 	{
-		if (vecWarningStack[u16].IsActiveMode(m_enWarningMode))
+		if (vecWarningStack[u16].IsActiveMode(m_enWarningMode) && vecWarningStack[u16].IsAvailiable(m_enAvailiable))
 		{
 			if (u16Counter == 0)
 			{
@@ -97,7 +113,6 @@ enum WarningIDs WarningList::GetActiveModeWarningFromStack(uint16 u16Index)
 				u16Counter--;
 			}
 		}
-		u16++;
 	}
 
 	return NumberOfWarnings;

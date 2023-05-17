@@ -118,7 +118,7 @@ void WarningNodeList::DecreaseTriggerDelay(uint16 u16Minuend)
 			it->u16TriggerDelay = 0;
 		}
 		else{
-			printf("DecreaseTriggerDelay it->enWarningID = %u, it->u16TriggerDelay = %u !\n", it->enWarningID, it->u16TriggerDelay);
+			printf("DecreaseTriggerDelay it->enWarningID = %u, it->u16TriggerDelay = %u !\n", (uint16)it->enWarningID, it->u16TriggerDelay);
 			it->u16TriggerDelay = it->u16TriggerDelay - u16Minuend;
 		}
 	}

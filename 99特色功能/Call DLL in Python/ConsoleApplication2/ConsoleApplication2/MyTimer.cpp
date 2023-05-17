@@ -118,18 +118,18 @@ void cMyTimer::OnTimer(unsigned id, int iParam, std::string str)
 
 	pWrnStrategy->TimeTick();
 
-	if (pWrnStrategy->m_poWarningList->GetWarningStackSize() != u16WarningStackSize)
+	if (pWrnStrategy->m_poWarningList->GetVisiableWarningNumOfStack() != u16WarningStackSize)
 	{
-		u16WarningStackSize = pWrnStrategy->m_poWarningList->GetWarningStackSize();
+		u16WarningStackSize = pWrnStrategy->m_poWarningList->GetVisiableWarningNumOfStack();
 		if (NULL != cbWarningStackChanged)
 		{
 			cbWarningStackChanged(u16WarningStackSize);
 		}
 	}
 
-	if (pWrnStrategy->GetActiveWarningID() != u16ActiveWarningID)
+	if (pWrnStrategy->GetCurrentWarningID() != u16ActiveWarningID)
 	{
-		u16ActiveWarningID = pWrnStrategy->GetActiveWarningID();
+		u16ActiveWarningID = pWrnStrategy->GetCurrentWarningID();
 		if (NULL != cbWarningChanged)
 		{
 			cbWarningChanged(u16ActiveWarningID);

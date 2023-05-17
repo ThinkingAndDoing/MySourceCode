@@ -55,6 +55,8 @@ public:
 
 	bool HasPendingRelease(void) const;
 
+	bool HasImmediate(void) const;
+
 	enum WarningIDs GetWarningID(void) const;
 
 	bool boNeedSaveToStack(void) const;

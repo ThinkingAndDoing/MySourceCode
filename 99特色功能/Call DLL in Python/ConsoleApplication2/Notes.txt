@@ -1,9 +1,23 @@
 
 
 对于Pattern B，若触发多个报警，是否要显示多个报警灯？是的
-CheckViewList（MessageStack）
-问题1：高优先级报警显示过程中，按键切换到菜单后，如果再触发低优先级报警，这时候要显示报警还是菜单？显示高优先级报警。
-问题2：如果一个Notification显示后，切换到菜单，Notification是否要停止计时？当从菜单切回到Notification之后，Notification的Display Timeout是否要重新计时？停止计时，切换到Notification之后，重新计时。
+
+PatternB
+
+On: Notification is shown
+Off: Notification is not shown
+
+shown代表报警为 TopOfQueue 或者在 WarningStack中显示
+
+
+触发一个Immediate属性为True的Notification，若Notification在当前UsageMode或者Available下不能显示，这个Notification是否要丢弃？
+若当前显示的界面是菜单，触发一个Immediate的报警，是否丢弃？
+
+Availiable 在值变化的时候，是否将WarningStack中的报警转移到WarningQueue？
+
+
+若报警A被触发后进入MessageQueue，驾驶员按键隐藏报警A，报警A进入MessageStack，切换UsageMode到ModeX，报警A在ModeX下不显示，这时MessageStack中的报警A是否要隐藏？
+
 
 
 
@@ -32,24 +46,8 @@ WarningManger framework 模块功能开发计划
 
 
 
-PatternB
-
-On: Notification is shown
-Off: Notification is not shown
-
-shown代表报警为 TopOfQueue 或者在 WarningStack中显示
-
-
-
-
-
-
-
-
-
 9:30~10:30 Indicator
 10:30~11:20 引用与值传递
-
 
 
 
@@ -76,7 +74,7 @@ shown代表报警为 TopOfQueue 或者在 WarningStack中显示
 2，Available若大于7，那么转换成7
 3，若最大显示时间小于最小显示时间，或者小于UserLockTime，那么maxdisptime = minidisptime > userlocktime? minidisptime:userlocktime；
 
-
+	
 
 1，如何访问系统时钟？
 

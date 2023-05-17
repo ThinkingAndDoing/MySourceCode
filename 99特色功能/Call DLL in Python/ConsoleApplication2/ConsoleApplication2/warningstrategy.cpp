@@ -181,14 +181,17 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
 
 		if (poWrnView == NULL)
 		{
-			InsertLinkListOnPriority(pNewView);
-
-			if (this->m_boSuspension == false)
+			if (!(NULL != m_poCurrent && pNewView->GetPriority() < m_poCurrent->GetPriority() && pNewView->HasImmediate()))  //pNewView will not be discarded.
 			{
-				WarningPrioArbitrate(pNewView);
-			}
+				InsertLinkListOnPriority(pNewView);
 
-			boIsAdded = true;
+				if (!m_boSuspension)
+				{
+					WarningPrioArbitrate(pNewView);
+				}
+
+				boIsAdded = true;
+			}
 		}
 		else
 		{
@@ -262,78 +265,37 @@ void WarningStrategy::SelectNextView(enum SelectWarningPolicy selectpolicy)
     }
 }
 
-void WarningStrategy::UpdateWarningQueueOnStateChanged(void)
+void WarningStrategy::ReleaseInactiveWarningView(void)
 {
 	WarningView *poView = GetFirstFromLinkList();
 
-	// release all warnings except current warning
+	// release all warnings
 	while (NULL != poView)
 	{
-		if (m_poCurrent != poView && (!poView->IsActiveMode(m_enWarningMode) || !poView->IsAvailiable(m_enAvailiable)))
+		if (!poView->IsActiveMode(m_enWarningMode) || !poView->IsAvailiable(m_enAvailiable))
 		{
 			enum WarningIDs enPendingRemove = poView->GetWarningID();
 			poView = poView->next;
-			RemoveWarningView(enPendingRemove);
+			ReleaseWarningView(enPendingRemove);
 		}
 		else{
 			poView = poView->next;
-		}
-	}
-	// release current warning
-	if (NULL != m_poCurrent && (!poView->IsActiveMode(m_enWarningMode) || !poView->IsAvailiable(m_enAvailiable)))
-	{
-		ReleaseWarningView(m_poCurrent->GetWarningID());
-	}
-
-	if (NULL != m_poWarningRepo)
-	{
-		stWarningIDList lstWarningID = m_poWarningRepo->GetActiveWarningIDList(m_enWarningMode, m_enAvailiable);
-
-		for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); ++it)
-		{
-			if (!m_poWarningList->boIDAlreadyInList(*it))
-			{
-				CreateNewWarningView(*it);
-			}
 		}
 	}
 }
 
-
-
-/*
- * Release all warnings from queue and add all warnings whose warningmode is m_enWarningMode to queue.
- */
-void WarningStrategy::RestartAllWarningView(void)
+void WarningStrategy::AddNewWarningsOnStateChanged(void)
 {
-	WarningView *poView = GetFirstFromLinkList();
-
-	// release all warnings except current warning
-	while (NULL != poView)
-	{
-		if (m_poCurrent != poView)
-		{
-			enum WarningIDs enPendingRemove = poView->GetWarningID();
-			poView = poView->next;
-			RemoveWarningView(enPendingRemove);
-		}
-		else{
-			poView = poView->next;
-		}
-	}
-	// release current warning
-	if (NULL != m_poCurrent)
-	{
-		ReleaseWarningView(m_poCurrent->GetWarningID());
-	}
-
 	if (NULL != m_poWarningRepo)
 	{
 		stWarningIDList lstWarningID = m_poWarningRepo->GetActiveWarningIDList(m_enWarningMode, m_enAvailiable);
 
 		for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); ++it)
 		{
-			CreateNewWarningView(*it);
+			if (!m_poWarningList->boIDAlreadyInList(*it) && GetFromLinkList(*it) == NULL)
+			{
+				CreateNewWarningView(*it);
+			}
 		}
 	}
 }
@@ -421,6 +383,8 @@ void WarningStrategy::CreateNewWarningView(enum WarningIDs enWrnID)
 {
 	WarningView *pView = new WarningView(enWrnID, *m_poWarningModel);
 
+	bool boIsAdded = false;
+
 	if (NULL == pView)
 	{
 		printf("unable to satisfy request for memory\n");
@@ -436,14 +400,15 @@ void WarningStrategy::CreateNewWarningView(enum WarningIDs enWrnID)
 
 		if (pView->IsActiveMode(m_enWarningMode) && pView->IsAvailiable(m_enAvailiable))
 		{
-			if (AddNewWarningView(pView) == false)
+			if (AddNewWarningView(pView))
 			{
-				delete pView;
-				pView = NULL;
+				boIsAdded = true;
 			}
 		}
 	}
-	else{
+
+	if (!boIsAdded)
+	{
 		delete pView;
 		pView = NULL;
 	}
@@ -534,7 +499,7 @@ void WarningStrategy::RemoveWarningView(enum WarningIDs enWrnID)
 /*
  * Get the warning ID of the currently active warning view
  */
-uint16 WarningStrategy::GetActiveWarningID(void)
+uint16 WarningStrategy::GetCurrentWarningID(void)
 {
 	if (NULL == m_poCurrent || this->m_boSuspension == true)
     {
@@ -558,23 +523,38 @@ void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 		{
 			this->m_enWarningMode = enWM;
 
-			if (NULL != m_poWarningList)
+			ReleaseInactiveWarningView();
+
+			if (NULL != m_poWarningRepo)
+			{
+				stWarningIDList lstWarningID = m_poWarningRepo->GetActiveWarningIDList(m_enWarningMode, m_enAvailiable);
+
+				for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); ++it)
+				{
+					if (m_poWarningList->boIDAlreadyInList(*it))
+					{
+						CreateNewWarningView(*it);
+					}
+				}
+			}
+
+			if (NULL != this->m_poWarningList)
 			{
 				this->m_poWarningList->SetWarningMode(enWM);
 				this->m_poWarningList->ClearAll();
 			}
-
-			RestartAllWarningView();
 		}
 		else{
 			this->m_enWarningMode = enWM;
 
-			if (NULL != m_poWarningList)
+			ReleaseInactiveWarningView();
+
+			AddNewWarningsOnStateChanged();
+
+			if (NULL != this->m_poWarningList)
 			{
 				this->m_poWarningList->SetWarningMode(enWM);
 			}
-
-			UpdateWarningQueueOnStateChanged();
 		}
 
 	}
@@ -592,12 +572,14 @@ void WarningStrategy::SetAvailiable(enum Availiable enAvai)
 	{
 		this->m_enAvailiable = enAvai;
 
+		ReleaseInactiveWarningView();
+
+		AddNewWarningsOnStateChanged();
+
 		if (NULL != this->m_poWarningList)
 		{
-			this->m_poWarningList->ClearAll();
+			this->m_poWarningList->SetAvailiable(enAvai);
 		}
-
-		RestartAllWarningView();
 	}
 }
 #endif

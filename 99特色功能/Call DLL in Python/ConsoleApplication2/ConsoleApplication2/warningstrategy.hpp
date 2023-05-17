@@ -46,7 +46,7 @@ public:
 	virtual void ForceReleaseWarning(enum WarningIDs enWrnID);
 	bool ProcessVirtualKey(enum VirtualKey enKey);
 	void RemoveWarningView(enum WarningIDs enWrnID);
-    uint16 GetActiveWarningID(void);
+	uint16 GetCurrentWarningID(void);
 	virtual void SetWarningMode(enum WarningMode enWM);
 	virtual void SetAvailiable(enum Availiable enAvai);
 	virtual void TimeTick(void);
@@ -69,8 +69,8 @@ private:
     bool AddNewWarningView(WarningView * pNewView); 
 	void WarningPrioArbitrate(WarningView * pNewView);
     void ReleaseCurrentShowNew(WarningView *pNewView);
-	void RestartAllWarningView(void);
-	void UpdateWarningQueueOnStateChanged(void);
+	void ReleaseInactiveWarningView(void);
+	void AddNewWarningsOnStateChanged(void);
 	void ReleaseWarningView(enum WarningIDs enWrnID);
 
 };

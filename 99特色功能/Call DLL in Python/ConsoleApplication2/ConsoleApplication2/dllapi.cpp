@@ -70,15 +70,9 @@ Function define
 void CALL_TYPE init(void)
 {
 	poWrnStrategy = new WarningStrategyCM1E();
-	if (NULL == poWrnStrategy)
-	{
-		printf("unable to satisfy request for memory\n");
-	}
+
 	poTTStrategy = new TelltaleStrategy();
-	if (NULL == poTTStrategy)
-	{
-		printf("unable to satisfy request for memory\n");
-	}
+
 	poMyTimer = new cMyTimer(poWrnStrategy, poTTStrategy);
 	poMyTimer->CreateTimer(100);
 	poMyTimer->SetWarningStackCallback(OnWarningStackChanged);
@@ -126,7 +120,7 @@ void CALL_TYPE SetAvailiable(int id)
 
 uint16 CALL_TYPE GetWarningIDFromStack(int id)
 {
-	uint16 u16WrnID = (uint16)poWrnStrategy->m_poWarningList->GetWarningFromStack((uint16)id);
+	uint16 u16WrnID = (uint16)poWrnStrategy->m_poWarningList->GetVisiableWarningFromStack((uint16)id);
 
 	if (NumberOfWarnings == u16WrnID)
 	{

@@ -11,7 +11,7 @@ struct WarningNode
 	uint16 u16Priority;
 	uint16 u16TriggerDelay;
 
-	WarningNode(enum WarningIDs _wrnid = NumberOfWarnings, uint16 _priority = 0, uint16 _triggerdelay = 0) :
+	explicit WarningNode(enum WarningIDs _wrnid = NumberOfWarnings, uint16 _priority = 0, uint16 _triggerdelay = 0) :
 		enWarningID(_wrnid), u16Priority(_priority), u16TriggerDelay(_triggerdelay){}
 };
 

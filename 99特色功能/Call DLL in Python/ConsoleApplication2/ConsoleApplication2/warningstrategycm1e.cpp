@@ -5,16 +5,19 @@
 
 WarningStrategyCM1E::WarningStrategyCM1E() :WarningStrategy()
 { 
+	m_u16IndicStatusOfPatternB = 0;
 	m_oPendingTriggerList.ClearAll(); 
 }
 
 WarningStrategyCM1E::WarningStrategyCM1E(const WarningStrategyCM1E & oWS) : WarningStrategy(oWS)
 { 
+	m_u16IndicStatusOfPatternB = 0;
 	m_oPendingTriggerList.ClearAll(); 
 }
 
 WarningStrategyCM1E::~WarningStrategyCM1E()
 { 
+	m_u16IndicStatusOfPatternB = 0;
 	m_oPendingTriggerList.ClearAll(); 
 }
 
@@ -29,7 +32,7 @@ void WarningStrategyCM1E::TimeTick(void)
 
 	while (stNode.enWarningID != NumberOfWarnings)
 	{
-		printf("stNode.enWarningID = %u will be add to queue!\n", stNode.enWarningID);
+		printf("stNode.enWarningID = %u will be add to queue!\n", (uint16)stNode.enWarningID);
 		WarningStrategy::CreateNewWarningView(stNode.enWarningID);
 		stNode = m_oPendingTriggerList.PopNoTriggerDelayNode();
 	}
@@ -58,8 +61,7 @@ void WarningStrategyCM1E::ReleaseWarning(enum WarningIDs wrnid)
 
 void WarningStrategyCM1E::RequestWarning(enum WarningIDs wrnid)
 {
-
-	printf("RequestWarning wrnid = %u!\n", wrnid);
+	printf("RequestWarning wrnid = %u!\n", (uint16)wrnid);
 	if (WarningStrategy::m_poWarningModel->GetTriggerTime(wrnid) > 0)
 	{
 		WarningNode oPendingTriggerWrn(wrnid, WarningStrategy::m_poWarningModel->GetPriority(wrnid), WarningStrategy::m_poWarningModel->GetTriggerTime(wrnid));
@@ -108,7 +110,7 @@ void WarningStrategyCM1E::UpdateIndicStatusOfPatternA(void)
 		}
 	}
 
-	printf(" m_u16IndicStatusOfPatternB = %d \n", m_u16IndicStatusOfPatternB);
+	printf(" m_u16IndicStatusOfPatternB = %u \n", m_u16IndicStatusOfPatternB);
 }				
 
 /*

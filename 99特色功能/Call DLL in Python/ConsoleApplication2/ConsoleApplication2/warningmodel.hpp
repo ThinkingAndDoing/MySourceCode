@@ -3,8 +3,9 @@
 #include "warningresourceids.hpp"
 #include "typedefine.hpp"
 
-#define NUM_OF_ATTRIBUTE           9          
 #define MAX_USAGE_MODE			   31
+#define MIN_PRIORITY			   1
+#define MAX_PRIORITY			   10
 #define TS_ENDLESS				   0
 
 
@@ -19,7 +20,8 @@ enum WarningAttribute
 	enStack,
 	enUsageMode,
 	enIndicatorRequest,
-	enAudioChimeRequest
+	enAudioChimeRequest,
+	enAttribNumber
 };
 
 
@@ -61,7 +63,7 @@ public:
 private:
 	
 	// m_NotiID, m_Prio, m_UserLockTime, m_MinTime, m_diaplayTimeout, m_Immediate, m_Stack, m_Enable, m_IndicatorRequest
-	uint16 au16WarningAttribute[NumberOfWarnings][NUM_OF_ATTRIBUTE];
+	uint16 au16WarningAttribute[NumberOfWarnings][enAttribNumber];
 };
 
 
