@@ -201,27 +201,41 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
 	return boIsAdded;
 }
 
+void WarningStrategy::OnCurrentWarningChanged(void)
+{
+
+}
+
 /*
- * Set poNew as the Active/Current warning.
+ * Set poNew as the Active/Current warning. Skip if poNew->GetWarningID() equals to m_poCurrent->GetWarningID().
  */
 void WarningStrategy::UpdateCurrentWarning(WarningView * poNew)
 {
-    // 1.deactive current warning
-    if (NULL != m_poCurrent) 
-    {
-		m_poCurrent->Deactivate();
-		TimerStop();
-    }
+	if (NULL != m_poCurrent || NULL != poNew)
+	{
+		// 1.deactive current warning
+		if (NULL != m_poCurrent)
+		{
+			m_poCurrent->Deactivate();
+			TimerStop();
+		}
 
-	// 2.update m_poCurrent as poNew
-	m_poCurrent = poNew;
+		if (!(NULL != m_poCurrent && NULL != poNew && m_poCurrent->GetWarningID() == poNew->GetWarningID()))
+		{
+			// 2.update m_poCurrent as poNew
+			m_poCurrent = poNew;
+			OnCurrentWarningChanged();
 
-    // 3.activate new
-	if (NULL != m_poCurrent && this->m_boSuspension == false)
-    {
-		uint16 u16FirstDuration = m_poCurrent->Activate();
-		TimerStart(u16FirstDuration);
-    }
+			// 3.activate new
+			if (NULL != m_poCurrent && this->m_boSuspension == false)
+			{
+				uint16 u16FirstDuration = m_poCurrent->Activate();
+				TimerStart(u16FirstDuration);
+			}
+		}
+
+	}
+
 }
 
 /*
@@ -439,6 +453,25 @@ void WarningStrategy::Resume(void)
 	}
 }
 
+void WarningStrategy::TransferWarningToStack(WarningView* poWarning)
+{
+	if (NULL != poWarning)
+	{
+		if (poWarning->boNeedSaveToStack())
+		{
+			if (NULL != m_poWarningList)
+			{
+				m_poWarningList->AddWarningToStack(*poWarning);
+			}
+		}
+		else
+		{
+			m_poWarningRepo->RemoveViewFromRepository(poWarning->GetWarningID());
+		}
+		RemoveWarningView(poWarning->GetWarningID());
+	}
+}
+
 bool WarningStrategy::ProcessVirtualKey(enum VirtualKey enKey)
 {
 	if (NULL != m_poCurrent && this->m_boSuspension == false)
@@ -457,11 +490,7 @@ bool WarningStrategy::ProcessVirtualKey(enum VirtualKey enKey)
 			return false;
 
 		case WBRelease:
-			if (NULL != m_poWarningList)
-			{
-				m_poWarningList->AddWarningToStack(*m_poCurrent);
-			}
-			RemoveWarningView(m_poCurrent->GetWarningID());
+			TransferWarningToStack(m_poCurrent);
 			return true;
 
 		case WBInvalid:
@@ -531,10 +560,7 @@ void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 
 				for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); ++it)
 				{
-					if (m_poWarningList->boIDAlreadyInList(*it))
-					{
-						CreateNewWarningView(*it);
-					}
+					CreateNewWarningView(*it);
 				}
 			}
 
@@ -549,12 +575,13 @@ void WarningStrategy::SetWarningMode(enum WarningMode enWM)
 
 			ReleaseInactiveWarningView();
 
-			AddNewWarningsOnStateChanged();
-
 			if (NULL != this->m_poWarningList)
 			{
 				this->m_poWarningList->SetWarningMode(enWM);
 			}
+
+			AddNewWarningsOnStateChanged();
+
 		}
 
 	}
@@ -574,12 +601,13 @@ void WarningStrategy::SetAvailiable(enum Availiable enAvai)
 
 		ReleaseInactiveWarningView();
 
-		AddNewWarningsOnStateChanged();
-
 		if (NULL != this->m_poWarningList)
 		{
 			this->m_poWarningList->SetAvailiable(enAvai);
 		}
+
+		AddNewWarningsOnStateChanged();
+
 	}
 }
 #endif
@@ -625,11 +653,7 @@ void WarningStrategy::OnTimer(void)
 	switch (m_poCurrent->GetCurrentTimespan()->GetOnEnd())
 	{
 	case WBRelease:
-		if (NULL != m_poWarningList)
-		{
-			m_poWarningList->AddWarningToStack(*m_poCurrent);
-		}
-		RemoveWarningView(m_poCurrent->GetWarningID());
+		TransferWarningToStack(m_poCurrent);
 		break;
 
 	case WBIgnore:

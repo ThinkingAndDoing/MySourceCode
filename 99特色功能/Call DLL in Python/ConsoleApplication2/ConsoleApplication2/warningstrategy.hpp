@@ -50,6 +50,7 @@ public:
 	virtual void SetWarningMode(enum WarningMode enWM);
 	virtual void SetAvailiable(enum Availiable enAvai);
 	virtual void TimeTick(void);
+	virtual void OnCurrentWarningChanged(void);
 
 protected:
 	void CreateNewWarningView(enum WarningIDs enWrnID);
@@ -72,7 +73,7 @@ private:
 	void ReleaseInactiveWarningView(void);
 	void AddNewWarningsOnStateChanged(void);
 	void ReleaseWarningView(enum WarningIDs enWrnID);
-
+	void TransferWarningToStack(WarningView* poWarning);
 };
 
 #endif

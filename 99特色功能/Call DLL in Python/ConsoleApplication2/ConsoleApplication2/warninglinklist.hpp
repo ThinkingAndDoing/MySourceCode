@@ -12,6 +12,7 @@ public:
 	WarningLinkList(const WarningLinkList & oWLL);
 	virtual ~WarningLinkList();
 
+	uint16 GetNumberOfWarningView(void);
 	virtual void Deinitialize(void);
 
 protected:
@@ -21,7 +22,6 @@ protected:
 	bool RemoveFromLinkList(enum WarningIDs enWrnID);
 	WarningView* GetLastFromLinkList(void);
 	WarningView* GetFirstFromLinkList(void);
-	uint16 GetNumberOfWarningView(void);
 
 private:
 
