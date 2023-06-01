@@ -30,7 +30,7 @@ public:
 
 	enum WarningIDs GetWarningIDOfFirstNode(void);
 
-	bool boIDAlreadyInList(enum WarningIDs enWrnID);
+	bool ListContainSameID(enum WarningIDs enWrnID);
 
 	bool AddNewNodeToList(WarningNode stNewArrivalTemp);
 
@@ -44,11 +44,11 @@ public:
 
 	WarningNode PopNoTriggerDelayNode(void);
 
-	stWarningIDList GetAllWarningIDList(void);
+	stWarningIDList GetListOfAllIDs(void);
 
 private:
 
-	stWarningNodeList m_lstWarningNode;      //新来报警除了放入WarningView队列外，也存储到m_newarrivallist中
+	stWarningNodeList m_lstWarningNode;
 
 };
 

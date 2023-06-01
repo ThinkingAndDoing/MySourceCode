@@ -35,7 +35,7 @@ void WarningList::RemoveWarningFromStack(enum WarningIDs wrnid)
 	}
 }
 
-bool WarningList::boIDAlreadyInList(enum WarningIDs enWrnID)
+bool WarningList::ListContainSameID(enum WarningIDs enWrnID)
 {
 	for (itWarningViewVec it = vecWarningStack.begin(); it != vecWarningStack.end(); ++it)
 	{
@@ -49,7 +49,7 @@ bool WarningList::boIDAlreadyInList(enum WarningIDs enWrnID)
 
 void WarningList::AddWarningToStack(const WarningView & oWrnView)
 {
-	if (false == boIDAlreadyInList(oWrnView.GetWarningID()))
+	if (false == ListContainSameID(oWrnView.GetWarningID()))
 	{
 		if (oWrnView.boNeedSaveToStack())
 		{

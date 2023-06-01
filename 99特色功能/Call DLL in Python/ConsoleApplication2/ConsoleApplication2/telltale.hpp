@@ -28,7 +28,7 @@ private:
 	TelltaleViewList lstTelltaleView;
 
 	void AddNewTelltale(TelltaleView stNewTelltale);
-	bool boIDAlreadyInList(enum WarningIDs ttid);
+	bool ListContainSameID(enum WarningIDs ttid);
 };
 
 

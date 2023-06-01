@@ -299,7 +299,7 @@ void WarningStrategy::AddNewWarningsOnStateChanged(void)
 
 		for (itWarningIDList it = lstWarningID.begin(); it != lstWarningID.end(); ++it)
 		{
-			if (!m_poWarningList->boIDAlreadyInList(*it) && GetFromLinkList(*it) == NULL)
+			if (!m_poWarningList->ListContainSameID(*it) && GetFromLinkList(*it) == NULL)
 			{
 				CreateNewWarningView(*it);
 			}

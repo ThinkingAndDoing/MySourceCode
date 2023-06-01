@@ -69,7 +69,7 @@ struct TelltaleView stTelltalePriorityArray[] = {
 };
 
 
-bool TelltaleStrategy::boIDAlreadyInList(enum WarningIDs ttid)
+bool TelltaleStrategy::ListContainSameID(enum WarningIDs ttid)
 {
 	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); ++it)
 	{
@@ -87,7 +87,7 @@ void TelltaleStrategy::RequestWarning(enum WarningIDs ttid)
 	{
 		if (i == ttid)
 		{
-			if (boIDAlreadyInList(ttid) == false)
+			if (ListContainSameID(ttid) == false)
 			{
 				AddNewTelltale(stTelltalePriorityArray[i]);
 				return ;

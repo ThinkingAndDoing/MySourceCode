@@ -39,10 +39,10 @@ protected:
 private:
 
 	bool m_boSuspension;
-	uint16 m_au16IndicatorReq[NumberOfIndicator];
 
 	WarningNodeList m_oPendingTriggerList;
-	uint16 m_u16IndicStatusOfPatternB;
+	WarningNodeList m_oEverDisplayedList;
+	uint16 m_u16IndicStatusOfPatternA;
 };
 
 #endif

@@ -27,7 +27,7 @@ enum WarningIDs WarningNodeList::GetWarningIDOfFirstNode(void)
 	}
 }
 
-bool WarningNodeList::boIDAlreadyInList(enum WarningIDs enWrnID)
+bool WarningNodeList::ListContainSameID(enum WarningIDs enWrnID)
 {
 	for (itWarningNode it = m_lstWarningNode.begin(); it != m_lstWarningNode.end(); ++it)
 	{
@@ -46,7 +46,7 @@ bool WarningNodeList::AddNewNodeToList(WarningNode stNewArrivalTemp)
 {
 	bool boInserted = false;
 
-	if (false == boIDAlreadyInList(stNewArrivalTemp.enWarningID))
+	if (false == ListContainSameID(stNewArrivalTemp.enWarningID))
 	{
 		for (itWarningNode it = m_lstWarningNode.begin(); it != m_lstWarningNode.end(); ++it)
 		{
@@ -142,7 +142,7 @@ WarningNode WarningNodeList::PopNoTriggerDelayNode(void)
 }
 
 
-stWarningIDList WarningNodeList::GetAllWarningIDList(void)
+stWarningIDList WarningNodeList::GetListOfAllIDs(void)
 {
 	stWarningIDList lstWarningID;
 

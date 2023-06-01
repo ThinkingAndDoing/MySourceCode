@@ -7,38 +7,26 @@
 
 WarningStrategyCM1E::WarningStrategyCM1E() :WarningStrategy()
 { 
-	m_u16IndicStatusOfPatternB = 0;
+	m_u16IndicStatusOfPatternA = 0;
 	m_boSuspension = false;
 	m_oPendingTriggerList.ClearAll();
-
-	for (int i = 0; i < NumberOfIndicator; i++)
-	{
-		m_au16IndicatorReq[i] = 0;
-	}
+	m_oEverDisplayedList.ClearAll();
 }
 
 WarningStrategyCM1E::WarningStrategyCM1E(const WarningStrategyCM1E & oWS) : WarningStrategy(oWS)
 { 
-	m_u16IndicStatusOfPatternB = oWS.m_u16IndicStatusOfPatternB;
+	m_u16IndicStatusOfPatternA = oWS.m_u16IndicStatusOfPatternA;
 	m_boSuspension = oWS.m_boSuspension;
 	m_oPendingTriggerList.ClearAll();
-
-	for (int i = 0; i < NumberOfIndicator; i++)
-	{
-		m_au16IndicatorReq[i] = oWS.m_au16IndicatorReq[i];
-	}
+	m_oEverDisplayedList.ClearAll();
 }
 
 WarningStrategyCM1E::~WarningStrategyCM1E()
 { 
-	m_u16IndicStatusOfPatternB = 0;
+	m_u16IndicStatusOfPatternA = 0;
 	m_boSuspension = false;
 	m_oPendingTriggerList.ClearAll();
-
-	for (int i = 0; i < NumberOfIndicator; i++)
-	{
-		m_au16IndicatorReq[i] = 0;
-	}
+	m_oEverDisplayedList.ClearAll();
 }
 
 void WarningStrategyCM1E::WarningPrioArbitrate(WarningView * pNewView)
@@ -62,13 +50,25 @@ void WarningStrategyCM1E::ReleaseWarningView(enum WarningIDs enWrnID)
 
 bool WarningStrategyCM1E::UpdateCurrentWarning(WarningView * poNew)
 {
+	bool boCurrentChanged = false;
+
 	if (!m_boSuspension)
 	{
-		return WarningStrategy::UpdateCurrentWarning(poNew);
+		boCurrentChanged = WarningStrategy::UpdateCurrentWarning(poNew);
 	}
-	else{
-		return false;
+	
+	if (boCurrentChanged)
+	{
+		WarningView *poCurrent = WarningStrategy::GetCurrentWarningView();
+		if (NULL != poCurrent)
+		{
+			WarningNode oEverDisplayedWrn(poCurrent->GetWarningID(), poCurrent->GetPriority(), poCurrent->GetTriggerDelay());
+			m_oEverDisplayedList.AddNewNodeToList(oEverDisplayedWrn);
+			UpdateIndicStatusOfPatternA();
+		}
 	}
+
+	return boCurrentChanged;
 }
 
 void WarningStrategyCM1E::Suspension(void)
@@ -144,7 +144,10 @@ void WarningStrategyCM1E::ForceReleaseWarning(enum WarningIDs wrnid)
 
 	WarningStrategy::ForceReleaseWarning(wrnid);
 
+	m_oEverDisplayedList.RemoveNodeFromList(wrnid);
+
 	UpdateIndicStatusOfPatternA();
+
 }
 
 void WarningStrategyCM1E::ReleaseWarning(enum WarningIDs wrnid)
@@ -153,6 +156,8 @@ void WarningStrategyCM1E::ReleaseWarning(enum WarningIDs wrnid)
 	m_oPendingTriggerList.RemoveNodeFromList(wrnid);
 
 	WarningStrategy::ReleaseWarning(wrnid);
+
+	m_oEverDisplayedList.RemoveNodeFromList(wrnid);
 
 	UpdateIndicStatusOfPatternA();
 }
@@ -168,47 +173,38 @@ void WarningStrategyCM1E::RequestWarning(enum WarningIDs wrnid)
 	else{
 		WarningStrategy::CreateNewWarningView(wrnid);
 	}
-
-	UpdateIndicStatusOfPatternA();
 }
 
 void WarningStrategyCM1E::UpdateIndicStatusOfPatternA(void)
 {
-	for (int i = 0; i < NumberOfIndicator; i++)
-	{
-		m_au16IndicatorReq[i] = 0;
-	}
+	uint16 m_au16IndicatorReq[NumberOfIndicator];
 
-	stWarningIDList triggerListWarningID = m_oPendingTriggerList.GetAllWarningIDList();
-	triggerListWarningID.sort();
+	memset(m_au16IndicatorReq, 0, sizeof(m_au16IndicatorReq));
 
-	stWarningIDList repoListWarningID = m_poWarningRepo->GetAllWarningIDList();
-	repoListWarningID.sort();
+	stWarningIDList olstEverDisplayed = m_oEverDisplayedList.GetListOfAllIDs();
 
-	repoListWarningID.merge(triggerListWarningID);
-
-	for (itWarningIDList it = repoListWarningID.begin(); it != repoListWarningID.end(); ++it)
+	for (itWarningIDList it = olstEverDisplayed.begin(); it != olstEverDisplayed.end(); ++it)
 	{
 		uint16 u16Indic = m_poWarningModel->GetIndicatorRequest((uint16)*it);
 
-		if (u16Indic % 2 == 0 && (u16Indic / 2 - 1) < NumberOfIndicator)
+		if (u16Indic % 2 == 1 && u16Indic / 2 < NumberOfIndicator)
 		{
-			m_au16IndicatorReq[u16Indic / 2 - 1] ++;
+			m_au16IndicatorReq[u16Indic / 2] ++;
 		}
 	}
 
 	for (int i = 0; i < NumberOfIndicator; i++)
 	{
-		if (m_au16IndicatorReq[i])
+		if (m_au16IndicatorReq[i]>0)
 		{
-			vSetBitValById(&m_u16IndicStatusOfPatternB, i, 1);
+			vSetBitValById(&m_u16IndicStatusOfPatternA, i, 1);
 		}
 		else{
-			vSetBitValById(&m_u16IndicStatusOfPatternB, i, 0);
+			vSetBitValById(&m_u16IndicStatusOfPatternA, i, 0);
 		}
 	}
 
-	printf(" m_u16IndicStatusOfPatternB = %u \n", m_u16IndicStatusOfPatternB);
+	printf(" UpdateIndicStatusOfPatternA = %u \n", m_u16IndicStatusOfPatternA);
 }				
 
 /*

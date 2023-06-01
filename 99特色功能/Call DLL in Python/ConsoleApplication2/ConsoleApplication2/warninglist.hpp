@@ -24,7 +24,7 @@ public:
 
 	void RemoveWarningFromStack(enum WarningIDs wrnid);
 
-	bool boIDAlreadyInList(enum WarningIDs enWrnID);
+	bool ListContainSameID(enum WarningIDs enWrnID);
 
 	void AddWarningToStack(const WarningView & oWrnView);
 

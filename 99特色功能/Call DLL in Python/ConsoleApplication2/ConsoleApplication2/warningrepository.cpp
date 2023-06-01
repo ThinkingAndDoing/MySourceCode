@@ -15,7 +15,7 @@ WarningRepository::~WarningRepository()
 	lstViewRepository.clear();
 }
 
-stWarningIDList WarningRepository::GetAllWarningIDList(void)
+stWarningIDList WarningRepository::GetListOfAllIDs(void)
 {
 	stWarningIDList lstWarningID;
 
@@ -42,7 +42,7 @@ stWarningIDList WarningRepository::GetActiveWarningIDList(enum WarningMode enWrn
 	return lstWarningID;
 }
 
-bool WarningRepository::boIDAlreadyInList(enum WarningIDs enWrnID)
+bool WarningRepository::ListContainSameID(enum WarningIDs enWrnID)
 {
 	for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
 	{
@@ -58,7 +58,7 @@ bool WarningRepository::AddViewToRepository(const WarningView & oWV)
 {
 	bool boInserted = false;
 
-	if (false == boIDAlreadyInList(oWV.GetWarningID()))
+	if (false == ListContainSameID(oWV.GetWarningID()))
 	{
 		for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
 		{

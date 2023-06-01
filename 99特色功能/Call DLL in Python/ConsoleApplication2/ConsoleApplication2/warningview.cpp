@@ -205,7 +205,7 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oW
 
 		/**/
 		printf("----------------------------------------------\n");
-		printf("WarningID = %d, priority = %d \n", m_enWarningID, 0xFFFF - m_u16Priority);
+		printf("WarningID = %d, priority = %d \n", m_enWarningID, m_u16Priority);
 		printf("displaytimeout = %d, mini display time = %d \n", oWrnModel.GetMaxDispTime(wrnid), oWrnModel.GetMinDispTime(wrnid));
 		printf("immediate = %d, stack = %d \n", m_boImmediate, m_boSaveToStack);
 		printf("usagemode = %d, availiable = %d \n", oWrnModel.GetUsageMode(wrnid), oWrnModel.GetAvailable(wrnid));

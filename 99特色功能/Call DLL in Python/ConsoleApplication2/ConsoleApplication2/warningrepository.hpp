@@ -17,7 +17,7 @@ public:
 
 	~WarningRepository();
 
-	bool boIDAlreadyInList(enum WarningIDs enWrnID);
+	bool ListContainSameID(enum WarningIDs enWrnID);
 
 	bool AddViewToRepository(const WarningView & oWV);
 
@@ -25,7 +25,7 @@ public:
 
 	stWarningIDList GetActiveWarningIDList(enum WarningMode enWrnMode, enum Availiable enWrnAvai);
 
-	stWarningIDList GetAllWarningIDList(void);
+	stWarningIDList GetListOfAllIDs(void);
 
 private:
 
