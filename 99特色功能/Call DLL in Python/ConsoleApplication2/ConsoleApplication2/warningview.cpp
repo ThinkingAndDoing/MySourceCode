@@ -14,6 +14,7 @@ WarningView::WarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel)
 	m_boImmediate = false;
 	m_boPendingRelease = false;
 	m_boSaveToStack = false;
+	m_boEverDisplayed = false;
 	m_u16CurTimespanIndex = 0;
 	m_enWarningID = NumberOfWarnings;
 	m_u16TriggerDelay = 0;
@@ -35,6 +36,8 @@ WarningView::WarningView(const WarningView & oWV)
 	m_boPendingRelease = oWV.m_boPendingRelease;
 	m_boImmediate = oWV.m_boImmediate;
 	m_boSaveToStack = oWV.m_boSaveToStack;
+	m_boEverDisplayed = oWV.m_boEverDisplayed;
+
 
 	m_lstWarningMode = oWV.m_lstWarningMode;
 	m_lstAvailiable = oWV.m_lstAvailiable;
@@ -65,6 +68,7 @@ WarningView& WarningView::operator = (const WarningView & oWV)
 	m_boPendingRelease = oWV.m_boPendingRelease;
 	m_boImmediate = oWV.m_boImmediate;
 	m_boSaveToStack = oWV.m_boSaveToStack;
+	m_boEverDisplayed = oWV.m_boEverDisplayed;
 
 	m_lstWarningMode = oWV.m_lstWarningMode;
 	m_lstAvailiable = oWV.m_lstAvailiable;
@@ -363,6 +367,16 @@ enum WarningIDs WarningView::GetWarningID(void) const
 bool WarningView::boNeedSaveToStack(void) const
 {
 	return m_boSaveToStack;
+}
+
+bool WarningView::IsEverDisplayed(void) const
+{
+	return m_boEverDisplayed;
+}
+
+void WarningView::SetEverDisplayed(bool boEverDisp)
+{
+	m_boEverDisplayed = boEverDisp;
 }
 
 uint16 WarningView::GetTriggerDelay(void) const

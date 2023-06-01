@@ -2,25 +2,124 @@
 #include "warningstrategycm1e.hpp"
 #include "warningmodel.hpp"
 #include "warningrepository.hpp"
+#include "warningview.hpp"
+
 
 WarningStrategyCM1E::WarningStrategyCM1E() :WarningStrategy()
 { 
 	m_u16IndicStatusOfPatternB = 0;
-	m_oPendingTriggerList.ClearAll(); 
+	m_boSuspension = false;
+	m_oPendingTriggerList.ClearAll();
+
+	for (int i = 0; i < NumberOfIndicator; i++)
+	{
+		m_au16IndicatorReq[i] = 0;
+	}
 }
 
 WarningStrategyCM1E::WarningStrategyCM1E(const WarningStrategyCM1E & oWS) : WarningStrategy(oWS)
 { 
-	m_u16IndicStatusOfPatternB = 0;
-	m_oPendingTriggerList.ClearAll(); 
+	m_u16IndicStatusOfPatternB = oWS.m_u16IndicStatusOfPatternB;
+	m_boSuspension = oWS.m_boSuspension;
+	m_oPendingTriggerList.ClearAll();
+
+	for (int i = 0; i < NumberOfIndicator; i++)
+	{
+		m_au16IndicatorReq[i] = oWS.m_au16IndicatorReq[i];
+	}
 }
 
 WarningStrategyCM1E::~WarningStrategyCM1E()
 { 
 	m_u16IndicStatusOfPatternB = 0;
-	m_oPendingTriggerList.ClearAll(); 
+	m_boSuspension = false;
+	m_oPendingTriggerList.ClearAll();
+
+	for (int i = 0; i < NumberOfIndicator; i++)
+	{
+		m_au16IndicatorReq[i] = 0;
+	}
 }
 
+void WarningStrategyCM1E::WarningPrioArbitrate(WarningView * pNewView)
+{
+	if (!m_boSuspension)
+	{
+		WarningStrategy::WarningPrioArbitrate(pNewView);
+	}
+}
+
+void WarningStrategyCM1E::ReleaseWarningView(enum WarningIDs enWrnID)
+{
+	if (!m_boSuspension)
+	{
+		WarningStrategy::ReleaseWarningView(enWrnID);
+	}
+	else{
+		WarningStrategy::RemoveWarningView(enWrnID);
+	}
+}
+
+bool WarningStrategyCM1E::UpdateCurrentWarning(WarningView * poNew)
+{
+	if (!m_boSuspension)
+	{
+		return WarningStrategy::UpdateCurrentWarning(poNew);
+	}
+	else{
+		return false;
+	}
+}
+
+void WarningStrategyCM1E::Suspension(void)
+{
+	if (m_boSuspension == false)
+	{
+		m_boSuspension = true;
+
+		WarningView *poCurrent = WarningStrategy::GetCurrentWarningView();
+		if (NULL != poCurrent)
+		{
+			if (poCurrent->HasPendingRelease())
+			{
+				WarningStrategy::RemoveWarningView(poCurrent->GetWarningID());
+			}
+		}
+	}
+}
+
+void WarningStrategyCM1E::Resume(void)
+{
+	if (m_boSuspension == true)
+	{
+		m_boSuspension = false;
+		WarningStrategy::UpdateCurrentWarning(WarningStrategy::GetFirstFromLinkList());
+	}
+}
+
+bool WarningStrategyCM1E::ProcessVirtualKey(enum VirtualKey enKey)
+{
+	if (!m_boSuspension)
+	{
+		return WarningStrategy::ProcessVirtualKey(enKey);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+uint16 WarningStrategyCM1E::GetCurrentWarningID(void)
+{
+	if (!m_boSuspension)
+	{
+		return WarningStrategy::GetCurrentWarningID();
+	}
+	else
+	{
+		return NumberOfWarnings;
+	}
+}
 
 void WarningStrategyCM1E::TimeTick(void)
 {
@@ -38,7 +137,6 @@ void WarningStrategyCM1E::TimeTick(void)
 	}
 
 }
-
 
 void WarningStrategyCM1E::ForceReleaseWarning(enum WarningIDs wrnid)
 {
@@ -158,4 +256,9 @@ uint16 WarningStrategyCM1E::GetIndicatorOfPatternB(uint16 u16WrnID)
 	{
 		return NumberOfIndicator;
 	}
+}
+
+uint16 WarningStrategyCM1E::GetIndicReqByWarningID(uint16 u16WrnID)
+{
+	return m_poWarningModel->GetIndicatorRequest(u16WrnID);
 }

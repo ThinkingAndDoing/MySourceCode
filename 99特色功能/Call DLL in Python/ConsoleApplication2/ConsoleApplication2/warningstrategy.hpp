@@ -39,14 +39,12 @@ public:
 	virtual void Initialize();
 	virtual void Deinitialize();
     void SelectNextView(enum SelectWarningPolicy selectpolicy);
-    void Suspension(void);
-    void Resume(void);
     virtual void RequestWarning(enum WarningIDs enWrnID);
 	virtual void ReleaseWarning(enum WarningIDs enWrnID);
 	virtual void ForceReleaseWarning(enum WarningIDs enWrnID);
-	bool ProcessVirtualKey(enum VirtualKey enKey);
+	virtual bool ProcessVirtualKey(enum VirtualKey enKey);
 	void RemoveWarningView(enum WarningIDs enWrnID);
-	uint16 GetCurrentWarningID(void);
+	virtual uint16 GetCurrentWarningID(void);
 	virtual void SetWarningMode(enum WarningMode enWM);
 	virtual void SetAvailiable(enum Availiable enAvai);
 	virtual void TimeTick(void);
@@ -54,25 +52,25 @@ public:
 
 protected:
 	void CreateNewWarningView(enum WarningIDs enWrnID);
-	uint16 m_au16IndicatorReq[NumberOfIndicator];
+	virtual bool UpdateCurrentWarning(WarningView * poNew);
+	virtual void WarningPrioArbitrate(WarningView * pNewView);
+	virtual WarningView* GetCurrentWarningView(void);
+	virtual void ReleaseWarningView(enum WarningIDs enWrnID);
+
 
 private:
 	enum AddWarningPolicy m_enAddWarningPolicy;
 	enum Availiable m_enAvailiable;
 	WarningView* m_poCurrent;
 	enum SelectWarningPolicy m_enSelectWarningPolicy;
-	bool m_boSuspension;
 	enum WarningMode m_enWarningMode;
 
 	virtual void OnTimer(void) override;
-	void UpdateCurrentWarning(WarningView * poNew);
 	WarningView* GetFirstViewOfArrivalList(void);
     bool AddNewWarningView(WarningView * pNewView); 
-	void WarningPrioArbitrate(WarningView * pNewView);
     void ReleaseCurrentShowNew(WarningView *pNewView);
 	void ReleaseInactiveWarningView(void);
 	void AddNewWarningsOnStateChanged(void);
-	void ReleaseWarningView(enum WarningIDs enWrnID);
 	void TransferWarningToStack(WarningView* poWarning);
 };
 

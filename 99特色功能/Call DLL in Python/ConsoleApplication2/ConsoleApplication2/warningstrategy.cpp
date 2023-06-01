@@ -15,7 +15,6 @@ WarningStrategy::WarningStrategy() :WarningLinkList()
 	m_enAvailiable = OFF;
 	m_poCurrent = NULL;
 	m_enSelectWarningPolicy = SelectNext;
-	m_boSuspension = false;
 	m_enWarningMode = Abandoned;
 
 	Initialize();
@@ -28,7 +27,6 @@ WarningStrategy::WarningStrategy(const WarningStrategy & oWS) :WarningLinkList(o
 	m_enAvailiable = oWS.m_enAvailiable;
 	m_poCurrent = oWS.m_poCurrent;
 	m_enSelectWarningPolicy = oWS.m_enSelectWarningPolicy;
-	m_boSuspension = oWS.m_boSuspension;
 	m_enWarningMode = oWS.m_enWarningMode;
 
 	Initialize();
@@ -41,7 +39,6 @@ WarningStrategy::~WarningStrategy()
 	m_enAvailiable = OFF;
 	m_poCurrent = NULL;
 	m_enSelectWarningPolicy = SelectNext;
-	m_boSuspension = false;
 	m_enWarningMode = Abandoned;
 
 	Deinitialize();
@@ -49,11 +46,6 @@ WarningStrategy::~WarningStrategy()
 
 void WarningStrategy::Initialize()
 {
-	for (int i = 0; i < NumberOfIndicator; i++)
-	{
-		m_au16IndicatorReq[i] = 0;
-	}
-
 	m_poWarningRepo = new WarningRepository();
 	if (NULL == m_poWarningRepo)
 	{
@@ -76,11 +68,6 @@ void WarningStrategy::Initialize()
 
 void WarningStrategy::Deinitialize()
 {
-	for (int i = 0; i < NumberOfIndicator; i++)
-	{
-		m_au16IndicatorReq[i] = 0;
-	}
-
 	if (NULL != m_poWarningRepo)
 	{
 		delete m_poWarningRepo;
@@ -184,12 +171,7 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
 			if (!(NULL != m_poCurrent && pNewView->GetPriority() < m_poCurrent->GetPriority() && pNewView->HasImmediate()))  //pNewView will not be discarded.
 			{
 				InsertLinkListOnPriority(pNewView);
-
-				if (!m_boSuspension)
-				{
-					WarningPrioArbitrate(pNewView);
-				}
-
+				WarningPrioArbitrate(pNewView);
 				boIsAdded = true;
 			}
 		}
@@ -203,14 +185,24 @@ bool WarningStrategy::AddNewWarningView(WarningView * pNewView)
 
 void WarningStrategy::OnCurrentWarningChanged(void)
 {
+	if (NULL != m_poCurrent)
+	{
+		m_poWarningRepo;
+	}
+}
 
+WarningView* WarningStrategy::GetCurrentWarningView(void)
+{
+	return m_poCurrent;
 }
 
 /*
  * Set poNew as the Active/Current warning. Skip if poNew->GetWarningID() equals to m_poCurrent->GetWarningID().
  */
-void WarningStrategy::UpdateCurrentWarning(WarningView * poNew)
+bool WarningStrategy::UpdateCurrentWarning(WarningView * poNew)
 {
+	bool boCurrentUpdated = false;
+
 	if (NULL != m_poCurrent || NULL != poNew)
 	{
 		// 1.deactive current warning
@@ -227,15 +219,16 @@ void WarningStrategy::UpdateCurrentWarning(WarningView * poNew)
 			OnCurrentWarningChanged();
 
 			// 3.activate new
-			if (NULL != m_poCurrent && this->m_boSuspension == false)
+			if (NULL != m_poCurrent)
 			{
 				uint16 u16FirstDuration = m_poCurrent->Activate();
 				TimerStart(u16FirstDuration);
 			}
+
+			boCurrentUpdated = true;
 		}
-
 	}
-
+	return boCurrentUpdated;
 }
 
 /*
@@ -318,7 +311,7 @@ void WarningStrategy::ReleaseWarningView(enum WarningIDs enWrnID)
 {
 	if (NULL != m_poCurrent && NULL != GetFromLinkList(enWrnID))
 	{
-		if (m_poCurrent->GetWarningID() == enWrnID && this->m_boSuspension == false)
+		if (m_poCurrent->GetWarningID() == enWrnID)
 		{
 			switch (m_poCurrent->GetCurrentTimespan()->GetOnRelease())
 			{
@@ -331,14 +324,7 @@ void WarningStrategy::ReleaseWarningView(enum WarningIDs enWrnID)
 				break;
 
 			case WBDisplace:
-				if (GetNumberOfWarningView() == 1)
-				{
-					m_boSuspension = true;
-				}
-				else
-				{
-					SelectNextView(m_enSelectWarningPolicy);
-				}
+				SelectNextView(m_enSelectWarningPolicy);
 				break;
 
 			case WBDepend:
@@ -428,30 +414,7 @@ void WarningStrategy::CreateNewWarningView(enum WarningIDs enWrnID)
 	}
 }
 
-void WarningStrategy::Suspension(void)
-{
-	if (this->m_boSuspension == false)
-	{
-		this->m_boSuspension = true;
 
-		if (NULL != m_poCurrent)
-		{
-			if (m_poCurrent->HasPendingRelease())
-			{
-				RemoveWarningView(m_poCurrent->GetWarningID());
-			}
-		}
-	}
-}
-
-void WarningStrategy::Resume(void)
-{
-	if (this->m_boSuspension == true)
-	{
-		this->m_boSuspension = false;
-		UpdateCurrentWarning(GetFirstFromLinkList());
-	}
-}
 
 void WarningStrategy::TransferWarningToStack(WarningView* poWarning)
 {
@@ -474,7 +437,7 @@ void WarningStrategy::TransferWarningToStack(WarningView* poWarning)
 
 bool WarningStrategy::ProcessVirtualKey(enum VirtualKey enKey)
 {
-	if (NULL != m_poCurrent && this->m_boSuspension == false)
+	if (NULL != m_poCurrent)
 	{
 		enum WarningAction enAction = WBInvalid;
 
@@ -530,7 +493,7 @@ void WarningStrategy::RemoveWarningView(enum WarningIDs enWrnID)
  */
 uint16 WarningStrategy::GetCurrentWarningID(void)
 {
-	if (NULL == m_poCurrent || this->m_boSuspension == true)
+	if (NULL == m_poCurrent)
     {
 		return (uint16)NumberOfWarnings;
     }
@@ -704,14 +667,7 @@ void WarningStrategy::OnTimer(void)
 		break;
 
 	case WBDisplace:
-		if (GetNumberOfWarningView() == 1)
-		{
-			m_boSuspension = true;
-		}
-		else
-		{
-			SelectNextView(m_enSelectWarningPolicy);
-		}
+		SelectNextView(m_enSelectWarningPolicy);
 		break;
 
 	case WBDepend:

@@ -61,6 +61,11 @@ public:
 
 	bool boNeedSaveToStack(void) const;
 
+	bool IsEverDisplayed(void) const;
+
+	void SetEverDisplayed(bool boEverDisp);
+
+
 	enum WarningAction GetActionOnNewWarningComing(WarningView* poNewView) const;
 
 	uint16 MoveToNextTimespan(void);
@@ -76,6 +81,7 @@ private:
 	bool m_boPendingRelease;
 	bool m_boImmediate;
 	bool m_boSaveToStack;
+	bool m_boEverDisplayed;
 	enWarningModeList m_lstWarningMode;
 	enAvailiableList m_lstAvailiable;
 
