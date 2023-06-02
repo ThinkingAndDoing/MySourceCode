@@ -7,36 +7,35 @@
 #include "warningview.hpp"
 
 
-WarningView::WarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel)
+WarningView::WarningView(enum WarningIDs enWrnID, const WarningModel &oWrnModel)
 {
 	m_lstWarningMode.clear();
 	m_lstAvailiable.clear();
 	m_boImmediate = false;
 	m_boPendingRelease = false;
 	m_boSaveToStack = false;
-	m_boEverDisplayed = false;
 	m_u16CurTimespanIndex = 0;
 	m_enWarningID = NumberOfWarnings;
 	m_u16TriggerDelay = 0;
 	m_u16Priority = 0;
-    next = pre = NULL;
+	m_poNext = m_poPre = NULL;
     for (int i = 0; i < MAX_TIMESPAN_NUMS; i++)
     {
 		m_paTimespan[i] = NULL;
     }
 
-	BuildWarningView(wrnid, oWrnModel);
+	BuildWarningView(enWrnID, oWrnModel);
 }
+
 
 WarningView::WarningView(const WarningView & oWV)
 {
-	next = oWV.next;
-	pre = oWV.pre;
+	m_poNext = oWV.m_poNext;
+	m_poPre = oWV.m_poPre;
 	m_oNewArrivalList = oWV.m_oNewArrivalList;
 	m_boPendingRelease = oWV.m_boPendingRelease;
 	m_boImmediate = oWV.m_boImmediate;
 	m_boSaveToStack = oWV.m_boSaveToStack;
-	m_boEverDisplayed = oWV.m_boEverDisplayed;
 
 
 	m_lstWarningMode = oWV.m_lstWarningMode;
@@ -62,13 +61,12 @@ WarningView::WarningView(const WarningView & oWV)
 
 WarningView& WarningView::operator = (const WarningView & oWV)
 {
-	next = oWV.next;
-	pre = oWV.pre;
+	m_poNext = oWV.m_poNext;
+	m_poPre = oWV.m_poPre;
 	m_oNewArrivalList = oWV.m_oNewArrivalList;
 	m_boPendingRelease = oWV.m_boPendingRelease;
 	m_boImmediate = oWV.m_boImmediate;
 	m_boSaveToStack = oWV.m_boSaveToStack;
-	m_boEverDisplayed = oWV.m_boEverDisplayed;
 
 	m_lstWarningMode = oWV.m_lstWarningMode;
 	m_lstAvailiable = oWV.m_lstAvailiable;
@@ -93,7 +91,6 @@ WarningView& WarningView::operator = (const WarningView & oWV)
 }
 
 
-
 WarningView::~WarningView() {
 
 	m_lstWarningMode.clear();
@@ -109,9 +106,7 @@ WarningView::~WarningView() {
     }
 }
 
-/*
- * Deactivate WarningView
- */
+
 void WarningView::Deactivate(void)
 {
 	this->m_u16CurTimespanIndex = 0;
@@ -119,10 +114,6 @@ void WarningView::Deactivate(void)
 }
 
 
-
-/*
- * Activate WarningView
- */
 uint16 WarningView::Activate(void)
 {
 	uint16 u16Duration = 0;
@@ -141,51 +132,75 @@ uint16 WarningView::Activate(void)
 	return u16Duration;
 }
 
-/*
-* Build WarningView
-*/
-void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oWrnModel)
+
+WarningView* WarningView::GetNext(void)
 {
-	if (wrnid < NumberOfWarnings && 0 != oWrnModel.GetNotificationID(wrnid))
+	return this->m_poNext;
+}
+
+
+void WarningView::SetNext(WarningView* poWV)
+{
+	this->m_poNext = poWV;
+}
+
+
+WarningView* WarningView::GetPrevious(void)
+{
+	return this->m_poPre;
+}
+
+
+void WarningView::SetPrevious(WarningView* poWV)
+{
+	this->m_poPre = poWV;
+}
+
+
+void WarningView::BuildWarningView(enum WarningIDs enWrnID, const WarningModel &oWrnModel)
+{
+	uint16 u16WrnID = static_cast<uint16>(enWrnID);
+
+	if (u16WrnID < NumberOfWarnings && 0 != oWrnModel.GetNotificationID(u16WrnID))
 	{
-		this->m_enWarningID = wrnid;
-		this->m_u16Priority = oWrnModel.GetPriority(wrnid);
-		this->m_boImmediate = oWrnModel.GetImmediate(wrnid) > 0 ? true : false;
-		this->m_boSaveToStack = oWrnModel.GetStack(wrnid) > 0 ? true : false;
-		this->m_u16TriggerDelay = oWrnModel.GetTriggerTime(wrnid);
-		this->m_u16AudioChimeID = oWrnModel.GetAudioChimeRequest(wrnid);
-		this->m_u16IndicatorID = oWrnModel.GetIndicatorRequest(wrnid);
+		this->m_enWarningID = enWrnID;
+		this->m_u16Priority = oWrnModel.GetPriority(u16WrnID);
+		this->m_boImmediate = oWrnModel.GetImmediate(u16WrnID) > 0 ? true : false;
+		this->m_boSaveToStack = oWrnModel.GetStack(u16WrnID) > 0 ? true : false;
+		this->m_u16TriggerDelay = oWrnModel.GetTriggerTime(u16WrnID);
+		this->m_u16AudioChimeID = oWrnModel.GetAudioChimeRequest(u16WrnID);
+		this->m_u16IndicatorID = oWrnModel.GetIndicatorRequest(u16WrnID);
 
-		this->SetWarningModeList(oWrnModel.GetUsageMode(wrnid));
+		this->SetWarningModeList(oWrnModel.GetUsageMode(u16WrnID));
 
-		this->SetAvailiableList(oWrnModel.GetAvailable(wrnid));
+		this->SetAvailiableList(oWrnModel.GetAvailable(u16WrnID));
 
 		//(int st, int et, enum WarningAction onRel, enum WarningAction oe, enum WarningAction onHighPro, enum WarningAction onSamePro);
-		if (oWrnModel.GetMinDispTime(wrnid) > oWrnModel.GetUserLockTime(wrnid))
+		if (oWrnModel.GetMinDispTime(u16WrnID) > oWrnModel.GetUserLockTime(u16WrnID))
 		{
-			this->m_paTimespan[0] = new Timespan(0, oWrnModel.GetUserLockTime(wrnid) / 100);
+			this->m_paTimespan[0] = new Timespan(0, oWrnModel.GetUserLockTime(u16WrnID) / 100);
 			this->m_paTimespan[0]->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 
-			this->m_paTimespan[1] = new Timespan(oWrnModel.GetUserLockTime(wrnid) / 100, oWrnModel.GetMinDispTime(wrnid) / 100);
+			this->m_paTimespan[1] = new Timespan(oWrnModel.GetUserLockTime(u16WrnID) / 100, oWrnModel.GetMinDispTime(u16WrnID) / 100);
 
-			this->m_paTimespan[2] = new Timespan(oWrnModel.GetMinDispTime(wrnid) / 100, oWrnModel.GetMaxDispTime(wrnid) / 100);
+			this->m_paTimespan[2] = new Timespan(oWrnModel.GetMinDispTime(u16WrnID) / 100, oWrnModel.GetMaxDispTime(u16WrnID) / 100);
 			this->m_paTimespan[2]->SetOnRelease(WBRelease);
 			this->m_paTimespan[2]->SetOnEnd(WBRelease);
 			this->m_paTimespan[2]->SetOnNewHighPriority(WBDisplace);
 			this->m_paTimespan[2]->SetOnNewSamePriority(WBDisplace);
 		}
-		else if (oWrnModel.GetMinDispTime(wrnid) < oWrnModel.GetUserLockTime(wrnid))
+		else if (oWrnModel.GetMinDispTime(u16WrnID) < oWrnModel.GetUserLockTime(u16WrnID))
 		{
-			this->m_paTimespan[0] = new Timespan(0, oWrnModel.GetMinDispTime(wrnid) / 100);
+			this->m_paTimespan[0] = new Timespan(0, oWrnModel.GetMinDispTime(u16WrnID) / 100);
 			this->m_paTimespan[0]->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 
-			this->m_paTimespan[1] = new Timespan(oWrnModel.GetMinDispTime(wrnid) / 100, oWrnModel.GetUserLockTime(wrnid) / 100);
+			this->m_paTimespan[1] = new Timespan(oWrnModel.GetMinDispTime(u16WrnID) / 100, oWrnModel.GetUserLockTime(u16WrnID) / 100);
 			this->m_paTimespan[1]->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 			this->m_paTimespan[1]->SetOnRelease(WBRelease);
 			this->m_paTimespan[1]->SetOnNewHighPriority(WBDisplace);
 			this->m_paTimespan[1]->SetOnNewSamePriority(WBDisplace);
 
-			this->m_paTimespan[2] = new Timespan(oWrnModel.GetUserLockTime(wrnid) / 100, oWrnModel.GetMaxDispTime(wrnid) / 100);
+			this->m_paTimespan[2] = new Timespan(oWrnModel.GetUserLockTime(u16WrnID) / 100, oWrnModel.GetMaxDispTime(u16WrnID) / 100);
 			this->m_paTimespan[2]->SetOnRelease(WBRelease);
 			this->m_paTimespan[2]->SetOnEnd(WBRelease);
 			this->m_paTimespan[2]->SetOnNewHighPriority(WBDisplace);
@@ -193,10 +208,10 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oW
 		}
 		else
 		{
-			this->m_paTimespan[0] = new Timespan(0, oWrnModel.GetMinDispTime(wrnid) / 100);
+			this->m_paTimespan[0] = new Timespan(0, oWrnModel.GetMinDispTime(u16WrnID) / 100);
 			this->m_paTimespan[0]->m_oAcknowledge.AddKeyAction(VKY_OK, WBIgnore);
 
-			this->m_paTimespan[1] = new Timespan(oWrnModel.GetMinDispTime(wrnid) / 100, oWrnModel.GetMaxDispTime(wrnid) / 100);
+			this->m_paTimespan[1] = new Timespan(oWrnModel.GetMinDispTime(u16WrnID) / 100, oWrnModel.GetMaxDispTime(u16WrnID) / 100);
 			this->m_paTimespan[1]->SetOnRelease(WBRelease);
 			this->m_paTimespan[1]->SetOnEnd(WBRelease);
 			this->m_paTimespan[1]->SetOnNewHighPriority(WBDisplace);
@@ -206,14 +221,15 @@ void WarningView::BuildWarningView(enum WarningIDs wrnid, const WarningModel &oW
 		/**/
 		printf("----------------------------------------------\n");
 		printf("WarningID = %d, priority = %d \n", m_enWarningID, m_u16Priority);
-		printf("displaytimeout = %d, mini display time = %d \n", oWrnModel.GetMaxDispTime(wrnid), oWrnModel.GetMinDispTime(wrnid));
+		printf("displaytimeout = %d, mini display time = %d \n", oWrnModel.GetMaxDispTime(u16WrnID), oWrnModel.GetMinDispTime(u16WrnID));
 		printf("immediate = %d, stack = %d \n", m_boImmediate, m_boSaveToStack);
-		printf("usagemode = %d, availiable = %d \n", oWrnModel.GetUsageMode(wrnid), oWrnModel.GetAvailable(wrnid));
-		printf("IndicatorRequest = %d, AudioChimeRequest = %d \n", oWrnModel.GetIndicatorRequest(wrnid), oWrnModel.GetAudioChimeRequest(wrnid));
+		printf("usagemode = %d, availiable = %d \n", oWrnModel.GetUsageMode(u16WrnID), oWrnModel.GetAvailable(u16WrnID));
+		printf("IndicatorRequest = %d, AudioChimeRequest = %d \n", oWrnModel.GetIndicatorRequest(u16WrnID), oWrnModel.GetAudioChimeRequest(u16WrnID));
 		printf("----------------------------------------------\n");
 	}
 
 }
+
 
 Timespan *WarningView::GetCurrentTimespan(void)
 {
@@ -226,6 +242,7 @@ Timespan *WarningView::GetCurrentTimespan(void)
 	}
 }
 
+
 Timespan *WarningView::GetNextTimespan(void)
 {
 	if (m_u16CurTimespanIndex + 1 < MAX_TIMESPAN_NUMS)
@@ -237,12 +254,6 @@ Timespan *WarningView::GetNextTimespan(void)
 	}
 }
 
-#ifdef DISABLE_WARNING_MODE
-bool WarningView::IsActiveMode(enum WarningMode enMode)
-{
-	return true;
-}
-#else
 bool WarningView::IsActiveMode(enum WarningMode enMode)
 {
 	bool boRet = false;
@@ -255,17 +266,15 @@ bool WarningView::IsActiveMode(enum WarningMode enMode)
 			break;
 		}
 	}
-	return boRet;
-}
+
+#ifdef DISABLE_WARNING_MODE
+	boRet = true;
 #endif
 
-
-#ifdef DISABLE_WARNING_AVAILIABLE
-bool WarningView::IsAvailiable(enum Availiable enAvai)
-{
-	return true;
+	return boRet;
 }
-#else
+
+
 bool WarningView::IsAvailiable(enum Availiable enAvai)
 {
 	bool boRet = false;
@@ -278,9 +287,15 @@ bool WarningView::IsAvailiable(enum Availiable enAvai)
 			break;
 		}
 	}
+
+#ifdef DISABLE_WARNING_AVAILIABLE
+	boRet = true;
+#endif
+
 	return boRet;
 }
-#endif
+
+
 
 void WarningView::SetWarningModeList(uint16 u16WarningMode)
 {
@@ -296,6 +311,7 @@ void WarningView::SetWarningModeList(uint16 u16WarningMode)
 		u16Mode++;
 	}
 }
+
 
 void WarningView::SetAvailiableList(uint16 u16Availiable)
 {
@@ -339,50 +355,49 @@ void WarningView::SetAvailiableList(uint16 u16Availiable)
 		break;
 	}
 }
+
+
 uint16 WarningView::GetPriority(void) const
 {
 	return m_u16Priority;
 }
+
 
 void WarningView::SetPendingRelease(bool boPendingRel)
 {
 	m_boPendingRelease = boPendingRel;
 }
 
+
 bool WarningView::HasPendingRelease(void) const
 {
 	return m_boPendingRelease;
 }
+
 
 bool WarningView::HasImmediate(void) const
 {
 	return m_boImmediate;
 }
 
+
 enum WarningIDs WarningView::GetWarningID(void) const
 {
 	return m_enWarningID;
 }
+
 
 bool WarningView::boNeedSaveToStack(void) const
 {
 	return m_boSaveToStack;
 }
 
-bool WarningView::IsEverDisplayed(void) const
-{
-	return m_boEverDisplayed;
-}
-
-void WarningView::SetEverDisplayed(bool boEverDisp)
-{
-	m_boEverDisplayed = boEverDisp;
-}
 
 uint16 WarningView::GetTriggerDelay(void) const
 {
 	return m_u16TriggerDelay;
 }
+
 
 uint16 WarningView::MoveToNextTimespan(void)
 {
@@ -434,9 +449,6 @@ enum WarningAction WarningView::GetActionOnNewWarningComing(WarningView* poNewVi
 }
 
 
-/*
-* Allows interruption in the next timespan and there is a new warning with higher priority
-*/
 bool WarningView::HasNewInNextTimespan(void)
 {
 	WarningNode *pNewArrival = m_oNewArrivalList.GetFirstNodeOfList();

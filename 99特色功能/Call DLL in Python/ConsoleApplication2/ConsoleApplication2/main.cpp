@@ -134,6 +134,7 @@ void OnWarningStackChanged(uint16 u16StackSize)
 	printf("OnWarningStackChanged u16StackSize = %u \n", u16StackSize);
 	print_warninglist();
 }
+
 void OnWarningChanged(uint16 u16ActiveWrnID)
 {
 	printf("OnWarningChanged u16ActiveWrnID = %u \n", u16ActiveWrnID);
@@ -143,15 +144,14 @@ void OnWarningChanged(uint16 u16ActiveWrnID)
 	}
 }
 
-
 void RequestTelltale(int id)
 {
-	poTTStrategy->RequestWarning((enum WarningIDs)id);
+	poTTStrategy->RequestTelltale((enum WarningIDs)id);
 }
 
 void ReleaseTelltale(int id)
 {
-	poTTStrategy->ReleaseWarning((enum WarningIDs)id);
+	poTTStrategy->ReleaseTelltale((enum WarningIDs)id);
 }
 
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID)
@@ -161,6 +161,8 @@ void OnTelltaleChanged(uint16 u16ActiveTelltaleID)
 
 void verify_immediate(void)
 {
+	printf("verify_immediate!\n");
+
 	RequestWarning(98);
 
 	Sleep(500);
@@ -170,10 +172,14 @@ void verify_immediate(void)
 	Sleep(500);
 
 	RequestWarning(241);
+
+	Sleep(4000);
 }
 
 void verify_userlocktime(void)
 {
+	printf("verify_userlocktime!\n");
+
 	RequestWarning(98);
 	Sleep(500);
 	ProcessVirtualKey(4);
@@ -183,10 +189,14 @@ void verify_userlocktime(void)
 	ProcessVirtualKey(4);
 	Sleep(1000);
 	RequestWarning(98);
+
+	Sleep(4000);
 }
 
 void verify_telltale(void)
 {
+	printf("verify_telltale!\n");
+
 	RequestTelltale(0);
 	Sleep(400);
 	RequestTelltale(1);
@@ -198,6 +208,8 @@ void verify_telltale(void)
 	ReleaseTelltale(2);
 	Sleep(500);
 	ReleaseTelltale(0);
+
+	Sleep(4000);
 }
 
 void print_warninglist(void)
@@ -214,6 +226,8 @@ void print_warninglist(void)
 
 void verify_warninglist(void)
 {
+	printf("verify_warninglist!\n");
+
 	RequestWarning(99);
 	Sleep(3000);
 	ProcessVirtualKey(4);
@@ -229,10 +243,14 @@ void verify_warninglist(void)
 	ReleaseWarning(99);
 	Sleep(500);
 	ReleaseWarning(241);
+
+	Sleep(4000);
 }
 
 void verify_warningmode(void)
 {
+	printf("verify_warningmode!\n");
+
 	SetWarningMode(3);
 
 	RequestWarning(98);
@@ -247,10 +265,13 @@ void verify_warningmode(void)
 
 	SetWarningMode(4);
 
+	Sleep(4000);
 }
 
 void verify_suspension_resume(void)
 {
+	printf("verify_suspension_resume!\n");
+
 	Suspension();
 
 	RequestWarning(98);
@@ -265,10 +286,13 @@ void verify_suspension_resume(void)
 
 	Resume();
 
+	Sleep(4000);
 }
 
 void verify_triggertime(void)
 {
+	printf("verify_triggertime!\n");
+
 	RequestWarning(241);
 
 	Sleep(5000);
@@ -282,28 +306,59 @@ void verify_triggertime(void)
 	Sleep(500);
 
 	RequestWarning(98);
+
+	Sleep(4000);
 }
 
 void verify_availiable(void)
 {
-	SetAvailiable(4);
+	printf("verify_availiable!\n");
 
-	RequestWarning(98);
+	SetAvailiable(OFF);
 
-	Sleep(4000);
+	SetWarningMode(Abandoned);
 
-	SetAvailiable(3);
+	RequestWarning(112);
 
-	Sleep(500);
+	Sleep(1000);
 
-	RequestWarning(99);
+	SetAvailiable(Mode1);
 
-	SetAvailiable(4);
+	SetWarningMode(Driving);
 
 	Sleep(5000);
 
-	ReleaseWarning(98);
+	SetAvailiable(OFF);
+
+	Sleep(1000);
+
+	SetAvailiable(Mode1);
+
+	Sleep(4000);
 }
+
+void test(void)
+{
+	SetAvailiable(Stale);
+
+	SetWarningMode(Driving);
+
+	RequestWarning(112);
+
+	Sleep(1000);
+
+	RequestWarning(113);
+
+	Sleep(4000);
+
+	ProcessVirtualKey(4);
+
+	Sleep(4000);
+
+	ProcessVirtualKey(4);
+
+}
+
 
 void main(void)
 {
@@ -323,9 +378,11 @@ void main(void)
 
 	//verify_triggertime();
 
-	verify_availiable();
+	//verify_availiable();
 
-	printf("\nOver!\n");
+	//verify_suspension_resume();
+
+	test();
 
 	//deInit();
 

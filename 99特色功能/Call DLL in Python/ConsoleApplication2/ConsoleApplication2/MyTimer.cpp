@@ -41,7 +41,9 @@ void TimerMonitor(void* p)
     {
         return;
     }
-    while (1)
+
+	bool boRun = true;
+	while (boRun)
     {
         pTimer->RemoveDeletedTimer();
 
@@ -91,7 +93,7 @@ unsigned cMyTimer::CreateTimer(unsigned timeMs, int param, char* p)
 /*
 删除ID指定的定时器
 */
-bool cMyTimer::DeleteTimer(int id)
+bool cMyTimer::DeleteTimer(unsigned int id)
 {
     for (itTimerList it = m_timerList.begin(); it != m_timerList.end(); ++it)
     {
@@ -112,6 +114,8 @@ void cMyTimer::OnTimer(unsigned id, int iParam, std::string str)
 	static uint16 u16ActiveTelltaleID = 0xFFFF;
 
 
+	(void)id;
+	(void)iParam;
 	//unsigned timeNow = GetTickCount();
 
 	//printf("cMyTimer::OnTimer() timeNow = %d\n", timeNow);

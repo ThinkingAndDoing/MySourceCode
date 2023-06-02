@@ -6,20 +6,20 @@
 
 WarningRepository::WarningRepository()
 { 
-	lstViewRepository.clear();
+	m_lstViewRepository.clear();
 }
 
 
 WarningRepository::~WarningRepository()
 { 
-	lstViewRepository.clear();
+	m_lstViewRepository.clear();
 }
 
 stWarningIDList WarningRepository::GetListOfAllIDs(void)
 {
 	stWarningIDList lstWarningID;
 
-	for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
+	for (itWarningViewLst it = m_lstViewRepository.begin(); it != m_lstViewRepository.end(); ++it)
 	{
 		lstWarningID.push_back(it->GetWarningID());
 	}
@@ -31,7 +31,7 @@ stWarningIDList WarningRepository::GetActiveWarningIDList(enum WarningMode enWrn
 {
 	stWarningIDList lstWarningID;
 
-	for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
+	for (itWarningViewLst it = m_lstViewRepository.begin(); it != m_lstViewRepository.end(); ++it)
 	{
 		if (it->IsActiveMode(enWrnMode) && it->IsAvailiable(enWrnAvai))
 		{
@@ -44,7 +44,7 @@ stWarningIDList WarningRepository::GetActiveWarningIDList(enum WarningMode enWrn
 
 bool WarningRepository::ListContainSameID(enum WarningIDs enWrnID)
 {
-	for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
+	for (itWarningViewLst it = m_lstViewRepository.begin(); it != m_lstViewRepository.end(); ++it)
 	{
 		if (it->GetWarningID() == enWrnID)
 		{
@@ -60,11 +60,11 @@ bool WarningRepository::AddViewToRepository(const WarningView & oWV)
 
 	if (false == ListContainSameID(oWV.GetWarningID()))
 	{
-		for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
+		for (itWarningViewLst it = m_lstViewRepository.begin(); it != m_lstViewRepository.end(); ++it)
 		{
 			if (it->GetPriority() < oWV.GetPriority())
 			{
-				lstViewRepository.insert(it, oWV);
+				m_lstViewRepository.insert(it, oWV);
 				boInserted = true;
 				break;
 			}
@@ -72,7 +72,7 @@ bool WarningRepository::AddViewToRepository(const WarningView & oWV)
 
 		if (!boInserted)
 		{
-			lstViewRepository.push_back(oWV);
+			m_lstViewRepository.push_back(oWV);
 			boInserted = true;
 		}
 	}
@@ -84,11 +84,11 @@ bool WarningRepository::RemoveViewFromRepository(enum WarningIDs enWrnID)
 {
 	bool boDel = false;
 
-	for (itWarningViewLst it = lstViewRepository.begin(); it != lstViewRepository.end(); ++it)
+	for (itWarningViewLst it = m_lstViewRepository.begin(); it != m_lstViewRepository.end(); ++it)
 	{
 		if (it->GetWarningID() == enWrnID)
 		{
-			lstViewRepository.erase(it);
+			m_lstViewRepository.erase(it);
 			boDel = true;
 			break;
 		}

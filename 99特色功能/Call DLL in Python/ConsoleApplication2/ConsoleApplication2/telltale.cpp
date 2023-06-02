@@ -59,7 +59,7 @@ struct TelltaleView stTelltalePriorityArray[] = {
 	{ HVBattWarnRedTT, 1 },
 	{ HVBattWarnAmberTT, 1 },
 	{ OpenDoorWarnTT, 1 },
-	{ AVASErrorTT, 1 },
+	{ OpenDoorWarnBlinkTT, 1 },
 	{ HVLoBattLevelTT, 1 },
 	{ HiBeamFaultTT, 2 },
 	{ LoBeamFaultTT, 1 },
@@ -69,11 +69,23 @@ struct TelltaleView stTelltalePriorityArray[] = {
 };
 
 
-bool TelltaleStrategy::ListContainSameID(enum WarningIDs ttid)
+TelltaleStrategy::TelltaleStrategy(void)
+{ 
+	m_lstTelltaleView.clear();
+}
+
+
+TelltaleStrategy::~TelltaleStrategy()
+{ 
+	m_lstTelltaleView.clear();
+}
+
+
+bool TelltaleStrategy::ListContainSameID(enum WarningIDs enTelltaleID)
 {
-	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); ++it)
+	for (itTelltaleView it = m_lstTelltaleView.begin(); it != m_lstTelltaleView.end(); ++it)
 	{
-		if (it->enTelltaleID == ttid)
+		if (it->enTelltaleID == enTelltaleID)
 		{
 			return true;
 		}
@@ -81,15 +93,16 @@ bool TelltaleStrategy::ListContainSameID(enum WarningIDs ttid)
 	return false;
 }
 
-void TelltaleStrategy::RequestWarning(enum WarningIDs ttid)
+
+void TelltaleStrategy::RequestTelltale(enum WarningIDs enID)
 {
 	for (int i = 0; i < sizeof(stTelltalePriorityArray) / sizeof(TelltaleView); i++)
 	{
-		if (i == ttid)
+		if (i == enID)
 		{
-			if (ListContainSameID(ttid) == false)
+			if (ListContainSameID(enID) == false)
 			{
-				AddNewTelltale(stTelltalePriorityArray[i]);
+				AddTelltaleToList(stTelltalePriorityArray[i]);
 				return ;
 			}
 		}
@@ -97,13 +110,13 @@ void TelltaleStrategy::RequestWarning(enum WarningIDs ttid)
 }
 
 
-void TelltaleStrategy::ReleaseWarning(enum WarningIDs ttid)
+void TelltaleStrategy::ReleaseTelltale(enum WarningIDs enID)
 {
-	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); ++it)
+	for (itTelltaleView it = m_lstTelltaleView.begin(); it != m_lstTelltaleView.end(); ++it)
 	{
-		if (ttid == it->enTelltaleID)
+		if (enID == it->enTelltaleID)
 		{
-			lstTelltaleView.erase(it);
+			m_lstTelltaleView.erase(it);
 			return ;
 		}
 	}
@@ -112,27 +125,28 @@ void TelltaleStrategy::ReleaseWarning(enum WarningIDs ttid)
 
 uint16 TelltaleStrategy::GetFirstTelltaleID(void)
 {
-	if (lstTelltaleView.empty())
+	if (m_lstTelltaleView.empty())
 	{
 		return InvalidTelltaleID;
 	}
 	else
 	{
-		return lstTelltaleView.front().enTelltaleID;
+		return (uint16)m_lstTelltaleView.front().enTelltaleID;
 	}
 }
 
-void TelltaleStrategy::AddNewTelltale(TelltaleView stNewTelltale)
+
+void TelltaleStrategy::AddTelltaleToList(TelltaleView stNewTelltale)
 {
 
-	for (itTelltaleView it = lstTelltaleView.begin(); it != lstTelltaleView.end(); ++it)
+	for (itTelltaleView it = m_lstTelltaleView.begin(); it != m_lstTelltaleView.end(); ++it)
 	{
 		if (stNewTelltale.u16Priority <= it->u16Priority)
 		{
-			lstTelltaleView.insert(it, stNewTelltale);
+			m_lstTelltaleView.insert(it, stNewTelltale);
 			return;
 		}
 	}
 
-	lstTelltaleView.push_back(stNewTelltale);
+	m_lstTelltaleView.push_back(stNewTelltale);
 }

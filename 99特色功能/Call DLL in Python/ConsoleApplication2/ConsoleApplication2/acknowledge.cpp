@@ -2,24 +2,25 @@
 #include "acknowledge.hpp"
 
 
+
+
 Acknowledge::Acknowledge()
 { 
-	lstKeyAction.clear(); 
+	m_lstKeyAction.clear();
 }
+
 
 Acknowledge::~Acknowledge()
 { 
-	lstKeyAction.clear();
+	m_lstKeyAction.clear();
 }
 
-/*
- * Register a new button. If the button has already been registered, update the Action.
- */
-void Acknowledge::AddKeyAction(enum VirtualKey vk, enum WarningAction wrnAction)
+
+void Acknowledge::AddKeyAction(enum VirtualKey enVKey, enum WarningAction wrnAction)
 {
-	for (itKeyAction it = lstKeyAction.begin(); it != lstKeyAction.end(); ++it)
+	for (itKeyAction it = m_lstKeyAction.begin(); it != m_lstKeyAction.end(); ++it)
 	{
-		if (it->enKey == vk)
+		if (it->enKey == enVKey)
 		{
 			it->enAction = wrnAction;
 			return;
@@ -27,29 +28,31 @@ void Acknowledge::AddKeyAction(enum VirtualKey vk, enum WarningAction wrnAction)
 	}
 
 	struct KeyAction stKA;
-	stKA.enKey = vk;
+	stKA.enKey = enVKey;
 	stKA.enAction = wrnAction;
-	lstKeyAction.push_back(stKA);
+	m_lstKeyAction.push_back(stKA);
 }
 
-bool Acknowledge::RemoveKeyAction(enum VirtualKey vk)
+
+bool Acknowledge::RemoveKeyAction(enum VirtualKey enVKey)
 {
-	for (itKeyAction it = lstKeyAction.begin(); it != lstKeyAction.end(); ++it)
+	for (itKeyAction it = m_lstKeyAction.begin(); it != m_lstKeyAction.end(); ++it)
 	{
-		if (it->enKey == vk)
+		if (it->enKey == enVKey)
 		{
-			lstKeyAction.erase(it);
+			m_lstKeyAction.erase(it);
 			return true;
 		}
 	}
 	return false;
 }
 
-enum WarningAction Acknowledge::GetActionByKey(enum VirtualKey vk)
+
+enum WarningAction Acknowledge::GetActionByKey(enum VirtualKey enVKey)
 {
-	for (itKeyAction it = lstKeyAction.begin(); it != lstKeyAction.end(); ++it)
+	for (itKeyAction it = m_lstKeyAction.begin(); it != m_lstKeyAction.end(); ++it)
 	{
-		if (it->enKey == vk)
+		if (it->enKey == enVKey)
 		{
 			return it->enAction;
 		}

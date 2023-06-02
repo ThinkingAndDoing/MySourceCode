@@ -2,11 +2,11 @@
 #define WARNINGRESOURCEIDS_HPP
 #include "list"
 
+/* Disable the WarningMode of the WarningStrategy */
+#define DISABLE_WARNING_MODE
 
-//#define DISABLE_WARNING_MODE
-//#define DISABLE_WARNING_AVAILIABLE
-#define DISABLE_TRIGGER_TIME
-
+/* Disable the Available of the WarningStrategy */
+#define DISABLE_WARNING_AVAILIABLE
 
 enum Availiable
 {
@@ -102,7 +102,7 @@ enum WarningIDs
     HVBattWarnRedTT,
     HVBattWarnAmberTT,
     OpenDoorWarnTT,
-    AVASErrorTT,
+	OpenDoorWarnBlinkTT,
     HVLoBattLevelTT,
     HiBeamFaultTT,
     LoBeamFaultTT,
@@ -293,9 +293,26 @@ enum WarningIDs
 	SrvRmnWarning1Wrn,
 	SrvRmnWarning2Wrn,
 	SrvRmnWarning3Wrn,
-	WarningID244,
+	PtADOpModStsWrn,
 	DoorOpnWrn,
-    NumberOfWarnings
+	HoodManWrn,
+	SftybeltSud,
+	SlfTstStsTo1Wrn,
+	SlfTstStsTo2Wrn,
+	SlfTstStsTo3Wrn,
+	SlfTstStsTo4Wrn,
+	PostImpctBrkgRdyWrn,
+	HoldUpYourNFC,
+	CllsnFwdWarnWrn,
+	CllsnFwdWarnLatentWrn,
+	CllsnAidPostWrn,
+	DirectionLndSud,
+	SteerAssisSerReqWrn,
+	SteerMalfStSafelyWrn,
+	SteerAssisSerUrgWrn,
+	SteerAssisTemRedWrn,
+	SteerAssisSerReq1Wrn,
+	NumberOfWarnings
 };
 
 

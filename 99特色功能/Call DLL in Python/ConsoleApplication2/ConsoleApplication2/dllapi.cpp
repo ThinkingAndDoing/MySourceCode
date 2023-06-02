@@ -169,12 +169,12 @@ void OnWarningChanged(uint16 u16ActiveWrnID)
 // telltale
 void CALL_TYPE RequestTelltale(int id)
 {
-	poTTStrategy->RequestWarning((enum WarningIDs)id);
+	poTTStrategy->RequestTelltale((enum WarningIDs)id);
 }
 
 void CALL_TYPE ReleaseTelltale(int id)
 {
-	poTTStrategy->ReleaseWarning((enum WarningIDs)id);
+	poTTStrategy->ReleaseTelltale((enum WarningIDs)id);
 }
 
 void OnTelltaleChanged(uint16 u16ActiveTelltaleID)

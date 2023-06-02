@@ -2,25 +2,56 @@
 #define WARNINGTIMER_HPP
 #include "typedefine.hpp"
 
+
+
+/**
+* The warning TimeSpan, TriggerTime all depend on this timer
+*/
 class WarningTimer
 {
 public:
 
-	WarningTimer();
+	/**
+	* Constructor
+	*/
+	WarningTimer(void);
 
+	/**
+	* Destructor
+	*/
     virtual ~WarningTimer();
 
-    void TimerStart(uint16 u16TimeGap);
+	/**
+	* Start Timer
+	* @parameter u16CountdownTime
+	* @return void
+	*/
+	void TimerStart(uint16 u16CountdownTime);
 
+	/**
+	* Stop Timer
+	* @return void
+	*/
     void TimerStop(void);
 
+	/**
+	* Timer Accumulation
+	* @return void
+	*/
     virtual void TimeTick(void);
 
+	/**
+	* The timer counts down to 0
+	* @return void
+	*/
     virtual void OnTimer(void) = 0;
 
 private:
 
-	uint16 u16TimeCounter; //注意多线程问题
+	/**
+	* Be Careful of Multi-Threading Issues
+	*/
+	uint16 m_u16TimeCounter; 
 };
 
-#endif // MYTIMER_H
+#endif // WARNINGTIMER_HPP

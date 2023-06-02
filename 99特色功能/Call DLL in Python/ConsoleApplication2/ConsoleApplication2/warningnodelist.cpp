@@ -2,6 +2,7 @@
 #include "warningnodelist.hpp"
 
 
+
 WarningNodeList::WarningNodeList()
 {
 	m_lstWarningNode.clear();
@@ -27,6 +28,7 @@ enum WarningIDs WarningNodeList::GetWarningIDOfFirstNode(void)
 	}
 }
 
+
 bool WarningNodeList::ListContainSameID(enum WarningIDs enWrnID)
 {
 	for (itWarningNode it = m_lstWarningNode.begin(); it != m_lstWarningNode.end(); ++it)
@@ -39,10 +41,8 @@ bool WarningNodeList::ListContainSameID(enum WarningIDs enWrnID)
 	return false;
 }
 
-/*
- * Add new warning to m_lstWarningNode by priority
- */
-bool WarningNodeList::AddNewNodeToList(WarningNode stNewArrivalTemp)
+
+bool WarningNodeList::AddToListByPriority(WarningNode stNewArrivalTemp)
 {
 	bool boInserted = false;
 
@@ -82,14 +82,13 @@ WarningNode *WarningNodeList::GetFirstNodeOfList(void)
 }
 
 
-
-bool WarningNodeList::RemoveNodeFromList(enum WarningIDs wrnid)
+bool WarningNodeList::RemoveNodeFromList(enum WarningIDs enWrnID)
 {
 	bool boDel = false;
 
 	for (itWarningNode it = m_lstWarningNode.begin(); it != m_lstWarningNode.end(); ++it)
 	{
-		if (wrnid == it->enWarningID)
+		if (enWrnID == it->enWarningID)
 		{
 			m_lstWarningNode.erase(it);
 			boDel = true;
@@ -100,15 +99,13 @@ bool WarningNodeList::RemoveNodeFromList(enum WarningIDs wrnid)
 	return boDel;
 }
 
+
 void WarningNodeList::ClearAll(void)
 {
 	m_lstWarningNode.clear();
 }
 
 
-/*
- * Reduce the u16TriggerDelay of every warning by u16Minuend, in milliseconds
- */
 void WarningNodeList::DecreaseTriggerDelay(uint16 u16Minuend)
 {
 	for (itWarningNode it = m_lstWarningNode.begin(); it != m_lstWarningNode.end(); ++it)
@@ -123,6 +120,7 @@ void WarningNodeList::DecreaseTriggerDelay(uint16 u16Minuend)
 		}
 	}
 }
+
 
 WarningNode WarningNodeList::PopNoTriggerDelayNode(void)
 {

@@ -42,7 +42,7 @@ public:
     unsigned CreateTimer(unsigned timeMs, int param = 0,
         char* p = NULL);
 
-    bool DeleteTimer(int id);
+    bool DeleteTimer(unsigned int id);
 
     void OnTimer(unsigned id, int iParam, std::string str);
 

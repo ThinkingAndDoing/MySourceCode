@@ -11,7 +11,24 @@ WarningLinkList::WarningLinkList()
 
 WarningLinkList::WarningLinkList(const WarningLinkList & oWLL)
 {
-	m_poHead = NULL;
+	m_poHead = oWLL.m_poHead;
+
+	if (NULL != oWLL.m_poHead)
+	{
+		m_poHead = new WarningView(*oWLL.m_poHead);
+
+		WarningView *poWV = m_poHead;
+		WarningView *poWarningToCopy = oWLL.m_poHead->GetNext();
+
+		while (NULL != poWarningToCopy)
+		{
+			poWV->SetNext(new WarningView(*poWarningToCopy));
+			poWarningToCopy = poWarningToCopy->GetNext();
+			poWV = poWV->GetNext();
+		}
+
+	}
+
 }
 
 
@@ -28,66 +45,60 @@ void WarningLinkList::Deinitialize(void)
 	while (NULL != poWV)
 	{
 		poPendingReleased = poWV;
-		poWV = poWV->next;
+		poWV = poWV->GetNext();
 		delete poPendingReleased;
 	}
 
 	m_poHead = NULL;
 }
 
-/*
- * New warning will be added to the Double Linked List in order of priority, the warning with highest priority will be put in the front.
- */
-bool WarningLinkList::InsertLinkListOnPriority(WarningView *pNode)
+bool WarningLinkList::InsertLinkListOnPriority(WarningView *poNode)
 {
     WarningView* poWrnView = m_poHead;
 
     if (NULL == poWrnView)
     {
         // add node to head
-        m_poHead = pNode;
-        pNode->next = NULL;
-        pNode->pre = NULL;
+		m_poHead = poNode;
+		poNode->SetNext(NULL);
+		poNode->SetPrevious(NULL);
         return true;
     }
 
 	//If new warning's priority is lower than the priority of poWrnView, continue to search the insertion position towards the back of the Double Linked List.
-    while (poWrnView->GetPriority() > pNode->GetPriority())
+	while (poWrnView->GetPriority() > poNode->GetPriority())
     {
-        if (NULL != poWrnView->next)
+        if (NULL != poWrnView->GetNext())
         {
-            poWrnView = poWrnView->next;
+            poWrnView = poWrnView->GetNext();
         }
         else{
             // add node to the tail.
-            poWrnView->next = pNode;
-            pNode->pre = poWrnView;
-            pNode->next = NULL;
+			poWrnView->SetNext(poNode);
+			poNode->SetPrevious(poWrnView);
+			poNode->SetNext(NULL);
             return true;
         }
     }
 
 	// Add new warning pNode to the header of linked list
-    if (NULL == poWrnView->pre)         
+    if (NULL == poWrnView->GetPrevious())         
     {
-        poWrnView->pre = pNode;
-        pNode->pre = NULL;
-        pNode->next = poWrnView;
-        m_poHead = pNode;
+		poWrnView->SetPrevious(poNode);
+		poNode->SetPrevious(NULL);
+		poNode->SetNext(poWrnView);
+		m_poHead = poNode;
     }
     else{           
 		//New warning pNode add to the front of the suitable location found
-        poWrnView->pre->next = pNode;
-        pNode->pre = poWrnView->pre;
-        pNode->next = poWrnView;
-        poWrnView->pre = pNode;
+		poWrnView->GetPrevious()->SetNext(poNode);
+		poNode->SetPrevious(poWrnView->GetPrevious());
+		poNode->SetNext(poWrnView);
+		poWrnView->SetPrevious(poNode);
     }
     return true;
 }
 
-/*
- * Remove warning view from the Double Linked List by the WarningID.
- */
 bool WarningLinkList::RemoveFromLinkList(enum WarningIDs enWrnID)
 {
     WarningView *poWrnView = m_poHead;
@@ -99,31 +110,31 @@ bool WarningLinkList::RemoveFromLinkList(enum WarningIDs enWrnID)
 		if (poWrnView->GetWarningID() == enWrnID)
 		{
 			// remove the only one from warning strategy
-			if (NULL == poWrnView->pre && NULL == poWrnView->next)
+			if (NULL == poWrnView->GetPrevious() && NULL == poWrnView->GetNext())
 			{
 				m_poHead = NULL;
 			}
 			// remove the warning view from head
-			else if (NULL == poWrnView->pre)
+			else if (NULL == poWrnView->GetPrevious())
 			{
-				m_poHead = poWrnView->next;
-				poWrnView->next->pre = NULL;
+				m_poHead = poWrnView->GetNext();
+				poWrnView->GetNext()->SetPrevious(NULL);
 			}
 			// remove the warning view from tail
-			else if (NULL == poWrnView->next)
+			else if (NULL == poWrnView->GetNext())
 			{
-				poWrnView->pre->next = NULL;
+				poWrnView->GetPrevious()->SetNext(NULL);
 			}
 			else{
-				poWrnView->pre->next = poWrnView->next;
-				poWrnView->next->pre = poWrnView->pre;
+				poWrnView->GetPrevious()->SetNext(poWrnView->GetNext());
+				poWrnView->GetNext()->SetPrevious(poWrnView->GetPrevious());
 			}
 			delete poWrnView;
 			boIsRemoved = true;
 
 			break;
 		}
-		poWrnView = poWrnView->next;
+		poWrnView = poWrnView->GetNext();
 	}
 
 	return boIsRemoved;
@@ -135,9 +146,9 @@ WarningView* WarningLinkList::GetLastFromLinkList(void)
 
     if (NULL != poWrnView){
 
-		while (NULL != poWrnView->next)
+		while (NULL != poWrnView->GetNext())
 		{
-			poWrnView = poWrnView->next;
+			poWrnView = poWrnView->GetNext();
 		}
     }
     
@@ -149,9 +160,6 @@ WarningView* WarningLinkList::GetFirstFromLinkList(void)
 	return m_poHead;
 }
 
-/*
- * Get the number of warning view in the linked list
- */
 uint16 WarningLinkList::GetNumberOfWarningView(void)
 {
     WarningView *poWrnView = m_poHead;
@@ -160,15 +168,12 @@ uint16 WarningLinkList::GetNumberOfWarningView(void)
 	while (NULL != poWrnView)
     {
 		u16Num ++;
-		poWrnView = poWrnView->next;
+		poWrnView = poWrnView->GetNext();
     }
 
 	return u16Num;
 }
 
-/*
- * Get the WarningView by WarningID
- */
 WarningView* WarningLinkList::GetFromLinkList(enum WarningIDs enWrnID)
 {
 	WarningView *poWrnView = m_poHead;
@@ -179,7 +184,7 @@ WarningView* WarningLinkList::GetFromLinkList(enum WarningIDs enWrnID)
 		{
 			break;
 		}
-		poWrnView = poWrnView->next;
+		poWrnView = poWrnView->GetNext();
 	}
 
 	return poWrnView;

@@ -7,14 +7,16 @@
 
 struct KeyAction
 {
+	/**
+	* Action of the warning when the corresponding virtual key value is pressed
+	*/
 	enum WarningAction enAction;
+
+	/**
+	* Virtual Key Value
+	*/
 	enum VirtualKey enKey;
 
-	KeyAction()
-    {
-		enAction = WBIgnore;
-		enKey = VKY_OK;
-    }
 };
 
 
@@ -25,19 +27,44 @@ typedef std::list<KeyAction>::iterator itKeyAction;
 class Acknowledge
 {
 public:
-	Acknowledge();
 
+	/**
+	* Constructor
+	*/
+	Acknowledge(void);
+
+	/**
+	* Destructor
+	*/
 	~Acknowledge();
 
-	void AddKeyAction(enum VirtualKey vk, enum WarningAction wrnAction);
+	/**
+	* Adding the definition of key and action, if the key has already been added, update the Action.
+	* @parameter
+	* @return void
+	*/
+	void AddKeyAction(enum VirtualKey enVKey, enum WarningAction wrnAction);
 
-	bool RemoveKeyAction(enum VirtualKey vk);
+	/**
+	* Delete key and action definitions
+	* @parameter
+	* @return bool
+	*/
+	bool RemoveKeyAction(enum VirtualKey enVKey);
 
-	enum WarningAction GetActionByKey(enum VirtualKey vk);
+	/**
+	* Get the action corresponding to the key according to the key value
+	* @parameter
+	* @return WarningAction
+	*/
+	enum WarningAction GetActionByKey(enum VirtualKey enVKey);
 
 private:
 
-	KeyActionList lstKeyAction;
+	/**
+	* List of definitions of keys and actions
+	*/
+	KeyActionList m_lstKeyAction;
 
 };
 

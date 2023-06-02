@@ -1,55 +1,8 @@
 
-1a.报警A，只在Driving下显示，Stack=0
-在Driving下触发A，按键隐藏，切换到Inactive，再切换到Driving，这时候报警不显示。
-1b.报警B，在所有UsageMode下显示，Stack=0
-在Driving下触发B，按键隐藏，切换到Inactive，再切换到Driving，这时候报警不显示。
-
-2a.报警A，只在Driving下显示，Stack=1
-在Driving下触发A，按键隐藏，切换到Inactive，再切换到Driving，这时候报警要进入WarningStack。
-2b.报警B，在所有UsageMode下显示，Stack=1
-在Driving下触发B，按键隐藏，切换到Inactive，报警进入WarningQueue，再切换到Driving，这时候报警在WarningQueue。
-
-报警在Driving/Active下显示，Stack=1
-在Driving下触发报警，按键隐藏，然后切换到Active，应该如何显示？报警在WarningStack显示
-报警在Driving/Active下显示，Stack=0
-在Driving下触发报警，按键隐藏，然后切换到Active，应该如何显示？报警不显示
-
-
-从Driving/active切换到其他模式的时候，MessageQueue里面的不激活的Release，将触发条件还在，并且当前UsageMode能显示的报警加入到MessageQueue。
-
-其他UsageMode切换，MessageQueue里面的不激活的Release，将触发条件还在，不在WarningStack，并且当前UsageMode能显示的报警加入到MessageQueue。
-
-
-
-
-
-
-
-
-■ Indicator request.question
-   报警灯与报警联动。
-
-   Pattern A
-   一个报警只要显示过，那它关联的报警灯就应该显示。当这个报警不在显示时，如果报警灯显示的位置还有其他报警灯，那么按照配置的优先级仲裁；
-   当这个报警正在显示时，这个报警关联的报警灯要有最高优先级。显示指在WarningQueue或者WarningStack显示。
-   当报警的触发条件不满足的时候，报警灯消失。
-   报警触发条件满足且报警未显示过，那么报警灯应该也是Off。
-   对于PatternA，WarningManager可以提供一个List，记录哪些Telltale是显示的，只要报警到达TopOfQueue，那就将对应的IndicatorRequest加入到List，报警取消时，从List移除。
-
-   Pattern B
-   On: Notification is shown
-   Off: Notification is not shown
-   shown代表报警为 TopOfQueue 或者在 WarningStack中显示
-   对于PatternB，WarningManager只需要提供一个API，根据NotificationID获取IndicatorRequest即可。
-   
-
-
-
 
 触发一个Immediate属性为True的Notification，若Notification在当前UsageMode或者Available下不能显示，这个Notification是否要丢弃？
 
 
-若当前显示的界面是菜单，触发一个Immediate的报警，是否丢弃？取决于后台显示的报警的优先级
 
 A > B 显示A-driving/active，触发B-active，B是Immediate
 当前是 driving, 
@@ -59,8 +12,6 @@ driving -> active 之后，B是否要显示
 
 有报警A和B，A优先级>B优先级，A在Driving和Active下显示，B在Active下显示，B的Immediate属性为True。
 在Driving下先触发A，A显示后触发B，然后取消A，UsageMode从Driving切换到Active，这时候B是否要显示？
-
-
 
 
 
@@ -92,18 +43,9 @@ WarningManger framework 模块功能开发计划
 
 
 
-
-
-
-
-
-
-
-
 Audio Chime request 是否支持配置？
 报警灯，纯声音放到哪里做？
 报警取消的时候CancelSound还是报警消失的时候CancelSound？
-
 
 
 
@@ -122,14 +64,32 @@ Audio Chime request 是否支持配置？
 
 
 
+王鹏飞是FR+Developer，我和王鹏飞一起做。
 
-数据有效性转换：
-1，UsageMode若大于31，那么转换成31
-2，Available若大于7，那么转换成7
-3，若最大显示时间小于最小显示时间，或者小于UserLockTime，那么maxdisptime = minidisptime > userlocktime? minidisptime:userlocktime；
+CyberSecurity 的具体工作内容？
 
+需求文档？开发工具？代码？帮助文档？是否敏捷开发？
+
+
+HUD Kick off meeting: 硬件平台，软件平台，调试工具。录屏
+
+
+
+
+
+python 实现多种加密
+http://www.ay1.cc/article/1672709150557553206.html
 	
 
+AC 工具链安装
+python 实现多种加密
+英语学习
+
+
+
+	
+	
+	
 1，如何访问系统时钟？
 
 2，
