@@ -30,9 +30,10 @@ def _render(source_html):
                 self.setHtml(html)
                 while self.html is None:
                     self.app.processEvents(
-                        QEventLoop.ExcludeUserInputEvents |
-                        QEventLoop.ExcludeSocketNotifiers |
-                        QEventLoop.WaitForMoreEvents)
+                        QEventLoop.ExcludeUserInputEvents
+                        | QEventLoop.ExcludeSocketNotifiers
+                        | QEventLoop.WaitForMoreEvents
+                    )
                 self.app.quit()
 
             def _callable(self, data):
@@ -40,6 +41,7 @@ def _render(source_html):
 
             def _loadFinished(self, result):
                 self.page().toHtml(self._callable)
+
     except ImportError:
         from PyQt5.QtWebKitWidgets import QWebPage
         from PyQt5.QtWidgets import QApplication
@@ -70,7 +72,7 @@ def devnull():
     try:
         original_stderr = os.dup(sys.stderr.fileno())
         original_stdout = os.dup(sys.stdout.fileno())
-        null = open(os.devnull, 'w')
+        null = open(os.devnull, "w")
         os.dup2(null.fileno(), sys.stderr.fileno())
         os.dup2(null.fileno(), sys.stdout.fileno())
         yield
@@ -98,4 +100,4 @@ def render(html):
         finally:
             pool.terminate()
 
-    raise TimeoutError('Timed out attempting to render HTML %d times' % tries)
+    raise TimeoutError("Timed out attempting to render HTML %d times" % tries)

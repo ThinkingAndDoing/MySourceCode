@@ -1,18 +1,22 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 import subprocess
 import os
 from lib.jsonio import Jsoner
 
 import platform
-print (platform.python_version())
+
+print(platform.python_version())
 import pandas as pd
-#str_ffmpegPath = "C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe"
-str_ffmpegPath = "D:\\01Myprogram\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe"
-#subprocess.call('C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe -y -i test.mp4 -ss 00:00:0.0 -t 00:00:40.0 -acodec copy -vcodec copy -async 1 test2.mp4')
-#subprocess.call('C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe -y -i test.mp4 -ss 00:00:0.0 -to 00:01:40.0 -acodec copy -vcodec copy -async 1 test2.mp4')
-#dict_video = {"file_name":"乌里：外科手术式打击BD中字.mkv", "start_time":"00:02:23", "end_time":"00:13:13"}
-'''
+
+# str_ffmpegPath = "C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe"
+str_ffmpegPath = (
+    "D:\\01Myprogram\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe"
+)
+# subprocess.call('C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe -y -i test.mp4 -ss 00:00:0.0 -t 00:00:40.0 -acodec copy -vcodec copy -async 1 test2.mp4')
+# subprocess.call('C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe -y -i test.mp4 -ss 00:00:0.0 -to 00:01:40.0 -acodec copy -vcodec copy -async 1 test2.mp4')
+# dict_video = {"file_name":"乌里：外科手术式打击BD中字.mkv", "start_time":"00:02:23", "end_time":"00:13:13"}
+"""
 subprocess.call('C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe -y -i test.mp4 -ss 00:00:0.0 -t 00:00:40.0 -acodec copy -vcodec copy -async 1 test2.mp4')
 subprocess.call('C:\\Users\\Administrator\\Downloads\\ffmpeg-20200713-7772666-win64-static\\bin\\ffmpeg.exe -y -i test.mp4 -ss 00:00:0.0 -to 00:01:40.0 -acodec copy -vcodec copy -async 1 test2.mp4')
 从00:00:0.0起截取40秒ffmpeg -y -i test.mp4 -ss 00:00:0.0 -t 00:00:40.0 -acodec copy -vcodec copy -async 1 test2.mp4
@@ -106,29 +110,41 @@ ffmpeg -i in.mp4 -filter:v "crop=in_w:in_h-40" -c:a copy out.mp4
 -title string 设置标题
 -author string 设置作者
 
-'''
-def cutVideo(dict_v):
+"""
 
-    save_name = "Fragment_"+dict_v["file_name"]
-    
-    cmd = str_ffmpegPath + ' -y -i ' +  dict_v["file_name"] + ' -ss ' + dict_v["start_time"] + ' -to '+ dict_v["end_time"] + ' -acodec copy -vcodec copy -async 1 ' + save_name
+
+def cutVideo(dict_v):
+    save_name = "Fragment_" + dict_v["file_name"]
+
+    cmd = (
+        str_ffmpegPath
+        + " -y -i "
+        + dict_v["file_name"]
+        + " -ss "
+        + dict_v["start_time"]
+        + " -to "
+        + dict_v["end_time"]
+        + " -acodec copy -vcodec copy -async 1 "
+        + save_name
+    )
     subprocess.call(cmd)
 
-def cutVideos(df):
-	
-	rows = df.shape[0]
-	for i in range(0, rows):
-		dict = {}
-		dict["file_name"] = df.loc[i,"file_name"]
-		dict["start_time"] = df.loc[i,"start_time"]
-		dict["end_time"] = df.loc[i,"end_time"]
-		try:
-			cutVideo(dict)
-		except:
-			pass
 
-if __name__ == '__main__':
-    #js = Jsoner.readJson("C:\\Users\\uidp8103\\Desktop\\1.json")
-    #cutVideo(js)
-	data = pd.read_csv("fileName.csv")
-	cutVideos(data)
+def cutVideos(df):
+    rows = df.shape[0]
+    for i in range(0, rows):
+        dict = {}
+        dict["file_name"] = df.loc[i, "file_name"]
+        dict["start_time"] = df.loc[i, "start_time"]
+        dict["end_time"] = df.loc[i, "end_time"]
+        try:
+            cutVideo(dict)
+        except:
+            pass
+
+
+if __name__ == "__main__":
+    # js = Jsoner.readJson("C:\\Users\\uidp8103\\Desktop\\1.json")
+    # cutVideo(js)
+    data = pd.read_csv("fileName.csv")
+    cutVideos(data)

@@ -15,7 +15,7 @@ def compress_image(outfile, mb=600, quality=85, k=0.9):
     :return: 压缩文件地址，压缩文件大小
     """
     o_size = os.path.getsize(outfile) // 1024
-    #print(o_size, mb)
+    # print(o_size, mb)
     if o_size <= mb:
         return outfile
 
@@ -54,14 +54,14 @@ def compress_image_bs4(b64, mb=190, k=0.9):
             out = img.resize((int(x * k), int(y * k)), Image.ANTIALIAS)
             im_out.close()
             im_out = io.BytesIO()
-            out.save(im_out, 'jpeg')
+            out.save(im_out, "jpeg")
             o_size = len(im_out.getvalue()) // 1024
         b64 = base64.b64encode(im_out.getvalue())
         im_out.close()
-        return str(b64, encoding='utf8')
+        return str(b64, encoding="utf8")
 
 
 if __name__ == "__main__":
-    for img in os.listdir('./img'):
-        compress_image(outfile='./img/' + str(img)[0:-4] + '.png')
-    print('完')
+    for img in os.listdir("./img"):
+        compress_image(outfile="./img/" + str(img)[0:-4] + ".png")
+    print("完")

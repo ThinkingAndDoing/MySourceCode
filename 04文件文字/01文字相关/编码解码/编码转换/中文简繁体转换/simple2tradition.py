@@ -1,32 +1,34 @@
-'''
+"""
 1.例子源代码 Python 3.x
-'''
+"""
 # -*- coding: UTF-8 -*-
 
 import os
 import sys
 from langconv import *
 
+
 def simple2tradition(line):
-    #将简体转换成繁体  
-    #line = Converter('zh-hant').convert(line.decode('utf-8'))
-    line = Converter('zh-hant').convert(line)
-    #line = line.encode('gbk')
+    # 将简体转换成繁体
+    # line = Converter('zh-hant').convert(line.decode('utf-8'))
+    line = Converter("zh-hant").convert(line)
+    # line = line.encode('gbk')
     return line
+
 
 def tradition2simple(line):
     # 将繁体转换成简体
-    line = Converter('zh-hans').convert(line.decode('utf-8'))
-    line = line.encode('utf-8')
+    line = Converter("zh-hans").convert(line.decode("utf-8"))
+    line = line.encode("utf-8")
     return line
 
 
-if __name__=="__main__":
-	content="你好吗中国"
-	print('The converted string is '+simple2tradition(content))
+if __name__ == "__main__":
+    content = "你好吗中国"
+    print("The converted string is " + simple2tradition(content))
 
 
-'''
+"""
 2.相关知识点
 
 形如——
@@ -45,20 +47,9 @@ if __name__=="__main__":
 &#x4e2d;&#x56fd;
 &#20013;&#22269;
 ——这两种 NCR 写法都会在显示时转换为「中国」二字。
-'''
+"""
 
 
-
-
-
-
-
-
-
-
-
-
-'''
+"""
 3.扩展
-'''
-
+"""

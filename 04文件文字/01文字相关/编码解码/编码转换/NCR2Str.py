@@ -1,33 +1,41 @@
-'''
+"""
 1.例子源代码 Python 3.x
-'''
+"""
 # -*- coding: UTF-8 -*-
 
 import os
 import sys
 
+
 def mixNcrtoStr(str):
-    #NCR 字符转换为字符串
-    i=0
-    distStr=""
-    while(i<len(str)-7):
-        if str[i]=='&' and str[i+1]=='#' and str[i+2]>='0' and str[i+2]<='9' and str[i+6]>='0' and str[i+6]<='9':
-            distStr = distStr + (chr(int(str[i+2:i+7])))
-            i = i +8
+    # NCR 字符转换为字符串
+    i = 0
+    distStr = ""
+    while i < len(str) - 7:
+        if (
+            str[i] == "&"
+            and str[i + 1] == "#"
+            and str[i + 2] >= "0"
+            and str[i + 2] <= "9"
+            and str[i + 6] >= "0"
+            and str[i + 6] <= "9"
+        ):
+            distStr = distStr + (chr(int(str[i + 2 : i + 7])))
+            i = i + 8
         else:
             distStr = distStr + str[i]
-            i = i +1
-    while(i<len(str)):
+            i = i + 1
+    while i < len(str):
         distStr = distStr + str[i]
-        i = i+1
+        i = i + 1
     return distStr
 
-if __name__=="__main__":
-	print(mixNcrtoStr("你好吗？&#20013;&#22269;"))
+
+if __name__ == "__main__":
+    print(mixNcrtoStr("你好吗？&#20013;&#22269;"))
 
 
-
-'''
+"""
 2.相关知识点
 
 形如——
@@ -46,20 +54,9 @@ if __name__=="__main__":
 &#x4e2d;&#x56fd;
 &#20013;&#22269;
 ——这两种 NCR 写法都会在显示时转换为「中国」二字。
-'''
+"""
 
 
-
-
-
-
-
-
-
-
-
-
-'''
+"""
 3.扩展
-'''
-
+"""

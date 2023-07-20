@@ -1,8 +1,8 @@
-'''
+"""
 1.例子源代码 Python 3.x
 功能：
 将 D:\迅雷下载\Keep 目录下所有子目录中的内容移动到 D:\迅雷下载\Keep 下面
-'''
+"""
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
@@ -11,29 +11,25 @@ import sys
 import shutil
 
 global _DistPath
-_DistPath = r'D:\迅雷下载\Keep'
+_DistPath = r"D:\迅雷下载\Keep"
+
 
 def copyFiles(sourcePath, distPath):
     for item in os.listdir(sourcePath):
-        if not os.path.exists(distPath+"\\"+item):
-            shutil.move(sourcePath+"\\"+item, distPath)
+        if not os.path.exists(distPath + "\\" + item):
+            shutil.move(sourcePath + "\\" + item, distPath)
         else:
-            print(distPath+"\\"+item+" is already exist!")
-
-if __name__=="__main__":
-
-	os.chdir(_DistPath)
-	for item in os.listdir(os.getcwd()):
-		if os.path.isdir(item)==True:
-			copyFiles(_DistPath+"\\"+item, _DistPath)
+            print(distPath + "\\" + item + " is already exist!")
 
 
+if __name__ == "__main__":
+    os.chdir(_DistPath)
+    for item in os.listdir(os.getcwd()):
+        if os.path.isdir(item) == True:
+            copyFiles(_DistPath + "\\" + item, _DistPath)
 
 
-
-
-
-'''
+"""
 2.相关知识点
 
 一、python中对文件、文件夹操作时经常用到的os模块和shutil模块常用方法。
@@ -81,21 +77,12 @@ shutil.rmtree("dir") #空目录、有内容的目录都可以删
 9.转换目录
 os.chdir("path") #换路径
 
-'''
+"""
 
 
-
-
-
-
-
-
-
-
-'''
+"""
 3.扩展
 
 
 http://www.runoob.com/python/python-tutorial.html
-'''
-
+"""

@@ -1,21 +1,23 @@
-'''
+"""
 1.例子源代码 Python 3.x
-'''
+"""
 # -*- coding: UTF-8 -*-
 import os
 import xlwt
 import xlrd
 
-os.chdir('C:\\Users\\uidp8103\\Desktop\\TextCompare\\python\\testing')
+os.chdir("C:\\Users\\uidp8103\\Desktop\\TextCompare\\python\\testing")
+
 
 def initGlobalVar():
     global _OutputFile
     global _SourceFile
     global _SheetName
 
-    _OutputFile='.\\TestCase.xls'
-    _SourceFile=".\\Geely_FE6_WarningConfiguration.xlsm"
-    _SheetName='WarningConfig'
+    _OutputFile = ".\\TestCase.xls"
+    _SourceFile = ".\\Geely_FE6_WarningConfiguration.xlsm"
+    _SheetName = "WarningConfig"
+
 
 def getTableIndex(table):
     global indexName
@@ -23,7 +25,7 @@ def getTableIndex(table):
     global indexWarningStrategy
     global indexActiveCondition
     global indexDeactiveCondition
-	
+
     keyName = table.row_values(0)
     indexName = keyName.index("Name")
     indexDisplayMode = keyName.index("DisplayMode")
@@ -31,37 +33,62 @@ def getTableIndex(table):
     indexActiveCondition = keyName.index("ActiveCondition")
     indexDeactiveCondition = keyName.index("DeactiveCondition")
 
+
 def generateTestCase(sourceSheet, distSheet):
     getTableIndex(sourceSheet)
-    for i in range(1,51):
-        Name = sourceSheet.cell(i,indexName).value
-        DisplayMode = sourceSheet.cell(i,indexDisplayMode).value
-        WarningStrategy = sourceSheet.cell(i,indexWarningStrategy).value
-        ActiveCondition = sourceSheet.cell(i,indexActiveCondition).value
-        DeactiveCondition = sourceSheet.cell(i,indexDeactiveCondition).value
-        
-        distSheet.write(i, 0, Name+"_"+WarningStrategy)
-        #distSheet.write(i, 1, sourceSheet.cell(i,indexDisplayMode).value)
-        #distSheet.write(i, 2, sourceSheet.cell(i,indexWarningStrategy).value)
-        inputSteps = "1."+"IgnOff, " + ActiveCondition + ", wait for 10s" + "\n"
+    for i in range(1, 51):
+        Name = sourceSheet.cell(i, indexName).value
+        DisplayMode = sourceSheet.cell(i, indexDisplayMode).value
+        WarningStrategy = sourceSheet.cell(i, indexWarningStrategy).value
+        ActiveCondition = sourceSheet.cell(i, indexActiveCondition).value
+        DeactiveCondition = sourceSheet.cell(i, indexDeactiveCondition).value
+
+        distSheet.write(i, 0, Name + "_" + WarningStrategy)
+        # distSheet.write(i, 1, sourceSheet.cell(i,indexDisplayMode).value)
+        # distSheet.write(i, 2, sourceSheet.cell(i,indexWarningStrategy).value)
+        inputSteps = "1." + "IgnOff, " + ActiveCondition + ", wait for 10s" + "\n"
         inputSteps += "2." + DeactiveCondition + "\n"
-        inputSteps += "3."+"IgnOn, " + ActiveCondition + ", wait for 10s" + "\n"
+        inputSteps += "3." + "IgnOn, " + ActiveCondition + ", wait for 10s" + "\n"
         inputSteps += "4." + DeactiveCondition + "\n"
         distSheet.write(i, 3, inputSteps)
         WarningStrategy = WarningStrategy.replace("Pos", "")
         WarningStrategy = WarningStrategy.replace("WSTT", "Position")
-        if DisplayMode=="IgnOFF" or DisplayMode=="IgnOFF_IgnON":
-            expectResult = "1."+"The telltale " + Name + " will be displayed on screen in "+ WarningStrategy +" for 10s" + "\n"
-            expectResult += "2."+"The telltale " + Name + " will disappear immediately" + "\n"
+        if DisplayMode == "IgnOFF" or DisplayMode == "IgnOFF_IgnON":
+            expectResult = (
+                "1."
+                + "The telltale "
+                + Name
+                + " will be displayed on screen in "
+                + WarningStrategy
+                + " for 10s"
+                + "\n"
+            )
+            expectResult += (
+                "2." + "The telltale " + Name + " will disappear immediately" + "\n"
+            )
         else:
-            expectResult = "1."+"The telltale " + Name + " will not be displayed" + "\n"
-            expectResult += "2."+"No changes on screen" + "\n"
-        if DisplayMode=="IgnON" or DisplayMode=="IgnOFF_IgnON":
-            expectResult += "3."+"The telltale " + Name + " will be displayed on screen in "+ WarningStrategy +" for 10s" + "\n"
-            expectResult += "4."+"The telltale " + Name + " will disappear immediately" + "\n"
+            expectResult = (
+                "1." + "The telltale " + Name + " will not be displayed" + "\n"
+            )
+            expectResult += "2." + "No changes on screen" + "\n"
+        if DisplayMode == "IgnON" or DisplayMode == "IgnOFF_IgnON":
+            expectResult += (
+                "3."
+                + "The telltale "
+                + Name
+                + " will be displayed on screen in "
+                + WarningStrategy
+                + " for 10s"
+                + "\n"
+            )
+            expectResult += (
+                "4." + "The telltale " + Name + " will disappear immediately" + "\n"
+            )
         else:
-            expectResult += "3."+"The telltale " + Name + " will not be displayed" + "\n"
-            expectResult += "4."+"No changes on screen" + "\n"
+            expectResult += (
+                "3." + "The telltale " + Name + " will not be displayed" + "\n"
+            )
+            expectResult += "4." + "No changes on screen" + "\n"
         distSheet.write(i, 5, expectResult)
 
 
@@ -70,14 +97,14 @@ try:
     sourcewb = xlrd.open_workbook(_SourceFile)
     sourcews = sourcewb.sheet_by_name(_SheetName)
     distwb = xlwt.Workbook()
-    distws = distwb.add_sheet('WarningTestCase',cell_overwrite_ok=True)
+    distws = distwb.add_sheet("WarningTestCase", cell_overwrite_ok=True)
 except:
-    print("Exception:",e)
+    print("Exception:", e)
 else:
-    generateTestCase(sourcews,distws)
+    generateTestCase(sourcews, distws)
     distwb.save(_OutputFile)
 
-'''
+"""
 2.相关知识点
 
 
@@ -114,20 +141,9 @@ else:
 5.报警灯PositionLight继续显示10s
 6.报警灯PositionLight消失
 
-'''
+"""
 
 
-
-
-
-
-
-
-
-
-
-
-'''
+"""
 3.扩展
-'''
-
+"""

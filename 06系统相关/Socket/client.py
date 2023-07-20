@@ -12,4 +12,4 @@ s.connect((host, port))
 # 接收小于 1024 字节的数据
 msg = s.recv(1024)
 s.close()
-print(msg.decode('utf-8'))
+print(msg.decode("utf-8"))

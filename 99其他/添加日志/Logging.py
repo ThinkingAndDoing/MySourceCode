@@ -6,13 +6,15 @@ import logging
 
 
 def setdebuglevel(debuglevel):
-    logging.basicConfig(level=debuglevel, format='%(message)s', filename='test.log', filemode='w')
-    logging.critical('-------------------------------')
-    logging.debug('debug message')
-    logging.info('info message')
-    logging.warning('warning message')
-    logging.error('error message')
-    logging.critical('critical message')
+    logging.basicConfig(
+        level=debuglevel, format="%(message)s", filename="test.log", filemode="w"
+    )
+    logging.critical("-------------------------------")
+    logging.debug("debug message")
+    logging.info("info message")
+    logging.warning("warning message")
+    logging.error("error message")
+    logging.critical("critical message")
 
 
 if __name__ == "__main__":
@@ -20,15 +22,15 @@ if __name__ == "__main__":
 
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)  # 在console显示大于logging.INFO级别的消息
-    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+    formatter = logging.Formatter("%(name)-12s: %(levelname)-8s %(message)s")
     console.setFormatter(formatter)
-    logging.getLogger('').addHandler(console)
+    logging.getLogger("").addHandler(console)
 
-    logging.debug('This is debug message')
-    logging.info('This is info message')
-    logging.warning('This is warning message')
+    logging.debug("This is debug message")
+    logging.info("This is info message")
+    logging.warning("This is warning message")
 
-'''
+"""
 2.相关知识点
 
 logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S',filename='test.log',filemode='w')
@@ -63,8 +65,8 @@ logging.getLogger('').addHandler(console)
 logging.debug('This is debug message')
 logging.info('This is info message')
 logging.warning('This is warning message')
-'''
+"""
 
-'''
+"""
 3.扩展
-'''
+"""

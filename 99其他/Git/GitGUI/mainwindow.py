@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -59,4 +60,3 @@ class Ui_MainWindow(object):
         self.pushButton_5.setText(_translate("MainWindow", "同步到远程仓库"))
         self.pushButton_3.setText(_translate("MainWindow", "一键Commit"))
         self.pushButton.setText(_translate("MainWindow", "一键Commit"))
-
