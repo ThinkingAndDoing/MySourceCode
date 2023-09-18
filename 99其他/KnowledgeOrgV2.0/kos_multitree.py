@@ -32,7 +32,6 @@ class MultiTree(object):
     def preorder(self, node):
         if node is None:
             return
-        print(node.elem, end=" ")
         for n in node.lChild:
             self.preorder(n)
 
