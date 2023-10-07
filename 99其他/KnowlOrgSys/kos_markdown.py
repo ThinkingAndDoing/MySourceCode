@@ -1,15 +1,14 @@
 ﻿# -*- coding: UTF-8 -*-
 
-import re
 import os
 import shutil
 import hashlib
 
 import sys
-from PyQt5.QtWidgets import QStatusBar, QFileSystemModel, QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QHBoxLayout
-from PyQt5.QtWidgets import QWidget, QTextBrowser, QInputDialog, QComboBox, QScrollArea, QTreeView
+from PyQt5.QtWidgets import QStatusBar, QFileSystemModel, QApplication, QMainWindow, QTextEdit, QAction, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QTextBrowser, QInputDialog, QComboBox, QScrollArea, QTreeView, QFileDialog
 from PyQt5.QtGui import QDesktopServices, QTextCursor, QFont, QTextOption
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QEvent
 import markdown
 
 TEXT_FONT = "新宋体"
@@ -42,6 +41,9 @@ class MarkdownEditor(QMainWindow):
         self.text_content = ""
         self.show_mark_down()
         self.mdFilePath = "."
+        self.insFilePath = "."
+        self.m_isItemClicked = False  
+        self.m_horizontalScrollBarPos = 0
 
     def initMarkdownEditorUI(self):
         self.setWindowTitle('Markdown Editor')
@@ -105,7 +107,10 @@ class MarkdownEditor(QMainWindow):
         # 创建左侧的 QTreeView
         self.tree_view = QTreeView(self)
         self.tree_view.setFont(QFont(ACTION_FONT, ACTION_FONT_SIZE))
-        self.tree_view.setFixedWidth(180)  # 设置固定宽度
+        self.tree_view.header().setMinimumSectionSize(400)
+        self.tree_view.horizontalScrollBar().valueChanged.connect(self.onLeftHorizontalScrollBarChange)
+        self.tree_view.clicked.connect(self.OnLeftTreeItemClicked)
+
         # 创建文件系统模型
         self.file_model = QFileSystemModel()
         self.file_model.setRootPath("/")  # 设置根目录
@@ -138,6 +143,24 @@ class MarkdownEditor(QMainWindow):
         scroll_area.setWidget(self.central_widget)
 
         self.setCentralWidget(scroll_area)
+
+    def OnLeftTreeItemClicked(self, item):
+        '''Record current pos of horizontal scrollbar'''
+        self.m_isItemClicked = True  
+        self.m_horizontalScrollBarPos = self.tree_view.horizontalScrollBar().sliderPosition()
+
+    def onLeftHorizontalScrollBarChange(self, value):
+        '''Change the pos of horizontal scrollbar to m_horizontalScrollBarPos to stop horizontal scrollbar going back to starting position'''
+        if self.m_isItemClicked:  
+            self.tree_view.horizontalScrollBar().setValue(self.m_horizontalScrollBarPos)  
+            self.m_isItemClicked = False
+
+    def resizeEvent(self, event: QEvent):
+        '''Change the width of horizontal scrollbar according to window's width and set the minimum width as 180'''
+        width = event.size().width() * 0.146
+        if width < 180:
+            width = 180
+        self.tree_view.setFixedWidth(width)
 
     def on_toolbtn_pressed(self, qAction):
 
@@ -190,16 +213,22 @@ class MarkdownEditor(QMainWindow):
 
         if file_path:
             filename, file_extension = os.path.splitext(os.path.basename(file_path))
-            target_file_path = os.path.join("D:\\.kos_file_library", os.path.basename(file_path))
+            target_file_path = os.path.join(self.insFilePath, os.path.basename(file_path))
 
             if os.path.exists(target_file_path):
                 old_file_md5 = get_md5(target_file_path)
                 new_file_md5 = get_md5(file_path)
                 if old_file_md5!=new_file_md5:
                     filename = "_".join((filename, new_file_md5))
-                    target_file_path = os.path.join("D:\\.kos_file_library", filename + file_extension)
+                    target_file_path = os.path.join(self.insFilePath, filename + file_extension)
 
-            shutil.move(file_path, target_file_path)
+            if os.path.exists(target_file_path):
+                self.status_bar.showMessage("已插入过完全相同的文件！")
+            else:
+                shutil.copy(file_path, target_file_path)
+                os.chmod(file_path, 0o777)
+                os.remove(file_path)
+                #shutil.move(file_path, target_file_path)
 
             file_link = "["+filename + file_extension+"]"+"(file:///" + target_file_path.replace("\\", "/")+")"
             
@@ -262,6 +291,9 @@ class MarkdownEditor(QMainWindow):
 
     def set_md_file_path(self, path):
         self.mdFilePath = path
+
+    def set_ins_file_path(self, path):
+        self.insFilePath = path
 
 def main():
     app = QApplication(sys.argv)

@@ -37,14 +37,15 @@ def get_args():
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-
     inputArgs = get_args()
 
-    model = kos_model.Model()
-    if model.set_path(inputArgs.mdfile):
+    if os.path.exists(inputArgs.mdfile):
+        model = kos_model.Model(inputArgs.mdfile)
         viewmodel = kos_viewmodel.ViewModel(model)
         myWin = kos_view.View()
         myWin.set_view_model(viewmodel)
+        if os.path.exists(inputArgs.insertedfile):
+            myWin.set_ins_file_path(inputArgs.insertedfile)
         myWin.show()
         sys.exit(app.exec_())
     else:
