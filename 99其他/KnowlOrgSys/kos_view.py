@@ -7,25 +7,23 @@
 
 import os
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import Qt, QModelIndex
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHeaderView, QMenu, QFileDialog
-from kos_markdown import MarkdownEditor
-import kos_markdown
+from kos_markdownview import MarkdownView
 
-class View(MarkdownEditor):
-    def __init__(self):
-        MarkdownEditor.__init__(self)
+class View(MarkdownView):
+    def __init__(self, view_model):
+        MarkdownView.__init__(self, view_model.model)
 
-        self.initViewUI()
+        self.init_view_ui()
         
-        self.treeModel = None
-        self.viewModel = None
-        self.currentRow = ""
-        self.itemToBePaste = None
-        self.nodeToBePaste = ""
+        self.view_model = view_model
+        self.current_row = ""
+        self.item_to_be_pasted = None
+        self.node_to_be_pasted = ""
 
 
-    def initViewUI(self):
+    def init_view_ui(self):
         self.setWindowTitle("我的笔记")
 
         #self.setFixedSize(self.width(), self.height())
@@ -39,7 +37,7 @@ class View(MarkdownEditor):
         # mouse left click
         self.tree_view.clicked.connect(self.on_clicked)
 
-        self.textEdit.textChanged.connect(self.on_text_changed)
+        self.text_edit_view.textChanged.connect(self.on_text_changed)
         # self.tree_view.viewport().installEventFilter(self)
 
         self.open_file_action.triggered.connect(self.load_info_base)
@@ -49,8 +47,8 @@ class View(MarkdownEditor):
         folder_path = QFileDialog.getExistingDirectory(self, "Select a Folder", "")
         
         if folder_path:
-            self.viewModel.model.set_md_file_path(folder_path)
-            self.update_tree_model()
+            self.view_model.model.set_md_file_path(folder_path)
+            self.update_tree_view()
 
     def eventFilter(self, object, event):
         if object is self.tree_view.viewport():
@@ -60,14 +58,9 @@ class View(MarkdownEditor):
 
             return super(View, self).eventFilter(object, event)
 
-    def set_view_model(self, viewmodel):
-        self.viewModel = viewmodel
-        self.update_tree_model()
-
-    def update_tree_model(self):
-        self.treeModel = self.viewModel.load_treemodel()
-        self.tree_view.setModel(self.treeModel)
-        self.set_md_file_path(self.viewModel.model.get_md_file_path())
+    def update_tree_view(self):
+        self.view_model.create_standard_model()
+        self.tree_view.setModel(self.view_model.standard_model)
         # tree item data changed
         self.tree_view.selectionModel().model().dataChanged.connect(self.on_item_name_changed)
 
@@ -82,49 +75,49 @@ class View(MarkdownEditor):
         for action_text, action_method in menu_actions.items():
             action = self.contextMenu.addAction(action_text)
             action.triggered.connect(action_method)
-            if action_text == "粘贴" and self.itemToBePaste is None:
+            if action_text == "粘贴" and self.item_to_be_pasted is None:
                 action.setEnabled(False)
             elif action_text == "粘贴":
                 action.setEnabled(True)
 
-        self.currentRow = self.tree_view.currentIndex()
-        self.tree_view.expand(self.currentRow)
+        self.current_row = self.tree_view.currentIndex()
+        self.tree_view.expand(self.current_row)
         self.contextMenu.move(self.pos() + pos)
         self.contextMenu.show()
 
     def menu_action_add(self):
         # item add
-        curItem = self.treeModel.itemFromIndex(self.currentRow)
+        curItem = self.view_model.standard_model.itemFromIndex(self.current_row)
         nodefullname = os.path.join(curItem.data(Qt.UserRole), curItem.text())
-        newItemName = self.viewModel.model.create_md_file(nodefullname)
+        newItemName = self.view_model.model.create_md_file(nodefullname)
         newItem = QtGui.QStandardItem(newItemName)
         newItem.setData(nodefullname, Qt.UserRole)
         curItem.appendRow(newItem)
 
     def menu_action_del(self):
         # item del
-        curItem = self.treeModel.itemFromIndex(self.currentRow)
+        curItem = self.view_model.standard_model.itemFromIndex(self.current_row)
         nodefullname = os.path.join(curItem.data(Qt.UserRole), curItem.text())
-        self.viewModel.model.remove_md_file(f"{nodefullname}.md")
+        os.remove(f"{nodefullname}.md")
 
-        self.treeModel.removeRow(self.currentRow.row(), self.currentRow.parent())
+        self.view_model.standard_model.removeRow(self.current_row.row(), self.current_row.parent())
 
     def menu_action_cut(self):
         # item cut
-        parentItem = self.treeModel.itemFromIndex(self.currentRow.parent())
-        self.itemToBePaste = parentItem.takeRow(self.currentRow.row())[0]
-        self.nodeToBePaste = os.path.join(self.itemToBePaste.data(Qt.UserRole), self.itemToBePaste.text())
+        parentItem = self.view_model.standard_model.itemFromIndex(self.current_row.parent())
+        self.item_to_be_pasted = parentItem.takeRow(self.current_row.row())[0]
+        self.node_to_be_pasted = os.path.join(self.item_to_be_pasted.data(Qt.UserRole), self.item_to_be_pasted.text())
 
     def menu_action_paste(self):
         # item paste
         self.tree_view.selectionModel().model().dataChanged.disconnect()
 
-        curItem = self.treeModel.itemFromIndex(self.currentRow)
-        curItem.appendRow(self.itemToBePaste)
+        curItem = self.view_model.standard_model.itemFromIndex(self.current_row)
+        curItem.appendRow(self.item_to_be_pasted)
         distPath = os.path.join(curItem.data(Qt.UserRole), curItem.text())
-        self.viewModel.move_node(self.itemToBePaste, self.nodeToBePaste, distPath)
+        self.view_model.move_node(self.item_to_be_pasted, self.node_to_be_pasted, distPath)
         self.tree_view.selectionModel().model().dataChanged.connect(self.on_item_name_changed)
-        self.itemToBePaste = None
+        self.item_to_be_pasted = None
 
     def on_item_name_changed(self, topLeft, bottomRight):
         # If only one data item has changed, the values of topLeft and bottomRight will be the same.
@@ -134,11 +127,11 @@ class View(MarkdownEditor):
         self.tree_view.selectionModel().model().dataChanged.disconnect()
 
         newItemName = topLeft.data()
-        selectedFileName = self.viewModel.model.get_name_of_file_selected()
+        selectedFileName = self.view_model.model.file_selected
         oldItemName = os.path.basename(selectedFileName)[:-3]
         if newItemName!=oldItemName:
-            newItemName = self.viewModel.rename_node(selectedFileName[:-3], newItemName)
-            curItem = self.treeModel.itemFromIndex(topLeft)
+            newItemName = self.view_model.rename_node(selectedFileName[:-3], newItemName)
+            curItem = self.view_model.standard_model.itemFromIndex(topLeft)
             curItem.setText(newItemName)
 
         # reconnect dataChanged event
@@ -149,25 +142,25 @@ class View(MarkdownEditor):
         gp = QtGui.QCursor.pos()
         lp = self.tree_view.viewport().mapFromGlobal(gp)
         ix_ = self.tree_view.indexAt(lp)
-        curItem = self.treeModel.itemFromIndex(ix_)
+        curItem = self.view_model.standard_model.itemFromIndex(ix_)
         nodefullname = os.path.join(curItem.data(Qt.UserRole), curItem.text())
         # print(f"on_clicked nodefullname={nodefullname}")
-        self.viewModel.model.set_name_of_file_selected(f"{nodefullname}.md")
+        self.view_model.model.file_selected = f"{nodefullname}.md"
 
         if not self.comboBox.isEnabled():
             self.comboBox.setDisabled(False)
-        if self.text_browser.isHidden():
+        if self.text_browser_view.isHidden():
             self.status_bar.showMessage("当前在编辑模式！")
         else:
             self.status_bar.showMessage("当前在阅读模式！")
-        self.text_content = self.viewModel.model.get_content_of_file_selected()
-        html_text = kos_markdown.get_html_text(self.text_content)
-        self.text_browser.setText(html_text)
-        self.textEdit.setText(self.text_content)
+        self.text_content = self.view_model.model.get_content_of_file_selected()
+        html_text = self.get_html_text(self.text_content)
+        self.text_browser_view.setText(html_text)
+        self.text_edit_view.setText(self.text_content)
         self.setWindowTitle("我的笔记" + "-" + ix_.data())
 
     def on_text_changed(self):
-        if self.text_content!=self.viewModel.model.get_content_of_file_selected():
-            self.viewModel.model.set_content_of_file_selected(self.text_content)
+        if self.text_content!=self.view_model.model.get_content_of_file_selected():
+            self.view_model.model.set_content_of_file_selected(self.text_content)
 
 

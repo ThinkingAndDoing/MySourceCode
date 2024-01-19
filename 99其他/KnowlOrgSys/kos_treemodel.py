@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt
 import kos_multitree
 
 
-class TreeModel(object):
+class TreeModel:
     def __init__(self):
         pass
 
@@ -93,13 +93,13 @@ class TreeModel(object):
 
 
 def main():
-    multiTree = kos_multitree.MultiTree("root")
-    multiTree.add("root", "Python")
-    multiTree.add("Python", "pyhton1")
-    multiTree.add("Python", "pyhton2")
+    multi_tree = kos_multitree.MultiTree("root")
+    multi_tree.add("root", "Python")
+    multi_tree.add("Python", "pyhton1")
+    multi_tree.add("Python", "pyhton2")
 
-    treeModel = TreeModel()
-    treeModel.show_tree(multiTree)
+    tree_model = TreeModel()
+    tree_model.show_tree(multi_tree)
 
 
 if __name__ == "__main__":

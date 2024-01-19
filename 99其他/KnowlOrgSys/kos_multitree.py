@@ -1,16 +1,16 @@
 # -*- coding: UTF-8 -*-
 import os
 
-class Node(object):
-    def __init__(self, fullname):
+class Node:
+    def __init__(self, full_name):
         # current node path
-        self.FullName = fullname
+        self.FullName = full_name
         self.lChild = []
 
 
 class MultiTree(object):
-    def __init__(self, rootNode):
-        self.root = Node(rootNode)
+    def __init__(self, root_node):
+        self.root = Node(root_node)
 
     def add(self, nodefullname):
         node = self.find_node(self.root, os.path.dirname(nodefullname))
@@ -36,6 +36,14 @@ class MultiTree(object):
         print(f"preorder = {node.FullName}")
         for n in node.lChild:
             self.preorder(n)
+
+    def create_node_tree(self, node, node_tree_list):
+        if node is None:
+            return
+        depth = len(node.FullName.split(os.sep)) - len(self.root.FullName.split(os.sep))
+        node_tree_list.append("\t"*depth + "* " + os.path.basename(node.FullName))
+        for n in node.lChild:
+            self.create_node_tree(n, node_tree_list)
 
 
 if __name__ == "__main__":

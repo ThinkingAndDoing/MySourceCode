@@ -6,23 +6,17 @@ import hashlib
 
 import sys
 from PyQt5.QtWidgets import QStatusBar, QFileSystemModel, QApplication, QMainWindow, QTextEdit, QAction, QHBoxLayout
-from PyQt5.QtWidgets import QWidget, QTextBrowser, QInputDialog, QComboBox, QScrollArea, QTreeView, QFileDialog
+from PyQt5.QtWidgets import QWidget, QInputDialog, QComboBox, QScrollArea, QTreeView, QFileDialog
 from PyQt5.QtGui import QDesktopServices, QTextCursor, QFont, QTextOption
 from PyQt5.QtCore import Qt, QEvent
+from kos_qtextbrowser import KosTextBrowser
+import kos_model
 import markdown
 
 TEXT_FONT = "新宋体"
 TEXT_FONT_SIZE = 14
 ACTION_FONT = "Arial"
 ACTION_FONT_SIZE = 12
-
-def get_html_text(plain_text):
-    #replace \n as <br/>
-    plain_text = plain_text.replace('\n', '<br/>')
-    html_text = markdown.markdown(plain_text)
-    #keep all space
-    html_text = "<pre>" + html_text + "</pre>"
-    return html_text
 
 def get_md5(filename):
     with open(filename, 'rb') as f:
@@ -32,20 +26,32 @@ def get_md5(filename):
     return md5.hexdigest()
 
 
-class MarkdownEditor(QMainWindow):
+class MarkdownView(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, model):
         super().__init__()
 
-        self.initMarkdownEditorUI()
+        self.init_markdown_editor_ui()
+
+        self.model = model
         self.text_content = ""
         self.show_mark_down()
-        self.mdFilePath = "."
-        self.insFilePath = "."
         self.m_isItemClicked = False  
         self.m_horizontalScrollBarPos = 0
 
-    def initMarkdownEditorUI(self):
+    def get_html_text(self, plain_text):
+        #replace \n as <br/>
+        plain_text = plain_text.replace('\n', '<br/>')
+        html_text = markdown.markdown(plain_text)
+        #keep all space
+        html_text = "<pre>" + html_text + "</pre>"
+        #replease __md_file_path__ with real path
+        html_text = html_text.replace("__md_file_path__", self.model.md_path)
+        html_text = html_text.replace("__inserted_file_path__", "file:///"+self.model.file_path)
+
+        return html_text
+
+    def init_markdown_editor_ui(self):
         self.setWindowTitle('Markdown Editor')
         self.setGeometry(100, 100, 1000, 750)
         
@@ -78,7 +84,7 @@ class MarkdownEditor(QMainWindow):
         self.toolbar.addAction(self.action_2)
         self.toolbar.addAction(self.action)
         self.toolbar.actionTriggered[QAction].connect(self.on_toolbtn_pressed)
-
+        # 创建状态栏
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
 
@@ -104,12 +110,18 @@ class MarkdownEditor(QMainWindow):
         self.insert_link_action.triggered.connect(self.insert_link)
         self.insert_menu.addAction(self.insert_link_action)
 
+        self.tool_menu = self.menu.addMenu('工具')
+        self.tool_menu.setFont(QFont(ACTION_FONT, ACTION_FONT_SIZE))
+        self.tool_create_tree_action = QAction('生成结点树', self)
+        self.tool_create_tree_action.triggered.connect(self.create_node_tree)
+        self.tool_menu.addAction(self.tool_create_tree_action)
+
         # 创建左侧的 QTreeView
         self.tree_view = QTreeView(self)
         self.tree_view.setFont(QFont(ACTION_FONT, ACTION_FONT_SIZE))
         self.tree_view.header().setMinimumSectionSize(400)
-        self.tree_view.horizontalScrollBar().valueChanged.connect(self.onLeftHorizontalScrollBarChange)
-        self.tree_view.clicked.connect(self.OnLeftTreeItemClicked)
+        self.tree_view.horizontalScrollBar().valueChanged.connect(self.on_left_horizontal_scrollbar_changed)
+        self.tree_view.clicked.connect(self.on_left_tree_item_clicked)
 
         # 创建文件系统模型
         self.file_model = QFileSystemModel()
@@ -118,24 +130,24 @@ class MarkdownEditor(QMainWindow):
         self.tree_view.setModel(self.file_model)
         self.tree_view.setRootIndex(self.file_model.index("/"))  # 设置根目录索引
 
-        self.text_browser = QTextBrowser()
-        self.text_browser.setFont(QFont(TEXT_FONT, TEXT_FONT_SIZE))
-        self.text_browser.setWordWrapMode(QTextOption.WordWrap)
-        self.text_browser.setHtml("QTextBrowser")
-        self.text_browser.setOpenLinks(False)
-        self.text_browser.anchorClicked.connect(lambda url: QDesktopServices.openUrl(url))
+        self.text_browser_view = KosTextBrowser()
+        self.text_browser_view.setFont(QFont(TEXT_FONT, TEXT_FONT_SIZE))
+        self.text_browser_view.setWordWrapMode(QTextOption.WordWrap)
+        self.text_browser_view.setHtml("QTextBrowser")
+        self.text_browser_view.setOpenLinks(False)
+        self.text_browser_view.anchorClicked.connect(lambda url: QDesktopServices.openUrl(url))
                 
-        self.textEdit = QTextEdit(self)
-        self.textEdit.setFont(QFont(TEXT_FONT, TEXT_FONT_SIZE))
-        self.textEdit.setAcceptRichText(False)
-        self.textEdit.hide()
-        self.textEdit.textChanged.connect(self.on_textedit_changed)
+        self.text_edit_view = QTextEdit(self)
+        self.text_edit_view.setFont(QFont(TEXT_FONT, TEXT_FONT_SIZE))
+        self.text_edit_view.setAcceptRichText(False)
+        self.text_edit_view.hide()
+        self.text_edit_view.textChanged.connect(self.on_textedit_changed)
         
         self.central_widget = QWidget()
         self.layout = QHBoxLayout(self.central_widget)
         self.layout.addWidget(self.tree_view)
-        self.layout.addWidget(self.textEdit)
-        self.layout.addWidget(self.text_browser)
+        self.layout.addWidget(self.text_edit_view)
+        self.layout.addWidget(self.text_browser_view)
         self.central_widget.setLayout(self.layout)
 
         scroll_area = QScrollArea(self)
@@ -144,13 +156,22 @@ class MarkdownEditor(QMainWindow):
 
         self.setCentralWidget(scroll_area)
 
-    def OnLeftTreeItemClicked(self, item):
+    def create_node_tree(self):
+        node_tree_list = []
+        multi_tree = self.model.get_multi_tree()
+        multi_tree.create_node_tree(multi_tree.root, node_tree_list)
+        kos_model.save_to_local("nodetreemap.md", "@startmindmap\n\n" + "\n".join(node_tree_list) + "\n\n@endmindmap")
+
+    def on_left_tree_item_clicked(self, item):
         '''Record current pos of horizontal scrollbar'''
         self.m_isItemClicked = True  
         self.m_horizontalScrollBarPos = self.tree_view.horizontalScrollBar().sliderPosition()
 
-    def onLeftHorizontalScrollBarChange(self, value):
-        '''Change the pos of horizontal scrollbar to m_horizontalScrollBarPos to stop horizontal scrollbar going back to starting position'''
+    def on_left_horizontal_scrollbar_changed(self, value):
+        '''
+        Change the pos of horizontal scrollbar to m_horizontalScrollBarPos to stop horizontal scrollbar
+        going back to starting position
+        '''
         if self.m_isItemClicked:  
             self.tree_view.horizontalScrollBar().setValue(self.m_horizontalScrollBarPos)  
             self.m_isItemClicked = False
@@ -164,8 +185,8 @@ class MarkdownEditor(QMainWindow):
 
     def on_toolbtn_pressed(self, qAction):
 
-        if self.textEdit.textCursor().selection().toPlainText()!="":
-            selectionTextList = self.textEdit.textCursor().selection().toPlainText().split("\n")
+        if self.text_edit_view.textCursor().selection().toPlainText()!="":
+            selectionTextList = self.text_edit_view.textCursor().selection().toPlainText().split("\n")
             newSelectionLines = []
             if qAction.text() == "一级缩进":
                 newSelectionLines.append("■ " + selectionTextList[0].lstrip())
@@ -177,8 +198,8 @@ class MarkdownEditor(QMainWindow):
                 newSelectionLines.append("    ◇ " + selectionTextList[0].lstrip())
                 newSelectionLines.extend([" "*2+x for x in selectionTextList[1:]])
             newSelectionText = "\n".join(newSelectionLines)
-            self.textEdit.textCursor().removeSelectedText()
-            self.textEdit.textCursor().insertText(newSelectionText)
+            self.text_edit_view.textCursor().removeSelectedText()
+            self.text_edit_view.textCursor().insertText(newSelectionText)
                
     def on_combo_box_activated(self, index):
         selected_text = self.comboBox.itemText(index)
@@ -189,13 +210,13 @@ class MarkdownEditor(QMainWindow):
         elif selected_text == '编辑':
             self.edit_mark_down()
             self.status_bar.showMessage("当前在编辑模式！")
-
+    '''
     def insert_file(self):
         file_path, _ = QFileDialog.getOpenFileName(self, '选择文件', '', '所有文件 (*.*);;文本文件 (*.md)')
 
         if file_path:
             filename, file_extension = os.path.splitext(os.path.basename(file_path))
-            local_folder_path = os.path.join(self.mdFilePath, "resources", file_extension[1:])
+            local_folder_path = os.path.join(self.model.md_path, "resources", file_extension[1:])
             
             if not os.path.exists(local_folder_path):
                 os.makedirs(local_folder_path)
@@ -205,22 +226,22 @@ class MarkdownEditor(QMainWindow):
             
             file_link = "["+filename + file_extension+"]"+"(file:///" + os.path.join(local_folder_path, new_file_name).replace("\\", "/")+")"
             
-            cursor = QTextCursor(self.textEdit.textCursor())
+            cursor = QTextCursor(self.text_edit_view.textCursor())
             cursor.insertText(file_link)
-
+    '''
     def insert_file_link(self):
         file_path, _ = QFileDialog.getOpenFileName(self, '选择文件', '', '所有文件 (*.*);;文本文件 (*.md)')
 
         if file_path:
             filename, file_extension = os.path.splitext(os.path.basename(file_path))
-            target_file_path = os.path.join(self.insFilePath, os.path.basename(file_path))
+            target_file_path = os.path.join(self.model.file_path, os.path.basename(file_path))
 
             if os.path.exists(target_file_path):
                 old_file_md5 = get_md5(target_file_path)
                 new_file_md5 = get_md5(file_path)
                 if old_file_md5!=new_file_md5:
                     filename = "_".join((filename, new_file_md5))
-                    target_file_path = os.path.join(self.insFilePath, filename + file_extension)
+                    target_file_path = os.path.join(self.model.file_path, filename + file_extension)
 
             if os.path.exists(target_file_path):
                 self.status_bar.showMessage("已插入过完全相同的文件！")
@@ -230,9 +251,9 @@ class MarkdownEditor(QMainWindow):
                 os.remove(file_path)
                 #shutil.move(file_path, target_file_path)
 
-            file_link = "["+filename + file_extension+"]"+"(file:///" + target_file_path.replace("\\", "/")+")"
-            
-            cursor = QTextCursor(self.textEdit.textCursor())
+            file_link = "["+filename + file_extension+"](__inserted_file_path__/" + os.path.basename(file_path) + ")"
+
+            cursor = QTextCursor(self.text_edit_view.textCursor())
             cursor.insertText(file_link)
 
     def insert_image(self):
@@ -243,61 +264,55 @@ class MarkdownEditor(QMainWindow):
 
         image_extension = image_path.split('.')[-1]
         image_name = os.path.basename(image_path)
-        local_folder_path = os.path.join(self.mdFilePath, "resources", image_extension)
+        local_folder_path = os.path.join(self.model.md_path, "resources", image_extension)
         if not os.path.exists(local_folder_path):
             os.makedirs(local_folder_path)
 
-        new_image_name = get_md5(image_path)+"."+image_extension
+        new_image_name = get_md5(image_path) + "." + image_extension
         if not os.path.exists(os.path.join(local_folder_path, new_image_name)):
             shutil.copy(image_path, os.path.join(local_folder_path, new_image_name))
 
-        image_url = f'![{image_name}](' + os.path.join(local_folder_path, new_image_name) + ')'
-        cursor = QTextCursor(self.textEdit.textCursor())
+        image_url = f'![{image_name}](' + os.path.join("__md_file_path__", "resources", image_extension, new_image_name) + ')'
+        cursor = QTextCursor(self.text_edit_view.textCursor())
         cursor.insertText(image_url)
 
     def insert_link(self):
         link, ok = QInputDialog.getText(self, '插入超级链接', '请输入链接地址：')
 
         if ok and link:
-            cursor = QTextCursor(self.textEdit.textCursor())
+            cursor = QTextCursor(self.text_edit_view.textCursor())
             cursor.clearSelection()
             cursor.movePosition(QTextCursor.StartOfWord)
             cursor.insertText('<' + link + '>')
             cursor.movePosition(QTextCursor.EndOfWord)
             cursor.insertText('</' + link + '>')
-            self.textEdit.setTextCursor(cursor)
+            self.text_edit_view.setTextCursor(cursor)
 
     def on_textedit_changed(self):
-        self.text_content = self.textEdit.toPlainText()
+        self.text_content = self.text_edit_view.toPlainText()
             
     def edit_mark_down(self):
         self.insert_menu.setEnabled(True)
         self.action.setEnabled(True)
         self.action_2.setEnabled(True)
         self.action_3.setEnabled(True)
-        self.textEdit.setText(self.text_content)
-        self.textEdit.show()
-        self.text_browser.hide()
+        self.text_edit_view.setText(self.text_content)
+        self.text_edit_view.show()
+        self.text_browser_view.hide()
 
     def show_mark_down(self):
         self.insert_menu.setEnabled(False)
         self.action.setEnabled(False)
         self.action_2.setEnabled(False)
         self.action_3.setEnabled(False)
-        html_text = get_html_text(self.text_content)
-        self.text_browser.setText(html_text)
-        self.text_browser.show()
-        self.textEdit.hide()
-
-    def set_md_file_path(self, path):
-        self.mdFilePath = path
-
-    def set_ins_file_path(self, path):
-        self.insFilePath = path
+        html_text = self.get_html_text(self.text_content)
+        self.text_browser_view.setText(html_text)
+        self.text_browser_view.show()
+        self.text_edit_view.hide()
 
 def main():
     app = QApplication(sys.argv)
-    editor = MarkdownEditor()
+    editor = MarkdownView()
     editor.show()
     sys.exit(app.exec_())
 
